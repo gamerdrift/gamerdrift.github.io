@@ -133,15 +133,6 @@
     /* ══════════════════════════════════
        HERO
     ══════════════════════════════════ */
-    #hero {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 80px 5% 60px;
-      overflow: hidden;
-    }
     .hero-orb1 {
       position: absolute; width: 700px; height: 700px;
       background: radial-gradient(circle, rgba(0,245,255,0.06) 0%, transparent 70%);
@@ -192,6 +183,44 @@
       93%,95% { opacity: 0.4; }
     }
 
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem; font-weight: 300; letter-spacing: 0.08em;
+      color: var(--t2); max-width: 580px; margin: 0 auto 2.5rem;
+      text-shadow: 0 0 12px rgba(0,245,255,0.08);
+    }
+
+    .hero-grid-lines {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      overflow: hidden;
+    }
+    .hero-grid-lines::before,
+    .hero-grid-lines::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(220,220,220,0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220,220,220,0.14) 1px, transparent 1px);
+      background-size: 140px 140px;
+      opacity: 0.35;
+      animation: hero-grid-move 18s linear infinite;
+    }
+    .hero-grid-lines::after {
+      transform: rotate(45deg);
+      opacity: 0.2;
+      animation-duration: 22s;
+    }
+
+    @keyframes hero-grid-move {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 140px 140px, 140px 140px; }
+    }
+
     #hero {
       position: relative; z-index: 1;
       min-height: 100vh;
@@ -205,26 +234,37 @@
                   radial-gradient(circle at 50% 120%, rgba(255,0,200,0.08), transparent 30%);
     }
 
-    .hero-logo-wrap {
-      margin-bottom: 1.5rem;
+    #hero::before {
+      content: '';
+      position: absolute; inset: 1.5rem;
+      border: 1px solid rgba(40,255,120,0.45);
+      border-radius: 30px;
+      box-shadow: 0 0 40px rgba(40,255,120,0.18);
+      pointer-events: none;
+      z-index: 2;
+    }
+    #hero::after {
+      content: '';
+      position: absolute; inset: 2.5rem;
+      border: 1px solid rgba(40,255,120,0.22);
+      border-radius: 28px;
+      box-shadow: 0 0 16px rgba(40,255,120,0.12);
+      pointer-events: none;
+      z-index: 2;
     }
 
     .hero-logo {
       width: min(420px, 100%);
       max-width: 420px;
       filter: drop-shadow(0 0 40px rgba(0,245,255,0.45));
+      mix-blend-mode: screen;
+      background: transparent;
       transition: transform 0.3s, filter 0.3s;
     }
 
     .hero-logo:hover {
       transform: scale(1.02);
       filter: drop-shadow(0 0 60px rgba(0,245,255,0.6));
-    }
-
-    .hero-sub {
-      font-size: 1.15rem; font-weight: 300; letter-spacing: 0.08em;
-      color: var(--t2); max-width: 580px; margin: 0 auto 2.5rem;
-      text-shadow: 0 0 12px rgba(0,245,255,0.08);
     }
 
     .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 4rem; }
@@ -861,8 +901,10 @@
     <div class="hero-orb2"></div>
     <div class="hero-orb3"></div>
     <div class="speed-lines" id="speed-lines"></div>
+    <div class="hero-grid-lines"></div>
 
-    <div class="hero-eyebrow">[ ENTER THE DRIFT ]</div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">[ ENTER THE DRIFT ]</div>
 
     <div class="hero-logo-wrap reveal">
       <img src="weblogo.PNG" alt="Gamer Drift Logo" class="hero-logo" />
@@ -881,6 +923,7 @@
       <div class="hstat"><span class="hstat-n c3">50K+</span><span class="hstat-l">Clan Members</span></div>
       <div class="hstat"><span class="hstat-n c1">100+</span><span class="hstat-l">Tournaments</span></div>
     </div>
+  </div>
   </section>
 
   <!-- ═══════════ REVIEWS ═══════════ -->
