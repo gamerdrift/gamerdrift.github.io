@@ -187,30 +187,39 @@
       93%,95% { opacity: 0.4; }
     }
 
-    .hero-title {
-      font-family: var(--ff-display);
-      font-size: clamp(4rem, 12vw, 10rem);
-      line-height: 0.9; letter-spacing: 0.02em;
-      margin-bottom: 1rem;
+    #hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 80px 5% 60px;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 20%, rgba(0,245,255,0.14), transparent 28%),
+                  radial-gradient(circle at 80% 15%, rgba(255,107,0,0.1), transparent 26%),
+                  radial-gradient(circle at 50% 120%, rgba(255,0,200,0.08), transparent 30%);
     }
-    .hero-title .t-white { color: var(--t1); display: block; }
-    .hero-title .t-cyan {
-      color: var(--cyan); display: block;
-      text-shadow: 0 0 40px rgba(0,245,255,0.6), 0 0 80px rgba(0,245,255,0.2);
-      animation: glow-pulse 3s ease-in-out infinite;
+
+    .hero-logo-wrap {
+      margin-bottom: 1.5rem;
     }
-    .hero-title .t-orange {
-      color: var(--orange); display: block;
-      text-shadow: 0 0 40px rgba(255,107,0,0.6);
+
+    .hero-logo {
+      width: min(420px, 100%);
+      max-width: 420px;
+      filter: drop-shadow(0 0 40px rgba(0,245,255,0.45));
+      transition: transform 0.3s, filter 0.3s;
     }
-    @keyframes glow-pulse {
-      0%,100% { text-shadow: 0 0 40px rgba(0,245,255,0.6), 0 0 80px rgba(0,245,255,0.2); }
-      50% { text-shadow: 0 0 60px rgba(0,245,255,0.9), 0 0 120px rgba(0,245,255,0.4); }
+
+    .hero-logo:hover {
+      transform: scale(1.02);
+      filter: drop-shadow(0 0 60px rgba(0,245,255,0.6));
     }
 
     .hero-sub {
       font-size: 1.15rem; font-weight: 300; letter-spacing: 0.08em;
       color: var(--t2); max-width: 580px; margin: 0 auto 2.5rem;
+      text-shadow: 0 0 12px rgba(0,245,255,0.08);
     }
 
     .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 4rem; }
@@ -850,11 +859,9 @@
 
     <div class="hero-eyebrow">[ WELCOME TO THE ULTIMATE GAMING HUB ]</div>
 
-    <h1 class="hero-title">
-      <span class="t-white">GAMER</span>
-      <span class="t-cyan">DRIFT</span>
-      <span class="t-orange">.COM</span>
-    </h1>
+    <div class="hero-logo-wrap reveal">
+      <img src="weblogo.PNG" alt="Gamer Drift Logo" class="hero-logo" />
+    </div>
 
     <p class="hero-sub">Reviews. Esports. News. Community. Games. Merch.<br/>Everything gaming — one legendary destination.</p>
 
