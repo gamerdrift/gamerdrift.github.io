@@ -80,19 +80,24 @@
       border-bottom: 1px solid var(--border);
     }
     .nav-logo {
-      display: flex;
-      align-items: center;
+      font-family: var(--ff-display);
+      font-size: 1.8rem; letter-spacing: 0.06em;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(0,245,255,0.5);
       text-decoration: none; cursor: pointer;
-      filter: drop-shadow(0 0 20px rgba(0,245,255,0.5));
-      transition: filter 0.2s;
+      transition: text-shadow 0.2s;
     }
     .nav-logo:hover {
-      filter: drop-shadow(0 0 30px rgba(0,245,255,0.8));
+      text-shadow: 0 0 30px rgba(0,245,255,0.8);
     }
-    .nav-logo img {
-      height: 40px;
-      width: auto;
-      max-width: 200px;
+    .nav-logo span { color: var(--orange); text-shadow: 0 0 20px rgba(255,107,0,0.5); }
+    .hero-logo {
+      width: min(420px, 100%);
+      max-width: 420px;
+      filter: drop-shadow(0 0 40px rgba(0,245,255,0.45));
+      mix-blend-mode: screen;
+      background: transparent;
+      transition: transform 0.3s, filter 0.3s;
     }
     .nav-links { display: flex; gap: 1.5rem; list-style: none; }
     .nav-links a {
@@ -822,7 +827,7 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a class="nav-logo" href="#hero"><img src="weblogo.PNG" alt="Gamer Drift Logo" style="height: 40px; width: auto;"></a>
+    <a class="nav-logo" href="#hero">Gamer<span>Drift</span></a>
     <ul class="nav-links">
       <li><a href="#reviews">Reviews</a></li>
       <li><a href="#esports">Esports</a></li>
