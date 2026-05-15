@@ -80,13 +80,20 @@
       border-bottom: 1px solid var(--border);
     }
     .nav-logo {
-      font-family: var(--ff-display);
-      font-size: 1.8rem; letter-spacing: 0.06em;
-      color: var(--cyan);
-      text-shadow: 0 0 20px rgba(0,245,255,0.5);
+      display: flex;
+      align-items: center;
       text-decoration: none; cursor: pointer;
+      filter: drop-shadow(0 0 20px rgba(0,245,255,0.5));
+      transition: filter 0.2s;
     }
-    .nav-logo span { color: var(--orange); text-shadow: 0 0 20px rgba(255,107,0,0.5); }
+    .nav-logo:hover {
+      filter: drop-shadow(0 0 30px rgba(0,245,255,0.8));
+    }
+    .nav-logo img {
+      height: 40px;
+      width: auto;
+      max-width: 200px;
+    }
     .nav-links { display: flex; gap: 1.5rem; list-style: none; }
     .nav-links a {
       font-family: var(--ff-body); font-size: 0.8rem; font-weight: 600;
@@ -696,8 +703,13 @@
       padding: 4rem 5% 2rem;
     }
     .foot-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
-    .foot-logo { font-family: var(--ff-display); font-size: 2rem; color: var(--cyan); text-shadow: 0 0 20px rgba(0,245,255,0.4); display: block; margin-bottom: 0.8rem; }
-    .foot-logo span { color: var(--orange); }
+    .foot-logo-img {
+      height: 50px;
+      width: auto;
+      max-width: 250px;
+      filter: drop-shadow(0 0 20px rgba(0,245,255,0.4));
+      margin-bottom: 0.8rem;
+    }
     .foot-desc { color: var(--t2); font-size: 0.9rem; max-width: 260px; line-height: 1.7; }
     .foot-col-ttl { font-family: var(--ff-display); font-size: 0.85rem; letter-spacing: 0.15em; color: var(--cyan); margin-bottom: 1rem; }
     .foot-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
@@ -801,7 +813,7 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a class="nav-logo" href="#hero">Gamer<span>Drift</span></a>
+    <a class="nav-logo" href="#hero"><img src="weblogo.PNG" alt="Gamer Drift Logo" style="height: 40px; width: auto;"></a>
     <ul class="nav-links">
       <li><a href="#reviews">Reviews</a></li>
       <li><a href="#esports">Esports</a></li>
@@ -1160,7 +1172,7 @@
   <footer>
     <div class="foot-top">
       <div>
-        <span class="foot-logo">Gamer<span>Drift</span></span>
+        <img src="weblogo.PNG" alt="Gamer Drift Logo" class="foot-logo-img">
         <p class="foot-desc">Your ultimate gaming hub. Reviews, news, esports, community, games, and merch — all in one legendary destination.</p>
       </div>
       <div>
