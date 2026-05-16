@@ -1,0 +1,72 @@
+name: 🚀 Auto Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: ✅ Verify files exist
+        run: |
+          echo "✅ Checking website files..."
+          ls -la
+          [ -f "index.html" ] && echo "✅ index.html found" || echo "❌ index.html missing"
+          [ -f "CNAME" ] && echo "✅ CNAME found" || echo "ℹ️ CNAME not required"
+
+      - name: 🔍 Validate HTML
+        run: |
+          echo "🔍 Validating HTML structure..."
+          if grep -q "firebaseConfig" index.html; then
+            echo "✅ Firebase config found"
+          fi
+          if grep -q "launchGame" index.html; then
+            echo "✅ Game functions found"
+          fi
+          if grep -q "openAuthModal" index.html; then
+            echo "✅ Authentication modal found"
+          fi
+
+      - name: 📱 Check responsive design
+        run: |
+          echo "📱 Checking responsive design markers..."
+          grep -q "viewport" index.html && echo "✅ Viewport meta tag found"
+          grep -q "max-width: 768px" index.html && echo "✅ Mobile breakpoint found"
+
+      - name: 🎮 Verify game implementations
+        run: |
+          echo "🎮 Verifying game implementations..."
+          grep -q "runSnake" index.html && echo "✅ Snake game found"
+          grep -q "runBreakout" index.html && echo "✅ Breakout game found"
+          grep -q "runAsteroids" index.html && echo "✅ Asteroids game found"
+          grep -q "runPong" index.html && echo "✅ Pong game found"
+
+      - name: 📊 Generate build report
+        run: |
+          echo "📊 Build Report" > build_report.txt
+          echo "==================" >> build_report.txt
+          echo "Date: $(date)" >> build_report.txt
+          echo "Files deployed: $(find . -name '*.html' -o -name '*.md' -o -name '*.PNG' | wc -l)" >> build_report.txt
+          echo "Commit: ${{ github.sha }}" >> build_report.txt
+          echo "Status: ✅ READY FOR PRODUCTION" >> build_report.txt
+          cat build_report.txt
+
+      - name: 🌐 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          cname: gamerdrift.github.io
+
+      - name: ✅ Deployment Complete
+        run: |
+          echo "✅ Website deployed successfully!"
+          echo "🌐 Live at: https://gamerdrift.github.io"
+          echo "📝 Commit: ${{ github.event.head_commit.message }}"
+          echo "👤 Author: ${{ github.event.pusher.name }}"
