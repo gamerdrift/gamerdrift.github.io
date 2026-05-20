@@ -1,9 +1,27 @@
 {
-  "timestamp": "2026-05-20T03:34:29.659529",
+  "timestamp": "2026-05-20T05:04:37.817076",
   "count": 15,
   "articles": [
     {
-      "title": "Ben Welsh made an index of all FiveThirtyEight articles on the Internet Archive",
+      "title": "GitHub Compromised",
+      "description": "",
+      "url": "https://twitter.com/i/status/2056949168208552080",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T04:12:48",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Evals will break",
+      "description": "",
+      "url": "https://wanglun1996.github.io/blog/your-evals-will-break.html",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T03:10:30",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "FiveThirtyEight articles on the Internet Archive",
       "description": "",
       "url": "https://fivethirtyeightindex.com/",
       "source": "Hacker News",
@@ -57,15 +75,6 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Minnesota becomes first state to ban prediction markets",
-      "description": "",
-      "url": "https://www.npr.org/2026/05/19/nx-s1-5821265/minnesota-ban-prediction-markets",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T19:13:26",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
       "title": "Google changes its search box",
       "description": "",
       "url": "https://blog.google/products-and-platforms/products/search/search-io-2026/",
@@ -89,15 +98,6 @@
       "url": "https://virtualosmuseum.org/",
       "source": "Hacker News",
       "publishedAt": "2026-05-19T15:53:38",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "I\u2019ve joined Anthropic",
-      "description": "",
-      "url": "https://twitter.com/karpathy/status/2056753169888334312",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T15:07:45",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -129,11 +129,11 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Museum of Imaginary Musical Instruments",
+      "title": "In 1979 engineer Hugh Padgham discovered \"gated reverb\" \u2013 by accident",
       "description": "",
-      "url": "https://imaginaryinstruments.org/",
+      "url": "https://producelikeapro.com/blog/how-one-recording-mistake-created-a-musical-phenomenon-in-the-80s/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-18T00:45:52",
+      "publishedAt": "2026-05-17T16:00:48",
       "image": null,
       "category": "INDUSTRY"
     }

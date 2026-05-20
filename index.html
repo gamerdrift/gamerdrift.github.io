@@ -200,6 +200,16 @@
       letter-spacing: 0.16em;
       text-transform: uppercase;
     }
+    /* Position LIVE badge at the left edge of the ticker */
+    .nav-news-ticker { position: relative; padding-left: 68px; }
+    .nav-news-ticker .live-badge {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      margin: 0;
+    }
+    .nav-news-ticker .ticker-track { padding-left: 0; }
     .live-badge {
       display: inline-flex; align-items: center; justify-content: center;
       padding: 0 0.55rem;
@@ -800,6 +810,35 @@
     /* Online users list */
     .online-list { display: flex; flex-direction: column; gap: 0.5rem; }
     .online-user { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.3rem; cursor: pointer; transition: background 0.2s; border-radius: 2px; }
+
+    /* ══════════════════════════════════
+       DRIFT TUNES PANEL
+    ══════════════════════════════════ */
+    .tunes-panel {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10003;
+      transform: translateY(110%); transition: transform 0.35s ease;
+      pointer-events: none;
+    }
+    .tunes-panel.open { transform: translateY(0); pointer-events: auto; }
+    .tunes-inner {
+      max-width: 1100px; margin: 0 auto; background: linear-gradient(180deg, rgba(8,8,12,0.96), rgba(6,6,10,0.98));
+      border-top: 1px solid var(--border); box-shadow: 0 -30px 80px rgba(0,0,0,0.6);
+      padding: 18px 5%; display:flex; gap:1rem; align-items:flex-start; justify-content:space-between;
+    }
+    .tunes-left { flex: 1 1 480px; }
+    .tunes-right { width: 300px; flex-shrink: 0; }
+    .tunes-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:8px; }
+    .tunes-title { font-family:var(--ff-display); color:var(--cyan); font-size:1.1rem; }
+    .tunes-close { background:none; border:1px solid var(--border); color:var(--t2); padding:6px 10px; cursor:pointer; }
+    .tunes-list { display:flex; flex-direction:column; gap:8px; max-height:320px; overflow:auto; padding-right:6px; }
+    .t-item { display:flex; justify-content:space-between; align-items:center; gap:0.6rem; padding:8px; background:var(--card2); border:1px solid var(--border); }
+    .t-meta { display:flex; flex-direction:column; }
+    .t-name { font-family:var(--ff-body); font-weight:700; }
+    .t-game { font-family:var(--ff-mono); font-size:0.72rem; color:var(--t3); }
+    .t-play { background:var(--cyan); color:#000; border:none; padding:8px 12px; cursor:pointer; }
+    .t-controls { display:flex; flex-direction:column; gap:8px; }
+    .audio-progress { width:100%; height:6px; background:rgba(255,255,255,0.04); border-radius:4px; overflow:hidden; }
+    .audio-progress > i { display:block; height:100%; background:linear-gradient(90deg,var(--cyan),var(--orange)); width:0%; }
     .online-user:hover { background: var(--card2); }
     .ou-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
     .ou-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
@@ -1008,7 +1047,7 @@
     <div class="nav-top">
       <a class="nav-logo" href="#hero">Gamer<span>Drift</span></a>
       <div class="nav-news-ticker">
-        <div class="ticker-label">GLOBAL TECH NEWS <span class="live-badge">LIVE</span></div>
+        <span class="live-badge">LIVE</span>
         <div class="ticker-track" id="ticker-track">Loading live headlines...</div>
       </div>
       <div class="nav-right">
@@ -1018,6 +1057,7 @@
       </div>
     </div>
     <ul class="nav-links">
+        <li><a href="#drift-tunes" id="nav-tunes">DriftTunes</a></li>
       <li><a href="#reviews">Reviews</a></li>
       <li><a href="#esports">Esports</a></li>
       <li><a href="#news">News</a></li>
@@ -1353,6 +1393,35 @@
   </section>
 
   <!-- ═══════════ NEWSLETTER ═══════════ -->
+  <!-- DRIFT TUNES PANEL (hidden until opened) -->
+  <div class="tunes-panel" id="tunes-panel" aria-hidden="true">
+    <div class="tunes-inner">
+      <div class="tunes-left">
+        <div class="tunes-header">
+          <div class="tunes-title">DriftTunes — Game Soundtrack Repository</div>
+          <div>
+            <button class="tunes-close" id="tunes-close">Close</button>
+          </div>
+        </div>
+        <div id="tunes-list" class="tunes-list">Loading tunes...</div>
+      </div>
+      <div class="tunes-right">
+        <div style="font-family:var(--ff-mono);color:var(--t3);margin-bottom:8px">Player</div>
+        <div class="t-controls">
+          <div class="audio-progress" id="audio-progress"><i id="audio-progress-bar"></i></div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn-sm" id="prev-track">Prev</button>
+            <button class="btn-sm" id="play-toggle">Play</button>
+            <button class="btn-sm" id="next-track">Next</button>
+          </div>
+          <div style="margin-top:8px">
+            <label class="btn-sm" style="display:inline-block;margin-bottom:6px">Volume</label>
+            <input type="range" id="audio-volume" min="0" max="1" step="0.01" value="0.8" style="width:100%" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <section class="section" id="newsletter">
     <div class="nl-wrap reveal">
       <span class="sec-tag" style="text-align:center;display:block">// STAY IN THE DRIFT</span>
@@ -1911,6 +1980,66 @@
       gameLoop=requestAnimationFrame(loop);
     })();
   }
+
+    // ══════════════════════════════
+    // DRIFT TUNES: player, loader, and UI
+    // ══════════════════════════════
+    let tunesList = [];
+    let currentTuneIndex = -1;
+    const tuneAudio = new Audio(); tuneAudio.crossOrigin = 'anonymous'; tuneAudio.preload = 'auto';
+
+    function toggleTunesPanel(open){
+      const p = document.getElementById('tunes-panel');
+      const isOpen = p.classList.contains('open');
+      const setOpen = (typeof open === 'boolean') ? open : !isOpen;
+      p.classList.toggle('open', setOpen);
+      p.setAttribute('aria-hidden', setOpen ? 'false' : 'true');
+      if(setOpen) loadTunes();
+    }
+
+    async function loadTunes(){
+      try{
+        const res = await fetch('tunes.json');
+        if(!res.ok) throw new Error('No tunes');
+        tunesList = await res.json();
+        renderTunes();
+      }catch(e){ document.getElementById('tunes-list').innerHTML = '<div style="color:var(--t2)">No tunes available. Run the tunes agent to populate `tunes.json`.</div>'; }
+    }
+
+    function renderTunes(){
+      const container = document.getElementById('tunes-list'); container.innerHTML='';
+      if(!tunesList || tunesList.length===0){ container.innerHTML = '<div style="color:var(--t2)">No tracks found.</div>'; return; }
+      tunesList.forEach((t,i)=>{
+        const el = document.createElement('div'); el.className='t-item';
+        el.innerHTML = `<div class="t-meta"><div class="t-name">${t.title}</div><div class="t-game">${t.game || 'Unknown'}</div></div><div><div style="display:flex;gap:8px"><button class="t-play" data-index="${i}">▶</button><div style="font-family:var(--ff-mono);color:var(--t3);font-size:0.85rem">${t.source||''}</div></div></div>`;
+        container.appendChild(el);
+      });
+      container.querySelectorAll('.t-play').forEach(btn=>btn.addEventListener('click',e=>{ const idx=Number(e.currentTarget.dataset.index); playTune(idx); }));
+    }
+
+    function playTune(index){
+      if(index<0 || index>=tunesList.length) return;
+      const t = tunesList[index];
+      if(!t || !t.url) return showToast('Track missing URL');
+      if(currentTuneIndex===index && !tuneAudio.paused){ tuneAudio.pause(); document.getElementById('play-toggle').textContent='Play'; return; }
+      currentTuneIndex = index; tuneAudio.src = t.url; tuneAudio.play().catch(()=>showToast('Playback blocked — interact first'));
+      document.getElementById('play-toggle').textContent='Pause';
+      highlightPlaying();
+    }
+
+    function highlightPlaying(){
+      document.querySelectorAll('.t-item').forEach((el,i)=> el.style.outline = (i===currentTuneIndex)?'2px solid rgba(0,245,255,0.12)':'' );
+    }
+
+    document.getElementById('play-toggle').addEventListener('click',()=>{ if(tuneAudio.paused){ if(currentTuneIndex<0 && tunesList.length>0) playTune(0); else tuneAudio.play(); document.getElementById('play-toggle').textContent='Pause'; } else { tuneAudio.pause(); document.getElementById('play-toggle').textContent='Play'; } });
+    document.getElementById('next-track').addEventListener('click',()=>{ if(tunesList.length===0) return; playTune((currentTuneIndex+1)%tunesList.length); });
+    document.getElementById('prev-track').addEventListener('click',()=>{ if(tunesList.length===0) return; playTune((currentTuneIndex-1+tunesList.length)%tunesList.length); });
+    document.getElementById('tunes-close').addEventListener('click',()=>toggleTunesPanel(false));
+    document.getElementById('audio-volume').addEventListener('input',e=>{ tuneAudio.volume = Number(e.target.value); });
+    tuneAudio.addEventListener('timeupdate', ()=>{ const pct = (tuneAudio.currentTime / (tuneAudio.duration||1))*100; document.getElementById('audio-progress-bar').style.width = pct + '%'; if(tuneAudio.ended){ document.getElementById('play-toggle').textContent='Play'; } });
+
+    // wire nav link
+    document.getElementById('nav-tunes').addEventListener('click', e=>{ e.preventDefault(); toggleTunesPanel(true); });
   </script>
 
   <!-- News Aggregator -->
