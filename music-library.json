@@ -1,0 +1,50 @@
+[
+  {
+    "id": "track-1",
+    "title": "Stellar Rift: Main Theme",
+    "game": "Stellar Rift",
+    "composer": "Nova Pulse",
+    "duration": "3:24",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+  },
+  {
+    "id": "track-2",
+    "title": "Nexus Gate: Battle Anthem",
+    "game": "Nexus Gate: Reborn",
+    "composer": "Circuit Breaker",
+    "duration": "4:12",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+  },
+  {
+    "id": "track-3",
+    "title": "Phantom Signal: Pulse",
+    "game": "Phantom Signal",
+    "composer": "Echo Drift",
+    "duration": "3:54",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+  },
+  {
+    "id": "track-4",
+    "title": "Vortex Protocol: Raid",
+    "game": "Vortex Protocol",
+    "composer": "Shadow Render",
+    "duration": "5:01",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+  },
+  {
+    "id": "track-5",
+    "title": "Grid Surge: Drift Loop",
+    "game": "Grid Surge 2025",
+    "composer": "Turbo Neon",
+    "duration": "3:42",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+  },
+  {
+    "id": "track-6",
+    "title": "Echoes of Elara: Luminous",
+    "game": "Echoes of Elara",
+    "composer": "Astral Wave",
+    "duration": "4:30",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+  }
+]
