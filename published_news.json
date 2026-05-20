@@ -1,13 +1,49 @@
 {
-  "timestamp": "2026-05-20T15:55:10.891646",
+  "timestamp": "2026-05-20T17:44:20.114947",
   "count": 15,
   "articles": [
     {
-      "title": "Nobel laureate Olga Tokarczuk apparently used AI to write her latest novel",
+      "title": "After Town Bans Flock, Councilmember Crashes Out, Proposes Internet, Phone Ban",
       "description": "",
-      "url": "https://lithub.com/nobel-laureate-olga-tokarczuk-apparently-used-ai-to-write-her-latest-novel/",
+      "url": "https://www.404media.co/after-town-bans-flock-councilmember-crashes-out-proposes-internet-and-phone-ban/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T15:10:43",
+      "publishedAt": "2026-05-20T16:55:17",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Ask HN: Shouldn't Google need to give a public statement about Railway incident?",
+      "description": "",
+      "url": "https://news.ycombinator.com/item?id=48210590",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T16:50:54",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Apparently Google hates us now",
+      "description": "",
+      "url": "https://twitter.com/pokemoncentral/status/2057123807404638250",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T16:27:25",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "SBCL: the ultimate assembly code breadboard (2014)",
+      "description": "",
+      "url": "https://pvk.ca/Blog/2014/03/15/sbcl-the-ultimate-assembly-code-breadboard/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T15:39:48",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Formal Verification Gates for AI Coding Loops",
+      "description": "",
+      "url": "https://reubenbrooks.dev/blog/structural-backpressure-beats-smarter-agents/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T15:25:45",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -30,16 +66,7 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Goodbye Visa and Mastercard: 130M Europeans switching to sovereign payment",
-      "description": "",
-      "url": "https://www.lesnumeriques.com/banque-en-ligne/adieu-visa-et-mastercard-130-millions-d-europeens-basculent-vers-un-paiement-100-souverain-des-2026-n250918.html",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T13:02:30",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Meta blocks human rights accounts from reaching audiences in Arabia and the UAE",
+      "title": "Meta blocks human rights accounts from reaching audiences in Saudi Arabia, UAE",
       "description": "",
       "url": "https://www.alqst.org/ar/posts/1190",
       "source": "Hacker News",
@@ -84,6 +111,15 @@
       "category": "INDUSTRY"
     },
     {
+      "title": "Incident Report: May 19, 2026 \u2013 GCP Account Suspension",
+      "description": "",
+      "url": "https://blog.railway.com/p/incident-report-may-19-2026-gcp-account-outage",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-20T08:37:55",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
       "title": "Everything in C is undefined behavior",
       "description": "",
       "url": "https://blog.habets.se/2026/05/Everything-in-C-is-undefined-behavior.html",
@@ -93,49 +129,13 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "FiveThirtyEight articles on the Internet Archive",
+      "title": "How fast is N tokens per second really?",
       "description": "",
-      "url": "https://fivethirtyeightindex.com/",
+      "url": "https://mikeveerman.github.io/tokenspeed/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T01:34:19",
+      "publishedAt": "2026-05-18T02:04:38",
       "image": null,
       "category": "INDUSTRY"
-    },
-    {
-      "title": "Gemini 3.5 Flash",
-      "description": "",
-      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T17:43:45",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "When Fast Fourier Transform Meets Transformer for Image Restoration (2024)",
-      "description": "",
-      "url": "https://github.com/deng-ai-lab/SFHformer",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-18T14:10:47",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Autoregressive next token prediction and KV Cache in transformers",
-      "description": "",
-      "url": "https://medium.com/advanced-deep-learning/autoregressive-next-token-prediction-kv-cache-in-transformers-afad22285baf",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-17T20:07:14",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Smartmedia Card Spec Opened, available free (2000)",
-      "description": "",
-      "url": "https://www.edn.com/smartmedia-card-interface-spec-opened-available-for-free/#google_vignette",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-17T19:22:42",
-      "image": null,
-      "category": "RELEASE"
     }
   ]
 }
