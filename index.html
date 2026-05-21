@@ -341,6 +341,332 @@
       margin-bottom: 0.4rem;
     }
 
+    /* ══════════════════════════════════
+       HERO HOLOGRAM NEWS CARD
+       ══════════════════════════════════ */
+    .hero-grid-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 3.5rem;
+      max-width: 1000px;
+      margin: 0 auto 2.5rem;
+      width: 100%;
+    }
+    
+    @media (max-width: 900px) {
+      .hero-grid-layout {
+        flex-direction: column-reverse;
+        gap: 2.5rem;
+      }
+    }
+
+    .hologram-container {
+      perspective: 1200px;
+      width: min(420px, 100%);
+      max-width: 420px;
+      margin: 0 auto;
+      z-index: 10;
+    }
+
+    .hologram-card {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: rgba(0, 255, 136, 0.02);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transform-style: preserve-3d;
+      transform: rotateY(12deg) rotateX(3deg);
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.08), inset 0 0 15px rgba(0, 255, 136, 0.04);
+      backdrop-filter: blur(8px);
+      transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+      font-family: var(--ff-mono);
+      animation: holo-flicker 12s infinite;
+    }
+
+    .hologram-card:hover {
+      border-color: rgba(0, 255, 136, 0.55);
+      box-shadow: 0 0 45px rgba(0, 255, 136, 0.22), inset 0 0 25px rgba(0, 255, 136, 0.08);
+    }
+
+    .holo-content-wrapper {
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .hud-controls, .hud-btn {
+      pointer-events: auto; /* enable clicks inside the card wrapper */
+    }
+
+    @keyframes holo-flicker {
+      0%, 19.9%, 22%, 62.9%, 64%, 64.9%, 70%, 100% { opacity: 0.98; filter: contrast(1) brightness(1); }
+      20%, 21.9%, 63%, 63.9%, 65%, 69.9% { opacity: 0.65; filter: contrast(1.1) brightness(1.2) hue-rotate(5deg); }
+    }
+
+    /* Scanlines */
+    .holo-scanlines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.3) 50%
+      );
+      background-size: 100% 4px;
+      z-index: 5;
+      opacity: 0.35;
+    }
+
+    /* Radar/Scan line sweep */
+    .holo-sweep {
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(0, 255, 136, 0.2), transparent);
+      pointer-events: none;
+      animation: holo-sweep-anim 4.5s linear infinite;
+      z-index: 4;
+    }
+
+    @keyframes holo-sweep-anim {
+      0% { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    /* HUD Corner Brackets */
+    .hud-corner-tl { position: absolute; top: 8px; left: 8px; border-top: 2px solid #00ff88; border-left: 2px solid #00ff88; width: 10px; height: 10px; pointer-events: none; }
+    .hud-corner-tr { position: absolute; top: 8px; right: 8px; border-top: 2px solid #00ff88; border-right: 2px solid #00ff88; width: 10px; height: 10px; pointer-events: none; }
+    .hud-corner-bl { position: absolute; bottom: 8px; left: 8px; border-bottom: 2px solid #00ff88; border-left: 2px solid #00ff88; width: 10px; height: 10px; pointer-events: none; }
+    .hud-corner-br { position: absolute; bottom: 8px; right: 8px; border-bottom: 2px solid #00ff88; border-right: 2px solid #00ff88; width: 10px; height: 10px; pointer-events: none; }
+
+    /* HUD Header */
+    .hud-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.62rem;
+      color: rgba(0, 255, 136, 0.85);
+      border-bottom: 1px solid rgba(0, 255, 136, 0.15);
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    
+    .hud-status-dot {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      background-color: #00ff88;
+      border-radius: 50%;
+      margin-right: 4px;
+      box-shadow: 0 0 6px #00ff88;
+      animation: blink 1.5s step-end infinite;
+    }
+
+    /* Hologram Image Container */
+    .holo-img-container {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      background: rgba(0, 255, 136, 0.05);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+    }
+
+    .holo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(1) sepia(1) hue-rotate(85deg) saturate(2.5) brightness(1.05) contrast(1.25);
+      opacity: 0.7;
+      mix-blend-mode: screen;
+      transition: opacity 0.3s;
+    }
+
+    .holo-img-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 255, 136, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.07) 1px, transparent 1px);
+      background-size: 12px 12px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Hologram news text */
+    .holo-news-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .holo-news-tag {
+      font-size: 0.58rem;
+      color: rgba(0, 255, 136, 0.65);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .holo-news-title {
+      font-family: var(--ff-body);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #00ff88;
+      line-height: 1.25;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+      margin-bottom: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .holo-news-desc {
+      font-family: var(--ff-body);
+      font-size: 0.78rem;
+      color: rgba(0, 255, 136, 0.75);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Hologram Footer & Controls */
+    .hud-ftr {
+      border-top: 1px solid rgba(0, 255, 136, 0.15);
+      padding-top: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hud-telemetry {
+      font-size: 0.55rem;
+      color: rgba(0, 255, 136, 0.55);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hud-btn {
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      color: #00ff88;
+      cursor: pointer;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .hud-btn:hover {
+      background: rgba(0, 255, 136, 0.22);
+      border-color: #00ff88;
+      box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+    }
+    
+    .hud-btn-sync {
+      padding: 0 0.4rem;
+      width: auto;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hud-countdown {
+      font-size: 0.58rem;
+      color: rgba(0, 255, 136, 0.7);
+      letter-spacing: 0.08em;
+    }
+
+    /* Decryption HUD Screen Overlay */
+    .decrypt-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 15, 8, 0.95);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      color: #00ff88;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    .decrypt-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .decrypt-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      font-weight: 700;
+      animation: blink 1s step-end infinite;
+    }
+
+    .decrypt-bar {
+      width: 80%;
+      height: 12px;
+      border: 1px solid rgba(0, 255, 136, 0.55);
+      padding: 1px;
+      background: transparent;
+      margin-bottom: 0.8rem;
+    }
+
+    .decrypt-progress {
+      width: 0%;
+      height: 100%;
+      background: #00ff88;
+      box-shadow: 0 0 10px #00ff88;
+      transition: width 0.1s linear;
+    }
+
+    .decrypt-status {
+      font-size: 0.6rem;
+      color: rgba(0, 255, 136, 0.75);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      min-height: 15px;
+    }
+
     .hero-sub {
       font-size: 1.15rem; font-weight: 300; letter-spacing: 0.08em;
       color: var(--t2); max-width: 580px; margin: 0 auto 2.5rem;
@@ -1108,13 +1434,79 @@
 
     <div class="hero-content">
 
-    <div class="hero-logo-wrap reveal">
-      <div class="hero-btns">
-        <a href="#reviews" class="btn-drift">Explore Reviews</a>
-        <a href="#games" class="btn-outline">Play Now</a>
+      <div class="hero-grid-layout">
+        <!-- Hologram Card Tile (Left) -->
+        <div class="hologram-container">
+          <div class="hologram-card" id="hologram-card">
+            <div class="holo-scanlines"></div>
+            <div class="holo-sweep"></div>
+            
+            <!-- HUD Bracket Corners -->
+            <div class="hud-corner-tl"></div>
+            <div class="hud-corner-tr"></div>
+            <div class="hud-corner-bl"></div>
+            <div class="hud-corner-br"></div>
+
+            <!-- Decryption Overlay -->
+            <div class="decrypt-overlay" id="decrypt-overlay">
+              <div class="decrypt-title">DECRYPTING SATELLITE FEED</div>
+              <div class="decrypt-bar">
+                <div class="decrypt-progress" id="decrypt-progress"></div>
+              </div>
+              <div class="decrypt-status" id="decrypt-status">ESTABLISHING SECURE HANDSHAKE...</div>
+            </div>
+
+            <!-- Inner Hologram Content -->
+            <div class="holo-content-wrapper">
+              <!-- HUD Header -->
+              <div class="hud-hdr">
+                <div><span class="hud-status-dot"></span>[ SYS_FEED: LIVE_INTEL ]</div>
+                <div id="hud-channel">CH: GD-NEWS-01</div>
+              </div>
+
+              <!-- Hologram Image -->
+              <div class="holo-img-container">
+                <div class="holo-img-grid"></div>
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" alt="Holographic Intel" class="holo-img" id="holo-img" />
+              </div>
+
+              <!-- News Content -->
+              <div class="holo-news-info">
+                <div class="holo-news-tag" id="holo-news-tag">CLASSIFIED // SEC_LEVEL_3</div>
+                <h3 class="holo-news-title" id="holo-news-title">INITIALIZING DATASET...</h3>
+                <p class="holo-news-desc" id="holo-news-desc">Downloading encrypted satellite feeds. Establishing link with system core coordinates.</p>
+              </div>
+
+              <!-- HUD Footer -->
+              <div class="hud-ftr">
+                <div class="hud-telemetry" id="hud-telemetry">
+                  SYS: DECRYPT_OK<br/>
+                  LOC: 34.052 // -118.243
+                </div>
+                <div class="hud-controls">
+                  <button class="hud-btn" id="holo-prev-btn" title="Previous news sector">&lt;</button>
+                  <button class="hud-btn hud-btn-sync" id="holo-sync-btn" title="Sync live feeds">SYNC</button>
+                  <button class="hud-btn" id="holo-next-btn" title="Next news sector">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Time-to-Sync status block below the 3D space -->
+          <div class="hud-countdown-wrap" style="margin-top: 0.5rem; text-align: left; padding: 0 0.5rem; font-family: var(--ff-mono); font-size: 0.65rem; color: #00ff88; display: flex; justify-content: space-between; opacity: 0.8;">
+            <span>[ CYCLE: 24H_AUTO ]</span>
+            <span id="holo-countdown">NEXT SYNC: --h --m --s</span>
+          </div>
+        </div>
+
+        <!-- Hero Logo Wrap (Right) -->
+        <div class="hero-logo-wrap reveal">
+          <div class="hero-btns">
+            <a href="#reviews" class="btn-drift">Explore Reviews</a>
+            <a href="#games" class="btn-outline">Play Now</a>
+          </div>
+          <img src="mylogo.png" alt="Gamer Drift Logo" class="hero-logo" />
+        </div>
       </div>
-      <img src="mylogo.png" alt="Gamer Drift Logo" class="hero-logo" />
-    </div>
 
     <p class="hero-sub">News. Reviews. Esports. Community. Instant browser games.<br/>The ultimate gaming universe — built for real legends.</p>
 
@@ -1887,8 +2279,230 @@
   window.addEventListener('load', () => {
     refreshNewsTicker();
     restoreCart();
+    initHologramNews();
   });
   setInterval(refreshNewsTicker, 13000);
+
+  // ══════════════════════════════
+  // MILITARY HUD HOLOGRAM CARD
+  // ══════════════════════════════
+  const hologramNewsLibrary = [
+    {
+      title: "GTA VI: CLASS-1 DETECTED IN R&D REPORT",
+      description: "Intercepted telemetry confirms Rockstar Games is deploying a revolutionary adaptive NPC cognitive layer, drastically enhancing reactive crowd heuristics in urban zones.",
+      category: "TACTICAL INTEL // SEC_LEVEL_4",
+      image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80",
+      telemetry: "SYS: DEC_OK\nCOORDS: 27.112 // 84.145\nSATELLITE: GD-INTEL-01"
+    },
+    {
+      title: "UNREAL ENGINE 6 NEURAL RENDERING DETECTED",
+      description: "Classified defense simulations are testing UE6 neural path-tracing systems, projecting sub-millimeter battlefield environments with near-zero latency.",
+      category: "SYS ANALYSIS // DEVIANCE_ZERO",
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      telemetry: "SYS: LINK_EST\nCOORDS: 45.021 // 12.390\nSATELLITE: GD-INTEL-02"
+    },
+    {
+      title: "PS5 PRO CUSTOM APU FREQUENCY ANOMALY",
+      description: "Hardware telemetry highlights a hidden silicon module inside the new custom revision. Thermal and power signatures indicate hardware-level compression logic.",
+      category: "HARDWARE TRACE // R-1150_PROT",
+      image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80",
+      telemetry: "SYS: APU_STABLE\nCOORDS: 35.676 // 139.650\nSATELLITE: GD-INTEL-03"
+    },
+    {
+      title: "KERNEL-LEVEL ANTI-CHEAT HARDWARE PROBES",
+      description: "Esports monitoring systems are testing hardware peripheral checks to quarantine advanced DMA emulation cards simulating controller inputs.",
+      category: "NET SEC // ANTICHEAT_SYS",
+      image: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=400&q=80",
+      telemetry: "SYS: CHK_ACTIVE\nCOORDS: 52.520 // 13.404\nSATELLITE: GD-INTEL-04"
+    },
+    {
+      title: "GAMERDRIFT CHAMPIONSHIP PRIZE POOL SECURED",
+      description: "GamerDrift Clan operations has established a classified escrow fund exceeding $250k for the upcoming multi-division arena tournament. Recruitment commences shortly.",
+      category: "CLAN OP // GLOBAL_CHAMP",
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80",
+      telemetry: "SYS: TRK_SECURE\nCOORDS: 19.076 // 72.877\nSATELLITE: GD-INTEL-05"
+    },
+    {
+      title: "CYBERPUNK ORION NPC GEN-AI REPOSITORIES",
+      description: "CDN repository crawls show experimental generative speech modules. Dialogue structures point to a dynamic conversational engine adjusting response paths on player pulse rates.",
+      category: "DATA MINING // INF_SYS_RED",
+      image: "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?w=400&q=80",
+      telemetry: "SYS: INGEST_OK\nCOORDS: 52.229 // 21.012\nSATELLITE: GD-INTEL-06"
+    },
+    {
+      title: "STALKER 2 POST-LAUNCH ANOMALY MAP LEAK",
+      description: "Classified level coordinates for Stalker 2 expanded maps indicate four additional research bunkers in the heart of the Chornobyl Exclusion Zone.",
+      category: "ZONE TRACE // RADAR_LOBE",
+      image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=400&q=80",
+      telemetry: "SYS: MAP_SYNCED\nCOORDS: 51.274 // 30.224\nSATELLITE: GD-INTEL-07"
+    },
+    {
+      title: "VALVE EXPANDS EXPERIMENTAL NEURAL ENGINE",
+      description: "Valve source branch updates reveal experimental integrations mapping brain-computer interface protocols directly onto game entity physics collision matrices.",
+      category: "NEURAL LINK // LABS_DECK",
+      image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&q=80",
+      telemetry: "SYS: DEV_CONNECTED\nCOORDS: 47.606 // -122.332\nSATELLITE: GD-INTEL-08"
+    }
+  ];
+
+  let currentHoloIndex = 0;
+  let isHoloDecrypting = false;
+
+  function initHologramNews() {
+    const container = document.querySelector('.hologram-container');
+    const card = document.getElementById('hologram-card');
+    
+    if (!container || !card) return;
+
+    // 1. Dynamic 3D Cursor Tilt Interaction
+    container.addEventListener('mousemove', (e) => {
+      if (isHoloDecrypting) return;
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateY = ((x - centerX) / centerX) * 16;  // Maximum 16 degrees tilt
+      const rotateX = -((y - centerY) / centerY) * 12; // Maximum 12 degrees tilt
+      
+      card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateZ(10px)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      // Snap back smoothly to default military angle
+      card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      card.style.transform = 'rotateY(12deg) rotateX(3deg) translateZ(0)';
+    });
+
+    container.addEventListener('mouseenter', () => {
+      card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+    });
+
+    // 2. Select index dynamically based on 24-hour cycle
+    const dateKey = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    currentHoloIndex = dateKey % hologramNewsLibrary.length;
+    
+    // 3. Render initial article immediately
+    renderHoloArticle(currentHoloIndex, false);
+
+    // 4. Set up manual controls
+    document.getElementById('holo-prev-btn').addEventListener('click', () => navigateHolo(-1));
+    document.getElementById('holo-next-btn').addEventListener('click', () => navigateHolo(1));
+    document.getElementById('holo-sync-btn').addEventListener('click', () => syncHoloFeed());
+
+    // 5. Countdown timer for 24-hour cycle
+    updateHoloCountdown();
+    setInterval(updateHoloCountdown, 1000);
+  }
+
+  function renderHoloArticle(index, withTelemetrySync = false) {
+    const article = hologramNewsLibrary[index];
+    if (!article) return;
+
+    document.getElementById('holo-img').src = article.image;
+    document.getElementById('holo-news-title').textContent = article.title;
+    document.getElementById('holo-news-desc').textContent = article.description;
+    document.getElementById('holo-news-tag').textContent = article.category;
+    document.getElementById('hud-telemetry').innerHTML = article.telemetry.replace(/\n/g, '<br/>');
+    document.getElementById('hud-channel').textContent = `CH: GD-NEWS-${String(index + 1).padStart(2, '0')}`;
+  }
+
+  function navigateHolo(direction) {
+    if (isHoloDecrypting) return;
+    currentHoloIndex = (currentHoloIndex + direction + hologramNewsLibrary.length) % hologramNewsLibrary.length;
+    decryptAndShowArticle(currentHoloIndex);
+  }
+
+  function decryptAndShowArticle(index) {
+    const overlay = document.getElementById('decrypt-overlay');
+    const progressBar = document.getElementById('decrypt-progress');
+    const statusText = document.getElementById('decrypt-status');
+    const card = document.getElementById('hologram-card');
+    
+    if (!overlay || !progressBar || !statusText) return;
+
+    isHoloDecrypting = true;
+    overlay.classList.add('active');
+    card.style.transform = 'rotateY(0deg) rotateX(0deg) translateZ(0)';
+    
+    // Play static glitch effect by toggling state classes
+    let progress = 0;
+    progressBar.style.width = '0%';
+    
+    const statuses = [
+      "ESTABLISHING SATELLITE HANDSHAKE...",
+      "RE-ALIGNING RADAR REFLECTOR...",
+      "DECOMPRESSING SIGNAL PACKETS...",
+      "BYPASSING SECURE LAYER CORRIDOR...",
+      "DECRYPTING TRANSMISSION VECTOR...",
+      "DECRYPTION COMPLETE // RENDERING FEED"
+    ];
+
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 15) + 8;
+      if (progress >= 100) {
+        progress = 100;
+        progressBar.style.width = '100%';
+        statusText.textContent = statuses[statuses.length - 1];
+        clearInterval(interval);
+        
+        setTimeout(() => {
+          renderHoloArticle(index, true);
+          overlay.classList.remove('active');
+          isHoloDecrypting = false;
+          
+          // Re-apply 3D default angle
+          card.style.transition = 'transform 0.5s ease';
+          card.style.transform = 'rotateY(12deg) rotateX(3deg)';
+        }, 300);
+      } else {
+        progressBar.style.width = `${progress}%`;
+        const statusIndex = Math.min(Math.floor((progress / 100) * statuses.length), statuses.length - 2);
+        statusText.textContent = statuses[statusIndex];
+      }
+    }, 60);
+  }
+
+  function syncHoloFeed() {
+    if (isHoloDecrypting) return;
+    
+    // Check if the newsAggregator has fresh live news articles available
+    if (window.newsAggregator && window.newsAggregator.getNews() && window.newsAggregator.getNews().length > 0) {
+      const liveNews = window.newsAggregator.getNews();
+      // Dynamically import live news articles into the hologram card deck!
+      liveNews.slice(0, 8).forEach((item, idx) => {
+        if (hologramNewsLibrary[idx]) {
+          hologramNewsLibrary[idx].title = item.title.toUpperCase();
+          hologramNewsLibrary[idx].description = item.description || item.content || "Classified transmission broadcasted in real time. Direct neural render completed successfully.";
+          hologramNewsLibrary[idx].category = `LIVE FEED // CH-${String(idx + 1).padStart(2, '0')}`;
+          if (item.image) {
+            hologramNewsLibrary[idx].image = item.image;
+          }
+        }
+      });
+    }
+    
+    // Re-decrypt the current page index
+    decryptAndShowArticle(currentHoloIndex);
+    showToast("📡 Satellite link re-synced! Feeds updated successfully.");
+  }
+
+  function updateHoloCountdown() {
+    const countdownEl = document.getElementById('holo-countdown');
+    if (!countdownEl) return;
+    
+    const now = new Date();
+    // Calculate time remaining until next midnight local
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const diffMs = tomorrow - now;
+    
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+    
+    countdownEl.textContent = `NEXT SYNC: ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+  }
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

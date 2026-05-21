@@ -1,22 +1,22 @@
 {
-  "timestamp": "2026-05-21T18:11:08.815829",
+  "timestamp": "2026-05-21T18:24:25.075611",
   "count": 15,
   "articles": [
+    {
+      "title": "BBEdit 16 Is Here",
+      "description": "",
+      "url": "https://www.barebones.com/products/bbedit/bbedit16.html",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T18:21:37",
+      "image": null,
+      "category": "INDUSTRY"
+    },
     {
       "title": "Amazon, Facebook, FBI have access to a private intelligence-sharing network",
       "description": "",
       "url": "https://prismreports.org/2026/05/20/seattle-shield-private-companies-surveillance/",
       "source": "Hacker News",
       "publishedAt": "2026-05-21T17:55:58",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Chewing gum restores dad's taste and smell years after Covid",
-      "description": "",
-      "url": "https://discover.swns.com/2026/05/chewing-gum-restores-dads-taste-and-smell-years-after-covid/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-21T17:14:56",
       "image": null,
       "category": "INDUSTRY"
     },
