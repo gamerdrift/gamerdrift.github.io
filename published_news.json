@@ -1,13 +1,58 @@
 {
-  "timestamp": "2026-05-21T05:22:12.662167",
+  "timestamp": "2026-05-21T11:57:44.891441",
   "count": 15,
   "articles": [
     {
-      "title": "OpenAI to confidentially file for IPO as soon as Friday",
+      "title": "A Girl Who Couldn't Draw Home",
       "description": "",
-      "url": "https://www.cnbc.com/2026/05/20/openai-ipo-filing.html",
+      "url": "https://www.gailweiner.com/post/the-girl-who-couldn-t-draw-home",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T02:24:35",
+      "publishedAt": "2026-05-21T11:21:53",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Python 3.15: features that didn't make the headlines",
+      "description": "",
+      "url": "https://blog.changs.co.uk/python-315-features-that-didnt-make-the-headlines.html",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T11:10:11",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Flipper One \u2013 we need your help",
+      "description": "",
+      "url": "https://blog.flipper.net/flipper-one-we-need-your-help/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T11:03:38",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Google officially announces that ads will be included in AI Mode search results",
+      "description": "",
+      "url": "https://blog.google/products/ads-commerce/google-marketing-live-search-ads/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T09:49:46",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Show HN: Rmux \u2013 A programmable terminal multiplexer with a Playwright-style SDK",
+      "description": "",
+      "url": "https://github.com/helvesec/rmux",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T09:22:00",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Typewise (YC S22) Is Hiring an AI Growth Engineer (Zurich or Remote)",
+      "description": "",
+      "url": "https://www.ycombinator.com/companies/typewise/jobs/HmCzfBK-ai-growth-engineer",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T08:01:53",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -19,15 +64,6 @@
       "publishedAt": "2026-05-21T02:13:23",
       "image": null,
       "category": "UPDATE"
-    },
-    {
-      "title": "Intuit to lay off over 3k employees to refocus on AI",
-      "description": "",
-      "url": "https://techcrunch.com/2026/05/20/intuit-to-lay-off-over-3000-employees-to-refocus-on-ai/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-21T00:36:01",
-      "image": null,
-      "category": "INDUSTRY"
     },
     {
       "title": "The Letter S, by Donald Knuth (1980) [pdf]",
@@ -53,15 +89,6 @@
       "url": "https://dos.zone/",
       "source": "Hacker News",
       "publishedAt": "2026-05-20T22:53:27",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Anthropic is expanding to Colossus2. Will use GB200",
-      "description": "",
-      "url": "https://twitter.com/nottombrown/status/2057194829986300375",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T20:55:52",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -93,47 +120,20 @@
       "category": "INDUSTRY"
     },
     {
+      "title": "Fender escalates legal campaign against S-style guitars",
+      "description": "",
+      "url": "https://www.guitarworld.com/gear/electric-guitars/fender-cease-and-desist-lsl-instruments",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-19T05:28:30",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
       "title": "New features in GCC 16: Improved error messages and SARIF output",
       "description": "",
       "url": "https://developers.redhat.com/articles/2026/04/28/gcc-16-improved-error-messages-sarif-output",
       "source": "Hacker News",
       "publishedAt": "2026-05-19T01:51:04",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Your Most Improbable Life",
-      "description": "",
-      "url": "https://kevinkelly.substack.com/p/your-most-improbable-life",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-18T18:04:13",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Reviving old scanners with an in-browser Linux VM bridged to WebUSB over USB/IP",
-      "description": "",
-      "url": "https://yes-we-scan.app/details",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-18T10:08:26",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "How fast is N tokens per second really?",
-      "description": "",
-      "url": "https://mikeveerman.github.io/tokenspeed/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-18T02:04:38",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Archaeologists find Egyptian mummy buried with the 'Iliad'",
-      "description": "",
-      "url": "https://www.openculture.com/2026/05/archaeologists-discover-ancient-egyptian-mummy-buried-with-pages-from-homers-iliad.html",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-15T22:31:45",
       "image": null,
       "category": "INDUSTRY"
     }
