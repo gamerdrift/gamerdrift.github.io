@@ -113,7 +113,7 @@ API_INTEGRATION.md        ← Real data setup
 DEPLOYMENT.md             ← How to go live
 ACTIVATION_COMPLETE.md    ← This summary
 CNAME                     ← Domain config
-weblogo.PNG               ← Your logo
+mylogo.png                 ← Your logo
 ```
 
 ---

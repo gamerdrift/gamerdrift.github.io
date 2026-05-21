@@ -1,5 +1,5 @@
 Add-Type -AssemblyName System.Drawing
-$img = [System.Drawing.Image]::FromFile('weblogo.PNG')
+$img = [System.Drawing.Image]::FromFile('mylogo.png')
 $bmp = New-Object System.Drawing.Bitmap($img)
 $width = $bmp.Width
 $height = $bmp.Height

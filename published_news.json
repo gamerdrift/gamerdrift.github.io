@@ -1,58 +1,67 @@
 {
-  "timestamp": "2026-05-20T22:55:49.105496",
+  "timestamp": "2026-05-21T05:11:18.762780",
   "count": 15,
   "articles": [
     {
-      "title": "Starship's Twelfth Flight Test",
+      "title": "OpenAI to confidentially file for IPO as soon as Friday",
       "description": "",
-      "url": "https://www.spacex.com/launches/starship-flight-12",
+      "url": "https://www.cnbc.com/2026/05/20/openai-ipo-filing.html",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T21:41:54",
+      "publishedAt": "2026-05-21T02:24:35",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "Google Declaring War on the Web",
+      "title": "Haskell Foundation 2026 Update",
       "description": "",
-      "url": "https://tante.cc/2026/05/20/on-google-declaring-war-on-the-web/",
+      "url": "https://discourse.haskell.org/t/haskell-foundation-2026-update/14136",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T21:33:18",
+      "publishedAt": "2026-05-21T02:13:23",
+      "image": null,
+      "category": "UPDATE"
+    },
+    {
+      "title": "Intuit to lay off over 3k employees to refocus on AI",
+      "description": "",
+      "url": "https://techcrunch.com/2026/05/20/intuit-to-lay-off-over-3000-employees-to-refocus-on-ai/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T00:36:01",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "PopuLoRA: Co-Evolving LLM Populations for Reasoning Self- Play",
+      "title": "The Letter S, by Donald Knuth (1980) [pdf]",
       "description": "",
-      "url": "https://vmax.ai/team/populora-co-evolving-llm-populations-for-reasoning-self-play",
+      "url": "https://gwern.net/doc/design/typography/1980-knuth.pdf",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T21:11:55",
+      "publishedAt": "2026-05-20T23:58:51",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "SpaceX S-1",
+      "title": "Show HN: I reverse engineered Apple's video wallpapers",
       "description": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026036936/spaceexplorationtechnologi.htm",
+      "url": "https://github.com/kageroumado/phosphene",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T20:49:59",
+      "publishedAt": "2026-05-20T23:54:06",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "Colorado Amended SB051 (Age Verification Bill) to Exclude Open Source Projects",
+      "title": "DOS Zone",
       "description": "",
-      "url": "https://legiscan.com/CO/bill/SB051/2026",
+      "url": "https://dos.zone/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T20:28:18",
+      "publishedAt": "2026-05-20T22:53:27",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "Not alive, but not dead: disembodied human brains used for drug testing",
+      "title": "Anthropic is expanding to Colossus2. Will use GB200",
       "description": "",
-      "url": "https://www.science.org/content/article/not-alive-not-dead-disembodied-human-brains-used-drug-testing",
+      "url": "https://twitter.com/nottombrown/status/2057194829986300375",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T19:38:25",
+      "publishedAt": "2026-05-20T20:55:52",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -75,24 +84,6 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Qian Xuesen: The missile genius America lost and China gained (2025)",
-      "description": "",
-      "url": "https://www.usni.org/magazines/naval-history/2025/december/missile-genius-america-lost-and-china-gained",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T17:48:52",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Why is Inkwell stuck in review",
-      "description": "",
-      "url": "https://www.manton.org/2026/05/19/why-is-inkwell-stuck-in.html",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T17:30:15",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
       "title": "GitHub confirms breach of 3,800 repos via malicious VSCode extension",
       "description": "",
       "url": "https://www.bleepingcomputer.com/news/security/github-confirms-breach-of-3-800-repos-via-malicious-vscode-extension/",
@@ -102,20 +93,29 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Saying Goodbye to Asm.js",
+      "title": "New features in GCC 16: Improved error messages and SARIF output",
       "description": "",
-      "url": "https://spidermonkey.dev/blog/2026/05/20/saying-goodbye-to-asmjs.html",
+      "url": "https://developers.redhat.com/articles/2026/04/28/gcc-16-improved-error-messages-sarif-output",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T12:01:56",
+      "publishedAt": "2026-05-19T01:51:04",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "Qwen3.7-Max: The Agent Frontier",
+      "title": "Your Most Improbable Life",
       "description": "",
-      "url": "https://qwen.ai/blog?id=qwen3.7",
+      "url": "https://kevinkelly.substack.com/p/your-most-improbable-life",
       "source": "Hacker News",
-      "publishedAt": "2026-05-20T10:35:02",
+      "publishedAt": "2026-05-18T18:04:13",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Reviving old scanners with an in-browser Linux VM bridged to WebUSB over USB/IP",
+      "description": "",
+      "url": "https://yes-we-scan.app/details",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-18T10:08:26",
       "image": null,
       "category": "INDUSTRY"
     },
