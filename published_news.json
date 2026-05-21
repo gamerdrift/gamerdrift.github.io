@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-21T18:06:21.376690",
+  "timestamp": "2026-05-21T18:11:08.815829",
   "count": 15,
   "articles": [
     {
@@ -12,11 +12,29 @@
       "category": "INDUSTRY"
     },
     {
+      "title": "Chewing gum restores dad's taste and smell years after Covid",
+      "description": "",
+      "url": "https://discover.swns.com/2026/05/chewing-gum-restores-dads-taste-and-smell-years-after-covid/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T17:14:56",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
       "title": "ParadeDB (YC S23) Is Hiring Distributed Systems/Platform Engineers",
       "description": "",
       "url": "https://news.ycombinator.com/item?id=48225852",
       "source": "Hacker News",
       "publishedAt": "2026-05-21T17:00:52",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "More than 340 local news outlets are limiting the Internet Archive's access",
+      "description": "",
+      "url": "https://www.niemanlab.org/2026/05/more-than-340-local-news-outlets-are-limiting-the-internet-archives-access-to-their-journalism/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T16:59:27",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -66,15 +84,6 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Show HN: I Dedicated 4 Years to Mastering Offline Password Cracking",
-      "description": "",
-      "url": "https://news.ycombinator.com/item?id=48221896",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-21T12:56:37",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
       "title": "Python 3.15: features that didn't make the headlines",
       "description": "",
       "url": "https://blog.changs.co.uk/python-315-features-that-didnt-make-the-headlines.html",
@@ -107,15 +116,6 @@
       "url": "https://blog.google/products/ads-commerce/google-marketing-live-search-ads/",
       "source": "Hacker News",
       "publishedAt": "2026-05-21T09:49:46",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "What Is Happening to Publishing?",
-      "description": "",
-      "url": "https://resobscura.substack.com/p/what-is-happening-to-publishing",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T20:23:44",
       "image": null,
       "category": "INDUSTRY"
     },
