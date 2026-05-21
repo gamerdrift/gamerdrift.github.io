@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-21T20:09:50.600126",
+  "timestamp": "2026-05-21T20:19:13.373502",
   "count": 15,
   "articles": [
     {
@@ -48,11 +48,20 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Show HN: Agent.email \u2013 sign up via curl, claim with a human OTP",
+      "title": "Waymo pauses Atlanta service as its robotaxis keep driving into floods",
       "description": "",
-      "url": "https://news.ycombinator.com/item?id=48225596",
+      "url": "https://techcrunch.com/2026/05/21/waymo-pauses-atlanta-service-as-its-robotaxis-keep-driving-into-floods/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T16:42:34",
+      "publishedAt": "2026-05-21T16:30:47",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Spotify will start reserving concert tickets for fans",
+      "description": "",
+      "url": "https://www.hollywoodreporter.com/music/music-industry-news/spotify-will-start-reserving-concert-tickets-for-superfans-1236603106/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T16:26:58",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -120,22 +129,13 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "We're testing new ad formats in Search and expanding our Direct Offers pilot",
+      "title": "Was my $48K GPU server worth it?",
       "description": "",
-      "url": "https://blog.google/products/ads-commerce/google-marketing-live-search-ads/",
+      "url": "https://rosmine.ai/2026/05/13/was-my-48k-gpu-worth-it/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T09:49:46",
+      "publishedAt": "2026-05-18T19:33:03",
       "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Mounting Git commits as folders with NFS",
-      "description": "",
-      "url": "https://jvns.ca/blog/2023/12/04/mounting-git-commits-as-folders-with-nfs/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T07:32:56",
-      "image": null,
-      "category": "INDUSTRY"
+      "category": "HARDWARE"
     }
   ]
 }
