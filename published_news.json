@@ -1,13 +1,76 @@
 {
-  "timestamp": "2026-05-21T11:57:44.891441",
+  "timestamp": "2026-05-21T17:06:15.698307",
   "count": 15,
   "articles": [
     {
-      "title": "A Girl Who Couldn't Draw Home",
+      "title": "ParadeDB (YC S23) Is Hiring Distributed Systems/Platform Engineers",
       "description": "",
-      "url": "https://www.gailweiner.com/post/the-girl-who-couldn-t-draw-home",
+      "url": "https://news.ycombinator.com/item?id=48225852",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T11:21:53",
+      "publishedAt": "2026-05-21T17:00:52",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "London Mayor Blocks Palantir",
+      "description": "",
+      "url": "https://www.theguardian.com/uk-news/2026/may/21/london-mayor-sadiq-khan-blocks-met-police-deal-with-palantir",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T16:35:01",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Waymo pauses Atlanta service as its robotaxis keep driving into floods",
+      "description": "",
+      "url": "https://techcrunch.com/2026/05/21/waymo-pauses-atlanta-service-as-its-robotaxis-keep-driving-into-floods/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T16:30:47",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Launch HN: Runtime (YC P26) \u2013 Sandboxed coding agents for everyone on a team",
+      "description": "",
+      "url": "https://www.runtm.com/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T16:07:13",
+      "image": null,
+      "category": "RELEASE"
+    },
+    {
+      "title": "Michael Keating has died",
+      "description": "",
+      "url": "https://www.bigfinish.com/news/v/michael-keating-1947-2026",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T14:31:33",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Indexing a year of video locally on a 2021 MacBook with Gemma4-31B (50GB swap)",
+      "description": "",
+      "url": "https://blog.simbastack.com/indexed-a-year-of-video-locally/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T14:01:37",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "Google's Antigravity Bait and Switch",
+      "description": "",
+      "url": "https://www.0xsid.com/blog/antigravity-bait-n-switch",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T13:50:59",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "FatGid: FreeBSD 14.x kernel local privilege escalation",
+      "description": "",
+      "url": "https://fatgid.io/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T12:15:02",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -30,7 +93,16 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Google officially announces that ads will be included in AI Mode search results",
+      "title": "Lost Images from the 1945 Trinity Nuclear Test Restored",
+      "description": "",
+      "url": "https://spectrum.ieee.org/trinity-nuclear-test",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T11:02:26",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "We're testing new ad formats in Search and expanding our Direct Offers pilot",
       "description": "",
       "url": "https://blog.google/products/ads-commerce/google-marketing-live-search-ads/",
       "source": "Hacker News",
@@ -39,101 +111,29 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Show HN: Rmux \u2013 A programmable terminal multiplexer with a Playwright-style SDK",
+      "title": "Vivaldi 8.0",
       "description": "",
-      "url": "https://github.com/helvesec/rmux",
+      "url": "https://vivaldi.com/blog/vivaldi-on-desktop-8-0/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T09:22:00",
+      "publishedAt": "2026-05-21T07:21:55",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "Typewise (YC S22) Is Hiring an AI Growth Engineer (Zurich or Remote)",
+      "title": "What Is Happening to Publishing?",
       "description": "",
-      "url": "https://www.ycombinator.com/companies/typewise/jobs/HmCzfBK-ai-growth-engineer",
+      "url": "https://resobscura.substack.com/p/what-is-happening-to-publishing",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T08:01:53",
+      "publishedAt": "2026-05-19T20:23:44",
       "image": null,
       "category": "INDUSTRY"
     },
     {
-      "title": "Haskell Foundation 2026 Update",
+      "title": "Mounting Git commits as folders with NFS",
       "description": "",
-      "url": "https://discourse.haskell.org/t/haskell-foundation-2026-update/14136",
+      "url": "https://jvns.ca/blog/2023/12/04/mounting-git-commits-as-folders-with-nfs/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T02:13:23",
-      "image": null,
-      "category": "UPDATE"
-    },
-    {
-      "title": "The Letter S, by Donald Knuth (1980) [pdf]",
-      "description": "",
-      "url": "https://gwern.net/doc/design/typography/1980-knuth.pdf",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T23:58:51",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Show HN: I reverse engineered Apple's video wallpapers",
-      "description": "",
-      "url": "https://github.com/kageroumado/phosphene",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T23:54:06",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "DOS Zone",
-      "description": "",
-      "url": "https://dos.zone/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T22:53:27",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "An OpenAI model has disproved a central conjecture in discrete geometry",
-      "description": "",
-      "url": "https://openai.com/index/model-disproves-discrete-geometry-conjecture/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T19:05:30",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Flipper One Tech Specs",
-      "description": "",
-      "url": "https://docs.flipper.net/one/general/tech-specs",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T18:33:56",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "GitHub confirms breach of 3,800 repos via malicious VSCode extension",
-      "description": "",
-      "url": "https://www.bleepingcomputer.com/news/security/github-confirms-breach-of-3-800-repos-via-malicious-vscode-extension/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-20T13:43:37",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Fender escalates legal campaign against S-style guitars",
-      "description": "",
-      "url": "https://www.guitarworld.com/gear/electric-guitars/fender-cease-and-desist-lsl-instruments",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T05:28:30",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "New features in GCC 16: Improved error messages and SARIF output",
-      "description": "",
-      "url": "https://developers.redhat.com/articles/2026/04/28/gcc-16-improved-error-messages-sarif-output",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-19T01:51:04",
+      "publishedAt": "2026-05-19T07:32:56",
       "image": null,
       "category": "INDUSTRY"
     }
