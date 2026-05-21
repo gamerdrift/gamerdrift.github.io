@@ -414,6 +414,15 @@
     .hologram-container.video-tile .hologram-card {
       transform: rotateY(-12deg) rotateX(3deg);
     }
+    .hologram-container.logo-tile .hologram-card {
+      transform: rotateY(0deg) rotateX(3deg);
+    }
+    .logo-tile .holo-img {
+      object-fit: contain !important;
+      padding: 10px;
+      filter: grayscale(1) sepia(1) hue-rotate(85deg) saturate(2.5) brightness(1.2) contrast(1.1);
+      opacity: 0.9;
+    }
 
     /* Video Play Button Overlay */
     .holo-play-btn {
@@ -1587,7 +1596,55 @@
             <a href="#reviews" class="btn-drift">Explore Reviews</a>
             <a href="#games" class="btn-outline">Play Now</a>
           </div>
-          <img src="mylogo.png" alt="Gamer Drift Logo" class="hero-logo" />
+          
+          <!-- Symmetrical 3D Logo Hologram Card -->
+          <div class="hologram-container logo-tile">
+            <a href="#games" style="text-decoration: none; display: block; color: inherit; outline: none;">
+              <div class="hologram-card" id="logo-hologram-card">
+                <div class="holo-scanlines"></div>
+                <div class="holo-sweep"></div>
+                
+                <!-- HUD Bracket Corners -->
+                <div class="hud-corner-tl"></div>
+                <div class="hud-corner-tr"></div>
+                <div class="hud-corner-bl"></div>
+                <div class="hud-corner-br"></div>
+
+                <!-- Inner Hologram Content -->
+                <div class="holo-content-wrapper" style="pointer-events: none;">
+                  <!-- HUD Header -->
+                  <div class="hud-hdr">
+                    <div><span class="hud-status-dot"></span>[ CORE_SYS: LOGO_IDENTIFIED ]</div>
+                    <div>CH: GD-LOGO-01</div>
+                  </div>
+
+                  <!-- Hologram Image -->
+                  <div class="holo-img-container">
+                    <div class="holo-img-grid"></div>
+                    <img src="mylogo.png" alt="Gamer Drift Logo" class="holo-img" />
+                  </div>
+
+                  <!-- Logo Content Info -->
+                  <div class="holo-news-info">
+                    <div class="holo-news-tag">INTEGRITY // SECURE</div>
+                    <h3 class="holo-news-title">GAMER DRIFT MAINPORT</h3>
+                    <p class="holo-news-desc">Click card to launch instant browser games mainframe. Play snake, breakout, asteroids, and pong directly.</p>
+                  </div>
+
+                  <!-- HUD Footer -->
+                  <div class="hud-ftr">
+                    <div class="hud-telemetry">
+                      SYS: ONLINE<br/>
+                      SECTOR: SE-GAMES
+                    </div>
+                    <div class="hud-controls">
+                      <span class="hud-btn hud-btn-sync" style="width: auto; height: auto; padding: 4px 8px; font-size: 0.65rem; border-color: #00ff88; color: #00ff88; text-shadow: 0 0 5px #00ff88;">LAUNCH GAMES</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
 
         <!-- Hologram Card Tile (Right - Video Feed) -->
@@ -2433,6 +2490,7 @@
     restoreCart();
     initHologramNews();
     initHologramVideos();
+    initHologramLogo();
   });
   setInterval(refreshNewsTicker, 13000);
 
@@ -2906,6 +2964,37 @@
       // Fallback if elements not found
       openVideoModal(video.videoId, video.title, video.description, video.category);
     }
+  }
+
+  function initHologramLogo() {
+    const container = document.querySelector('.hologram-container.logo-tile');
+    const card = document.getElementById('logo-hologram-card');
+    
+    if (!container || !card) return;
+
+    // Dynamic 3D Cursor Tilt Interaction
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateY = ((x - centerX) / centerX) * 16;       // Up to 16 deg tilt
+      const rotateX = -((y - centerY) / centerY) * 12 + 3;   // Up to 12 deg tilt offset by +3deg
+      
+      card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateZ(10px)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      // Snap back smoothly to default military angle (symmetrical flat: 0deg, 3deg)
+      card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      card.style.transform = 'rotateY(0deg) rotateX(3deg) translateZ(0)';
+    });
+
+    container.addEventListener('mouseenter', () => {
+      card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+    });
   }
 
   function openVideoModal(videoId, title, desc, tag) {
