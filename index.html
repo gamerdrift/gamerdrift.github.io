@@ -337,34 +337,48 @@
       padding: 1.5rem 1rem;
     }
 
-    /* ── BOLD RED: DriftTunes, DriftTube, LAUNCH GAMES ── */
+    /* ── NEON RED: DriftTunes, DriftTube, LAUNCH GAMES ── */
+    @keyframes neon-red-pulse {
+      0%, 100% {
+        text-shadow: 0 0 6px #ff0000, 0 0 14px #ff0000, 0 0 28px #ff0000, 0 0 50px #ff1a1a;
+      }
+      50% {
+        text-shadow: 0 0 10px #ff0000, 0 0 24px #ff0000, 0 0 45px #ff0000, 0 0 80px #ff1a1a;
+      }
+    }
     #nav-tunes,
     #nav-tube {
-      color: #ff1a1a !important;
-      font-weight: 700 !important;
-      text-shadow: 0 0 10px rgba(255,26,26,0.5);
+      color: #ff2222 !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.04em;
+      animation: neon-red-pulse 2.2s ease-in-out infinite;
     }
     #nav-tunes:hover,
     #nav-tube:hover {
       color: #ff4444 !important;
-      text-shadow: 0 0 18px rgba(255,26,26,0.8);
+      text-shadow: 0 0 12px #ff0000, 0 0 30px #ff0000, 0 0 60px #ff1a1a, 0 0 90px #ff0000 !important;
+      animation: none;
     }
     /* Mobile nav equivalents */
     .nav-mobile a[href="#drift-tunes"],
     .nav-mobile a[href="https://www.youtube.com/@gamerdrifttube"] {
-      color: #ff1a1a !important;
-      font-weight: 700 !important;
+      color: #ff2222 !important;
+      font-weight: 800 !important;
+      text-shadow: 0 0 8px #ff0000, 0 0 20px #ff1a1a !important;
     }
     /* LAUNCH GAMES label inside logo tile */
     .logo-tile .hud-btn-sync {
-      color: #ff1a1a !important;
-      border-color: #ff1a1a !important;
-      text-shadow: 0 0 8px rgba(255,26,26,0.6) !important;
-      font-weight: 700 !important;
+      color: #ff2222 !important;
+      border-color: #ff2222 !important;
+      font-weight: 800 !important;
+      text-shadow: 0 0 6px #ff0000, 0 0 14px #ff1a1a !important;
+      box-shadow: 0 0 10px rgba(255,0,0,0.35), inset 0 0 6px rgba(255,0,0,0.12) !important;
+      animation: neon-red-pulse 2.2s ease-in-out infinite;
     }
     .logo-tile .hud-btn-sync:hover {
-      background: rgba(255,26,26,0.15) !important;
-      box-shadow: 0 0 14px rgba(255,26,26,0.5) !important;
+      background: rgba(255,0,0,0.18) !important;
+      box-shadow: 0 0 22px rgba(255,0,0,0.65) !important;
+      animation: none;
     }
 
     /* ══════════════════════════════════
