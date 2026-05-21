@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-21T18:29:37.888995",
+  "timestamp": "2026-05-21T18:41:09.503497",
   "count": 15,
   "articles": [
     {
@@ -39,11 +39,11 @@
       "category": "INDUSTRY"
     },
     {
-      "title": "Waymo pauses Atlanta service as its robotaxis keep driving into floods",
+      "title": "Spotify will start reserving concert tickets for fans",
       "description": "",
-      "url": "https://techcrunch.com/2026/05/21/waymo-pauses-atlanta-service-as-its-robotaxis-keep-driving-into-floods/",
+      "url": "https://www.hollywoodreporter.com/music/music-industry-news/spotify-will-start-reserving-concert-tickets-for-superfans-1236603106/",
       "source": "Hacker News",
-      "publishedAt": "2026-05-21T16:30:47",
+      "publishedAt": "2026-05-21T16:26:58",
       "image": null,
       "category": "INDUSTRY"
     },
@@ -64,15 +64,6 @@
       "publishedAt": "2026-05-21T16:07:13",
       "image": null,
       "category": "RELEASE"
-    },
-    {
-      "title": "Michael Keating has died",
-      "description": "",
-      "url": "https://www.bigfinish.com/news/v/michael-keating-1947-2026",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-21T14:31:33",
-      "image": null,
-      "category": "INDUSTRY"
     },
     {
       "title": "Indexing a year of video locally on a 2021 MacBook with Gemma4-31B (50GB swap)",
@@ -116,6 +107,15 @@
       "url": "https://blog.google/products/ads-commerce/google-marketing-live-search-ads/",
       "source": "Hacker News",
       "publishedAt": "2026-05-21T09:49:46",
+      "image": null,
+      "category": "INDUSTRY"
+    },
+    {
+      "title": "What Is Happening to Publishing?",
+      "description": "",
+      "url": "https://resobscura.substack.com/p/what-is-happening-to-publishing",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-19T20:23:44",
       "image": null,
       "category": "INDUSTRY"
     },

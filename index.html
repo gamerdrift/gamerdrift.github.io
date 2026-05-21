@@ -349,23 +349,39 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 3.5rem;
-      max-width: 1000px;
+      gap: 2rem;
+      max-width: 1340px;
       margin: 0 auto 2.5rem;
       width: 100%;
     }
     
-    @media (max-width: 900px) {
+    @media (max-width: 1200px) {
       .hero-grid-layout {
-        flex-direction: column-reverse;
+        flex-wrap: wrap;
         gap: 2.5rem;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .hero-grid-layout {
+        flex-direction: column;
+        gap: 2.5rem;
+      }
+      .hero-logo-wrap {
+        order: 1;
+      }
+      .hologram-container.news-tile {
+        order: 2;
+      }
+      .hologram-container.video-tile {
+        order: 3;
       }
     }
 
     .hologram-container {
       perspective: 1200px;
-      width: min(420px, 100%);
-      max-width: 420px;
+      width: min(360px, 100%);
+      max-width: 360px;
       margin: 0 auto;
       z-index: 10;
     }
@@ -379,7 +395,6 @@
       border-radius: 8px;
       padding: 1.25rem;
       transform-style: preserve-3d;
-      transform: rotateY(12deg) rotateX(3deg);
       box-shadow: 0 0 30px rgba(0, 255, 136, 0.08), inset 0 0 15px rgba(0, 255, 136, 0.04);
       backdrop-filter: blur(8px);
       transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
@@ -390,6 +405,52 @@
       text-align: left;
       font-family: var(--ff-mono);
       animation: holo-flicker 12s infinite;
+    }
+
+    /* Symmetrical default angles */
+    .hologram-container.news-tile .hologram-card {
+      transform: rotateY(12deg) rotateX(3deg);
+    }
+    .hologram-container.video-tile .hologram-card {
+      transform: rotateY(-12deg) rotateX(3deg);
+    }
+
+    /* Video Play Button Overlay */
+    .holo-play-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateZ(15px);
+      width: 44px;
+      height: 44px;
+      background: rgba(0, 15, 8, 0.85);
+      border: 2px solid #00ff88;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+      pointer-events: auto;
+    }
+    .holo-play-btn::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 12px solid #00ff88;
+      margin-left: 3px;
+      transition: border-left-color 0.3s;
+    }
+    .holo-play-btn:hover {
+      background: #00ff88;
+      box-shadow: 0 0 20px #00ff88;
+    }
+    .holo-play-btn:hover::before {
+      border-left-color: #000;
     }
 
     .hologram-card:hover {
@@ -1355,6 +1416,26 @@
     </div>
   </div>
 
+  <!-- VIDEO THEATER MODAL -->
+  <div class="game-modal" id="video-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+    <div class="game-modal-inner" style="max-width: 800px; border-color: rgba(0, 255, 136, 0.4); box-shadow: 0 0 40px rgba(0, 255, 136, 0.15); background: rgba(3, 3, 5, 0.98); width: 90%;">
+      <div class="game-modal-header" style="border-bottom: 1px solid rgba(0, 255, 136, 0.2); padding: 0.8rem 1.2rem;">
+        <div class="game-modal-title" id="video-modal-title" style="color: #00ff88; font-family: var(--ff-mono); font-size: 1.1rem; text-shadow: 0 0 8px rgba(0, 255, 136, 0.4); letter-spacing: 0.05em;">
+          [ COCKPIT FEED // CRASH_INTEL ]
+        </div>
+        <button class="close-btn" onclick="closeVideoModal()" aria-label="Close video feed" style="color: #00ff88; font-size: 1.6rem; line-height: 1;">✕</button>
+      </div>
+      <div style="position: relative; width: 100%; padding-bottom: 56.25%; background: #000;">
+        <iframe id="video-modal-iframe" src="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-modal-details" style="padding: 1rem 1.5rem; background: rgba(0, 15, 8, 0.95); font-family: var(--ff-body); border-top: 1px solid rgba(0, 255, 136, 0.2); display: flex; flex-direction: column; gap: 0.3rem;">
+        <div id="video-modal-tag" style="font-family: var(--ff-mono); font-size: 0.65rem; color: rgba(0, 255, 136, 0.65); letter-spacing: 0.15em; text-transform: uppercase;">CRASH INTEL // CLASSIFIED</div>
+        <h4 id="video-modal-desc-title" style="font-size: 1.25rem; font-weight: 700; color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.3); font-family: var(--ff-body); line-height: 1.2;">FIGURE-8 BUS DEMOLITION DERBY</h4>
+        <p id="video-modal-desc-text" style="font-size: 0.85rem; color: rgba(0, 255, 136, 0.8); line-height: 1.4;">Classified structural impact telemetry reports.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- MESSENGER FLOAT -->
   <button class="msg-float-btn" onclick="toggleMsg()" title="Open Clan Chat">
     💬
@@ -1436,7 +1517,7 @@
 
       <div class="hero-grid-layout">
         <!-- Hologram Card Tile (Left) -->
-        <div class="hologram-container">
+        <div class="hologram-container news-tile">
           <div class="hologram-card" id="hologram-card">
             <div class="holo-scanlines"></div>
             <div class="holo-sweep"></div>
@@ -1498,13 +1579,78 @@
           </div>
         </div>
 
-        <!-- Hero Logo Wrap (Right) -->
+        <!-- Hero Logo Wrap (Center) -->
         <div class="hero-logo-wrap reveal">
           <div class="hero-btns">
             <a href="#reviews" class="btn-drift">Explore Reviews</a>
             <a href="#games" class="btn-outline">Play Now</a>
           </div>
           <img src="mylogo.png" alt="Gamer Drift Logo" class="hero-logo" />
+        </div>
+
+        <!-- Hologram Card Tile (Right - Video Feed) -->
+        <div class="hologram-container video-tile">
+          <div class="hologram-card" id="video-hologram-card">
+            <div class="holo-scanlines"></div>
+            <div class="holo-sweep"></div>
+            
+            <!-- HUD Bracket Corners -->
+            <div class="hud-corner-tl"></div>
+            <div class="hud-corner-tr"></div>
+            <div class="hud-corner-bl"></div>
+            <div class="hud-corner-br"></div>
+
+            <!-- Decryption Overlay -->
+            <div class="decrypt-overlay" id="decrypt-overlay-video">
+              <div class="decrypt-title">ESTABLISHING FEED LINK</div>
+              <div class="decrypt-bar">
+                <div class="decrypt-progress" id="decrypt-progress-video"></div>
+              </div>
+              <div class="decrypt-status" id="decrypt-status-video">SYNCING TARGET SATELLITE...</div>
+            </div>
+
+            <!-- Inner Hologram Content -->
+            <div class="holo-content-wrapper">
+              <!-- HUD Header -->
+              <div class="hud-hdr">
+                <div><span class="hud-status-dot" style="background-color: #ff6b00; box-shadow: 0 0 6px #ff6b00;"></span>[ FEED: ACCIDENT_RECON ]</div>
+                <div id="video-hud-channel">CH: GD-CRASH-01</div>
+              </div>
+
+              <!-- Hologram Video Image Preview -->
+              <div class="holo-img-container" id="video-feed-preview" style="cursor: pointer;">
+                <div class="holo-img-grid"></div>
+                <!-- Glowing play button overlay -->
+                <div class="holo-play-btn" id="holo-play-btn-trigger"></div>
+                <img src="https://img.youtube.com/vi/b8Hkv3KqSws/mqdefault.jpg" alt="Demolition Feed" class="holo-img" id="video-holo-img" />
+              </div>
+
+              <!-- Video Content Info -->
+              <div class="holo-news-info">
+                <div class="holo-news-tag" id="video-news-tag">CRASH INTEL // DESTROY_01</div>
+                <h3 class="holo-news-title" id="video-news-title">INITIALIZING FEED...</h3>
+                <p class="holo-news-desc" id="video-news-desc">Downloading accidental collision recordings. Connecting with video telemetry systems.</p>
+              </div>
+
+              <!-- HUD Footer -->
+              <div class="hud-ftr">
+                <div class="hud-telemetry" id="video-hud-telemetry">
+                  SPEED: 48 MPH<br/>
+                  G-FORCE: 14.2G
+                </div>
+                <div class="hud-controls">
+                  <button class="hud-btn" id="video-prev-btn" title="Previous video sector">&lt;</button>
+                  <button class="hud-btn hud-btn-sync" id="video-play-btn" title="Play full feed">PLAY</button>
+                  <button class="hud-btn" id="video-next-btn" title="Next video sector">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Time-to-Sync status block below the 3D space -->
+          <div class="hud-countdown-wrap" style="margin-top: 0.5rem; text-align: left; padding: 0 0.5rem; font-family: var(--ff-mono); font-size: 0.65rem; color: #00ff88; display: flex; justify-content: space-between; opacity: 0.8;">
+            <span>[ SYSTEM: LOCK_ACTIVE ]</span>
+            <span id="video-status-ticker">SATELLITE SYNC: ACTIVE</span>
+          </div>
         </div>
       </div>
 
@@ -2280,6 +2426,7 @@
     refreshNewsTicker();
     restoreCart();
     initHologramNews();
+    initHologramVideos();
   });
   setInterval(refreshNewsTicker, 13000);
 
@@ -2349,7 +2496,7 @@
   let isHoloDecrypting = false;
 
   function initHologramNews() {
-    const container = document.querySelector('.hologram-container');
+    const container = document.querySelector('.hologram-container.news-tile');
     const card = document.getElementById('hologram-card');
     
     if (!container || !card) return;
@@ -2504,10 +2651,311 @@
     countdownEl.textContent = `NEXT SYNC: ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
   }
 
+  // ══════════════════════════════
+  // MILITARY HUD VIDEO HOLOGRAM
+  // ══════════════════════════════
+  const hologramVideosLibrary = [
+    {
+      videoId: "b8Hkv3KqSws",
+      title: "FIGURE-8 BUS DEMOLITION DERBY",
+      description: "Classified telemetry of 40-foot transit buses colliding in high-impact figure-8 crossover maneuvers. Structural deformation maximized.",
+      category: "CRASH INTEL // DESTROY_01",
+      telemetry: "SPEED: 42 MPH\nG-FORCE: 16.4G\nSATELLITE: GD-VIDEO-01"
+    },
+    {
+      videoId: "ZtH3k6fQ0D8",
+      title: "EXTREME DEMOLITION DERBY CHAMPIONSHIPS",
+      description: "Full metal collision telemetry. High-mass vehicles targeting rear axles and engine compartments in a closed arena environment.",
+      category: "CRASH INTEL // DESTROY_02",
+      telemetry: "SPEED: 28 MPH\nG-FORCE: 9.8G\nSATELLITE: GD-VIDEO-02"
+    },
+    {
+      videoId: "P10X3Z9eX6Y",
+      title: "MONSTER TRUCK DESTRUCTION RUN",
+      description: "800HP powerplants crushing decommissioned sedan fleets. Extreme suspension travel, chassis compression, and roll-cage stress tests.",
+      category: "CRASH INTEL // DESTROY_03",
+      telemetry: "SPEED: 35 MPH\nG-FORCE: 11.2G\nSATELLITE: GD-VIDEO-03"
+    },
+    {
+      videoId: "e35J254a6nQ",
+      title: "HIGH-SPEED RACING CONTACT & ROLL",
+      description: "Telemetry log from GT sports car high-velocity impact with tyre barrier. Instant deceleration, multi-axis roll event registered.",
+      category: "CRASH INTEL // DESTROY_04",
+      telemetry: "SPEED: 118 MPH\nG-FORCE: 34.2G\nSATELLITE: GD-VIDEO-04"
+    },
+    {
+      videoId: "X9uQ6p8xQ7g",
+      title: "OFF-ROAD TRUCK ROLLOVER TELEMETRY",
+      description: "Longitudinal rollover on dynamic sand dune topography. Cabin structural integrity maintained; multiple suspension components sheared.",
+      category: "CRASH INTEL // DESTROY_05",
+      telemetry: "SPEED: 54 MPH\nG-FORCE: 12.8G\nSATELLITE: GD-VIDEO-05"
+    },
+    {
+      videoId: "qPyyq-728bU",
+      title: "DIRT TRACK STOCK CAR CRASHES",
+      description: "Spectacular multi-car pileup in turn 4 of the regional oval dirt track. Radiator failure and high-velocity bumper-to-bumper impact.",
+      category: "CRASH INTEL // DESTROY_06",
+      telemetry: "SPEED: 65 MPH\nG-FORCE: 15.1G\nSATELLITE: GD-VIDEO-06"
+    },
+    {
+      videoId: "7v7K1uA7wS0",
+      title: "RC CAR HIGH-SPEED IMPACTS",
+      description: "Scale model collisions filmed at 1000 FPS showing mechanical stress propagation through composite plastics and carbon fiber.",
+      category: "CRASH INTEL // DESTROY_07",
+      telemetry: "SPEED: 60 MPH\nG-FORCE: 8.5G\nSATELLITE: GD-VIDEO-07"
+    },
+    {
+      videoId: "wZ-iUv0_eGo",
+      title: "DEMOLITION DERBY FINALS CLIPS",
+      description: "Direct cockpit telemetry during the final showdown of heavy-class station wagons. Front-end cooling system blowout registered.",
+      category: "CRASH INTEL // DESTROY_08",
+      telemetry: "SPEED: 22 MPH\nG-FORCE: 7.4G\nSATELLITE: GD-VIDEO-08"
+    },
+    {
+      videoId: "2Z0pBebzXwY",
+      title: "STREET RACING WRECKS LOGS",
+      description: "Telemetry trace of high-performance import tuning cars losing traction during tight drift course bends and colliding with concrete dividers.",
+      category: "CRASH INTEL // DESTROY_09",
+      telemetry: "SPEED: 82 MPH\nG-FORCE: 22.3G\nSATELLITE: GD-VIDEO-09"
+    },
+    {
+      videoId: "4T78t4Kj4bI",
+      title: "COUNTY FAIR CRASH CHAMPIONSHIP",
+      description: "Spectacular rear-end collisions and engine bay fires from the annual county fair demolition arena. Active cabin smoke telemetry.",
+      category: "CRASH INTEL // DESTROY_10",
+      telemetry: "SPEED: 31 MPH\nG-FORCE: 10.5G\nSATELLITE: GD-VIDEO-10"
+    }
+  ];
+
+  let currentVideoIndex = 0;
+  let isVideoDecrypting = false;
+
+  function initHologramVideos() {
+    const container = document.querySelector('.hologram-container.video-tile');
+    const card = document.getElementById('video-hologram-card');
+    
+    if (!container || !card) return;
+
+    // 1. Dynamic 3D Cursor Tilt Interaction (Inverted default to lean inward -12deg)
+    container.addEventListener('mousemove', (e) => {
+      if (isVideoDecrypting) return;
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateY = ((x - centerX) / centerX) * 16 - 12;  // Maximum 16 degrees tilt offset by -12deg default
+      const rotateX = -((y - centerY) / centerY) * 12 + 3;  // Maximum 12 degrees tilt offset by 3deg default
+      
+      card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateZ(10px)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      // Snap back smoothly to default military angle
+      card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      card.style.transform = 'rotateY(-12deg) rotateX(3deg) translateZ(0)';
+    });
+
+    container.addEventListener('mouseenter', () => {
+      card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+    });
+
+    // 2. Render initial video slide immediately
+    renderVideoArticle(currentVideoIndex);
+
+    // 3. Set up manual controls
+    document.getElementById('video-prev-btn').addEventListener('click', () => navigateVideo(-1));
+    document.getElementById('video-next-btn').addEventListener('click', () => navigateVideo(1));
+    document.getElementById('video-play-btn').addEventListener('click', () => playVideoFullFeed());
+    
+    // Also bind click on the preview image container to play the video
+    const previewContainer = document.getElementById('video-feed-preview');
+    if (previewContainer) {
+      previewContainer.addEventListener('click', () => playVideoFullFeed());
+    }
+
+    // Initialize sync ticker text
+    updateVideoTicker();
+    setInterval(updateVideoTicker, 5000);
+  }
+
+  function renderVideoArticle(index) {
+    const video = hologramVideosLibrary[index];
+    if (!video) return;
+
+    document.getElementById('video-holo-img').src = `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`;
+    document.getElementById('video-news-title').textContent = video.title;
+    document.getElementById('video-news-desc').textContent = video.description;
+    document.getElementById('video-news-tag').textContent = video.category;
+    document.getElementById('video-hud-telemetry').innerHTML = video.telemetry.replace(/\n/g, '<br/>');
+    document.getElementById('video-hud-channel').textContent = `CH: GD-CRASH-${String(index + 1).padStart(2, '0')}`;
+  }
+
+  function navigateVideo(direction) {
+    if (isVideoDecrypting) return;
+    currentVideoIndex = (currentVideoIndex + direction + hologramVideosLibrary.length) % hologramVideosLibrary.length;
+    decryptAndShowVideo(currentVideoIndex);
+  }
+
+  function decryptAndShowVideo(index) {
+    const overlay = document.getElementById('decrypt-overlay-video');
+    const progressBar = document.getElementById('decrypt-progress-video');
+    const statusText = document.getElementById('decrypt-status-video');
+    const card = document.getElementById('video-hologram-card');
+    
+    if (!overlay || !progressBar || !statusText) return;
+
+    isVideoDecrypting = true;
+    overlay.classList.add('active');
+    card.style.transform = 'rotateY(0deg) rotateX(0deg) translateZ(0)';
+    
+    let progress = 0;
+    progressBar.style.width = '0%';
+    
+    const statuses = [
+      "ESTABLISHING SATCOM LINK...",
+      "ACQUIRING CAR TELEMETRY PORT...",
+      "DECOMPRESSING H.265 KEYFRAMES...",
+      "SYNCHRONIZING AUDIO FEED...",
+      "BYPASSING HUD SECURE TOKEN...",
+      "LINK STABILIZED // FEEDS SYNCED"
+    ];
+
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 15) + 8;
+      if (progress >= 100) {
+        progress = 100;
+        progressBar.style.width = '100%';
+        statusText.textContent = statuses[statuses.length - 1];
+        clearInterval(interval);
+        
+        setTimeout(() => {
+          renderVideoArticle(index);
+          overlay.classList.remove('active');
+          isVideoDecrypting = false;
+          
+          // Re-apply 3D default angle (negative for symmetry)
+          card.style.transition = 'transform 0.5s ease';
+          card.style.transform = 'rotateY(-12deg) rotateX(3deg)';
+        }, 300);
+      } else {
+        progressBar.style.width = `${progress}%`;
+        const statusIndex = Math.min(Math.floor((progress / 100) * statuses.length), statuses.length - 2);
+        statusText.textContent = statuses[statusIndex];
+      }
+    }, 60);
+  }
+
+  function playVideoFullFeed() {
+    if (isVideoDecrypting) return;
+    
+    const video = hologramVideosLibrary[currentVideoIndex];
+    if (!video) return;
+
+    // Trigger decryption before launching theater
+    const overlay = document.getElementById('decrypt-overlay-video');
+    const progressBar = document.getElementById('decrypt-progress-video');
+    const statusText = document.getElementById('decrypt-status-video');
+    const card = document.getElementById('video-hologram-card');
+    
+    if (overlay && progressBar && statusText) {
+      isVideoDecrypting = true;
+      overlay.classList.add('active');
+      card.style.transform = 'rotateY(0deg) rotateX(0deg) translateZ(0)';
+      
+      let progress = 0;
+      progressBar.style.width = '0%';
+      const statuses = [
+        "ESTABLISHING DECRYPTION BRIDGE...",
+        "DECRYPTING FULL RESOLUTION PACKETS...",
+        "AUTHENTICATING DIRECT COCKPIT LINK...",
+        "FEED HANDSHAKE STABILIZED // OPENING HUD"
+      ];
+      
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 18) + 12;
+        if (progress >= 100) {
+          progress = 100;
+          progressBar.style.width = '100%';
+          statusText.textContent = statuses[statuses.length - 1];
+          clearInterval(interval);
+          
+          setTimeout(() => {
+            overlay.classList.remove('active');
+            isVideoDecrypting = false;
+            card.style.transition = 'transform 0.5s ease';
+            card.style.transform = 'rotateY(-12deg) rotateX(3deg)';
+            
+            // Open the modal
+            openVideoModal(video.videoId, video.title, video.description, video.category);
+          }, 300);
+        } else {
+          progressBar.style.width = `${progress}%`;
+          const statusIndex = Math.min(Math.floor((progress / 100) * statuses.length), statuses.length - 2);
+          statusText.textContent = statuses[statusIndex];
+        }
+      }, 55);
+    } else {
+      // Fallback if elements not found
+      openVideoModal(video.videoId, video.title, video.description, video.category);
+    }
+  }
+
+  function openVideoModal(videoId, title, desc, tag) {
+    const modal = document.getElementById('video-modal');
+    const iframe = document.getElementById('video-modal-iframe');
+    
+    if (!modal || !iframe) return;
+    
+    // Inject the YouTube Embed code with autoplay and correct settings
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0&modestbranding=1`;
+    
+    document.getElementById('video-modal-title').textContent = `[ COCKPIT FEED // CH-${String(currentVideoIndex + 1).padStart(2, '0')} ]`;
+    document.getElementById('video-modal-tag').textContent = tag;
+    document.getElementById('video-modal-desc-title').textContent = title;
+    document.getElementById('video-modal-desc-text').textContent = desc;
+    
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeVideoModal() {
+    const modal = document.getElementById('video-modal');
+    const iframe = document.getElementById('video-modal-iframe');
+    
+    if (!modal || !iframe) return;
+    
+    // Stop the video by resetting the source
+    iframe.src = '';
+    
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function updateVideoTicker() {
+    const ticker = document.getElementById('video-status-ticker');
+    if (!ticker) return;
+    
+    const telemetryTones = [
+      "SATELLITE SYNC: ACTIVE",
+      "SIGNAL COMPRESSION: H.265",
+      "FEED BITRATE: 8.4MBPS // SECURE",
+      "HUD STRESS: NOMINAL",
+      "TARGET COORDS: LOCKED",
+      "DECRYPTION SECTORS: 10/10",
+      "COCKPIT HUD: ACTIVE"
+    ];
+    
+    const randomTone = telemetryTones[Math.floor(Math.random() * telemetryTones.length)];
+    ticker.textContent = randomTone;
+  }
+
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeGame();
       closeCart();
+      closeVideoModal();
       if (msgOpen) toggleMsg();
     }
   });
