@@ -46,5 +46,45 @@
     "composer": "Astral Wave",
     "duration": "4:30",
     "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+  },
+  {
+    "id": "track-7",
+    "title": "Techno Syndrome (Mortal Kombat Theme)",
+    "game": "Mortal Kombat",
+    "composer": "The Immortals",
+    "duration": "3:20",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3"
+  },
+  {
+    "id": "track-8",
+    "title": "Welcome to Los Santos",
+    "game": "Grand Theft Auto V",
+    "composer": "Oh No",
+    "duration": "2:34",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
+  },
+  {
+    "id": "track-9",
+    "title": "Soviet Connection",
+    "game": "Grand Theft Auto IV",
+    "composer": "Michael Hunter",
+    "duration": "2:51",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"
+  },
+  {
+    "id": "track-10",
+    "title": "Fire & Ice (Sub-Zero vs Scorpion)",
+    "game": "Mortal Kombat 11",
+    "composer": "Wilbert Roget, II",
+    "duration": "2:45",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"
+  },
+  {
+    "id": "track-11",
+    "title": "San Andreas Theme",
+    "game": "Grand Theft Auto: San Andreas",
+    "composer": "Michael Hunter",
+    "duration": "1:33",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3"
   }
 ]
