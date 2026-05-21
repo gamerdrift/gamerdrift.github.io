@@ -1484,6 +1484,7 @@
     </div>
     <ul class="nav-links">
         <li><a href="#drift-tunes" id="nav-tunes">DriftTunes</a></li>
+        <li><a href="https://www.youtube.com/@gamerdrifttube" target="_blank" id="nav-tube">DriftTube</a></li>
       <li><a href="#reviews">Reviews</a></li>
       <li><a href="#esports">Esports</a></li>
       <li><a href="#news">News</a></li>
@@ -1497,6 +1498,7 @@
   <!-- MOBILE NAV -->
   <div class="nav-mobile" id="nav-mobile">
     <a href="#drift-tunes" onclick="toggleMobile()">DriftTunes</a>
+    <a href="https://www.youtube.com/@gamerdrifttube" target="_blank" onclick="toggleMobile()">DriftTube</a>
     <a href="#reviews" onclick="toggleMobile()">Reviews</a>
     <a href="#esports" onclick="toggleMobile()">Esports</a>
     <a href="#news" onclick="toggleMobile()">News</a>
@@ -2108,15 +2110,19 @@
     let cur = '';
     secs.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
     nls.forEach(a => {
-      const isActive = a.getAttribute('href') === '#'+cur;
+      const href = a.getAttribute('href');
+      const isActive = href && href.startsWith('#') && href === '#'+cur;
       a.classList.toggle('active', isActive);
     });
   };
   nls.forEach(a => {
-    a.addEventListener('click', () => {
-      nls.forEach(x => x.classList.remove('active'));
-      a.classList.add('active');
-    });
+    const href = a.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      a.addEventListener('click', () => {
+        nls.forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+      });
+    }
   });
   window.addEventListener('scroll', setActiveNav);
   setActiveNav();
