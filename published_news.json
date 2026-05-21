@@ -1,7 +1,16 @@
 {
-  "timestamp": "2026-05-21T17:47:48.304167",
+  "timestamp": "2026-05-21T18:03:13.928409",
   "count": 15,
   "articles": [
+    {
+      "title": "Amazon, Facebook, FBI have access to a private intelligence-sharing network",
+      "description": "",
+      "url": "https://prismreports.org/2026/05/20/seattle-shield-private-companies-surveillance/",
+      "source": "Hacker News",
+      "publishedAt": "2026-05-21T17:55:58",
+      "image": null,
+      "category": "INDUSTRY"
+    },
     {
       "title": "ParadeDB (YC S23) Is Hiring Distributed Systems/Platform Engineers",
       "description": "",
@@ -98,15 +107,6 @@
       "url": "https://blog.google/products/ads-commerce/google-marketing-live-search-ads/",
       "source": "Hacker News",
       "publishedAt": "2026-05-21T09:49:46",
-      "image": null,
-      "category": "INDUSTRY"
-    },
-    {
-      "title": "Vivaldi 8.0",
-      "description": "",
-      "url": "https://vivaldi.com/blog/vivaldi-on-desktop-8-0/",
-      "source": "Hacker News",
-      "publishedAt": "2026-05-21T07:21:55",
       "image": null,
       "category": "INDUSTRY"
     },
