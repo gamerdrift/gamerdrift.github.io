@@ -428,9 +428,12 @@
     .btn-sm:hover { border-color: var(--borderg); background: rgba(0,245,255,0.06); }
 
     .tunes-panel {
-      position: relative; padding: 2rem; background: rgba(4,5,15,0.95); border: 1px solid rgba(0,245,255,0.15);
+      position: relative; padding: 2.5rem; background: rgba(4,5,15,0.95); border: 1px solid rgba(0,245,255,0.15);
       border-radius: 28px; box-shadow: 0 20px 80px rgba(0,0,0,0.6);
-      display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; align-items: start;
+      margin: 0 auto; max-width: 1100px;
+    }
+    .tunes-inner {
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 2.5rem; align-items: start;
     }
     .tunes-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
     .tunes-title { font-family: var(--ff-display); font-size: clamp(1.8rem, 3vw, 2.6rem); line-height: 1; color: var(--cyan); }
@@ -468,9 +471,9 @@
     .audio-toggle input { accent-color: #00f5ff; }
 
     @media (max-width: 920px) {
-      .tunes-panel { grid-template-columns: 1fr; }
+      .tunes-inner { grid-template-columns: 1fr; gap: 1.5rem; }
     }
-*** End Patch    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal.on { opacity: 1; transform: translateY(0); }
 
     /* ══════════════════════════════════
@@ -856,31 +859,6 @@
     /* ══════════════════════════════════
        DRIFT TUNES PANEL
     ══════════════════════════════════ */
-    .tunes-panel {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10003;
-      transform: translateY(110%); transition: transform 0.35s ease;
-      pointer-events: none;
-    }
-    .tunes-panel.open { transform: translateY(0); pointer-events: auto; }
-    .tunes-inner {
-      max-width: 1100px; margin: 0 auto; background: linear-gradient(180deg, rgba(8,8,12,0.96), rgba(6,6,10,0.98));
-      border-top: 1px solid var(--border); box-shadow: 0 -30px 80px rgba(0,0,0,0.6);
-      padding: 18px 5%; display:flex; gap:1rem; align-items:flex-start; justify-content:space-between;
-    }
-    .tunes-left { flex: 1 1 480px; }
-    .tunes-right { width: 300px; flex-shrink: 0; }
-    .tunes-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:8px; }
-    .tunes-title { font-family:var(--ff-display); color:var(--cyan); font-size:1.1rem; }
-    .tunes-close { background:none; border:1px solid var(--border); color:var(--t2); padding:6px 10px; cursor:pointer; }
-    .tunes-list { display:flex; flex-direction:column; gap:8px; max-height:320px; overflow:auto; padding-right:6px; }
-    .t-item { display:flex; justify-content:space-between; align-items:center; gap:0.6rem; padding:8px; background:var(--card2); border:1px solid var(--border); }
-    .t-meta { display:flex; flex-direction:column; }
-    .t-name { font-family:var(--ff-body); font-weight:700; }
-    .t-game { font-family:var(--ff-mono); font-size:0.72rem; color:var(--t3); }
-    .t-play { background:var(--cyan); color:#000; border:none; padding:8px 12px; cursor:pointer; }
-    .t-controls { display:flex; flex-direction:column; gap:8px; }
-    .audio-progress { width:100%; height:6px; background:rgba(255,255,255,0.04); border-radius:4px; overflow:hidden; }
-    .audio-progress > i { display:block; height:100%; background:linear-gradient(90deg,var(--cyan),var(--orange)); width:0%; }
     .online-user:hover { background: var(--card2); }
     .ou-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
     .ou-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
@@ -1473,6 +1451,7 @@
         </div>
         <audio id="music-player" preload="metadata"></audio>
       </div>
+    </div>
     </div>
   </section>
   <section class="section" id="newsletter">
