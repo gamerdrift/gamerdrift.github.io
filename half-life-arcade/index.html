@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEV HAZARD ARCADE // 3D Gun Rail Shooter</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- External 3D Rendering & Animation libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</head>
+<body>
+
+    <!-- 1. Sound Activator Overlay (Browser security block bypass) -->
+    <div id="sound-request-screen" class="sound-request">
+        <div class="sound-box">
+            <h2>HEV SUIT DIAGNOSTICS</h2>
+            <p>Welcome to Black Mesa security terminal. High definition 3D graphics, procedural military textures, and synthesized stereo audio feeds are ready for loading.</p>
+            <p>Please click below to calibrate and initialize your HEV Suit audio drivers.</p>
+            <button id="activate-audio-btn" class="menu-btn active" style="text-align: center;">
+                ACTIVATE HEV SYSTEM
+                <span class="menu-btn-desc">Initialize Web Audio Synth & Start Game</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Main Game Screen -->
+    <div id="game-container">
+        <!-- 3D Canvas -->
+        <div id="canvas3d"></div>
+
+        <!-- Scanline CRT Effect filters -->
+        <div class="scanlines"></div>
+        <div id="screen-filter" class="filter-normal"></div>
+
+        <!-- Crosshair Reticle -->
+        <div id="crosshair">
+            <div class="circle"></div>
+            <div class="dot"></div>
+            <div class="ticks">
+                <span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+
+        <!-- HUD Layer -->
+        <div id="hud-overlay">
+            <!-- Top panel (Objective + Score) -->
+            <div class="hud-top-bar">
+                <div class="hud-panel objective-panel">
+                    <div class="hud-header">Current Mission Objective</div>
+                    <div id="objective-text">Initializing parameters...</div>
+                </div>
+
+                <div class="hud-panel" style="text-align: right;">
+                    <div class="hud-header">Score</div>
+                    <div id="hud-score" class="hud-value">000000</div>
+                </div>
+            </div>
+
+            <!-- Warning Notification (Reload, Aiming Warning) -->
+            <div id="warning-prompt">RELOAD REQUIRED</div>
+
+            <!-- Ducking Cover indicator -->
+            <div id="cover-indicator">COVER ACTIVE</div>
+
+            <!-- Bottom panel (Health, Suit Power, Weapon clip) -->
+            <div class="hud-bottom-bar">
+                <!-- Health + Armor -->
+                <div class="vital-container">
+                    <div id="health-panel" class="hud-panel vital-panel">
+                        <div class="vital-icon">HP</div>
+                        <div class="vital-text">
+                            <span id="hud-health" class="vital-num">100</span>
+                            <span class="vital-label">Health</span>
+                        </div>
+                    </div>
+
+                    <div id="suit-power-panel" class="hud-panel vital-panel">
+                        <div class="vital-icon">AP</div>
+                        <div class="vital-text">
+                            <span id="hud-armor" class="vital-num">50</span>
+                            <span class="vital-label">Suit Charge</span>
+                        </div>
+                    </div>
+
+                    <!-- Heartbeat SVG panel -->
+                    <div class="hud-panel ecg-panel">
+                        <svg id="ecg-svg" viewBox="0 0 100 40">
+                            <path class="ecg-line" d="M 0,20 L 30,20 L 35,10 L 38,30 L 42,20 L 45,20 L 48,0 L 52,40 L 56,20 L 60,20 L 100,20" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Active Weapon clip count -->
+                <div class="hud-panel weapon-panel">
+                    <div class="ammo-display">
+                        <span id="ammo-clip">12</span>
+                        <span id="ammo-slash">/</span>
+                        <span id="ammo-total">INF</span>
+                    </div>
+                    <div class="weapon-graphic">
+                        <span id="weapon-name">USP Match</span>
+                        <span style="font-size: 9px; opacity: 0.6; margin-top: 2px;">Slots: 1, 2, 3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Start Menu Screen Overlay -->
+    <div id="screen-menu" class="screen" style="display: none;">
+        <div class="screen-content">
+            <h1 class="game-title">HEV HAZARD</h1>
+            <p class="game-subtitle">Arcade Tactical Rail Shooter</p>
+
+            <div class="menu-layout">
+                <!-- Buttons column -->
+                <div class="menu-options">
+                    <button id="campaign-mode-btn" class="menu-btn">
+                        Campaign Mode
+                        <span class="menu-btn-desc">Progress through 5 tactical camo zones</span>
+                    </button>
+                    <button id="survival-mode-btn" class="menu-btn">
+                        Survival Mode
+                        <span class="menu-btn-desc">Defend against endless camo waves</span>
+                    </button>
+                    <button id="show-controls-btn" class="menu-btn">
+                        System Controls
+                        <span class="menu-btn-desc">View keyboard/mouse layout</span>
+                    </button>
+                </div>
+
+                <!-- Info description side panel -->
+                <div class="info-panel">
+                    <div class="info-title">System Status</div>
+                    <ul class="info-list">
+                        <li>High Score: <span id="menu-highscore">0</span> pts</li>
+                        <li>HEV Suit Version: <span>Model IV</span></li>
+                        <li>Tactical HUD: <span>Fully Functional</span></li>
+                        <li>Graphics Module: <span>HD WebGL 3D</span></li>
+                    </ul>
+                    <div style="font-size: 12px; line-height: 1.5; opacity: 0.7;">
+                        <span style="color: var(--hev-orange); font-weight: bold;">Mission Profile:</span> Take down hostile forces across five environments. Hiding in cover triggers auto HEV healing parameters up to 50 HP.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Stage Select Screen Overlay -->
+    <div id="screen-stages" class="screen" style="display: none;">
+        <div class="screen-content" style="max-width: 1100px;">
+            <h1 class="game-title" style="font-size: 36px;">Select Camo Zone</h1>
+            <p class="game-subtitle">Choose operational theater</p>
+
+            <!-- 5 Stages Grid -->
+            <div class="stages-grid">
+                <!-- Stage 1 -->
+                <div class="stage-card active-stage" data-stage="1">
+                    <div class="stage-card-preview">
+                        <div class="icon-art"></div>
+                    </div>
+                    <div class="stage-card-body">
+                        <div class="stage-title">Container Yard</div>
+                        <div class="stage-desc">Tactical urban depot. Secure crates.</div>
+                        <div class="stage-camo">Camo: Urban</div>
+                    </div>
+                </div>
+
+                <!-- Stage 2 -->
+                <div class="stage-card locked" data-stage="2">
+                    <div class="stage-card-preview">
+                        <div class="icon-art"></div>
+                    </div>
+                    <div class="stage-card-body">
+                        <div class="stage-title">Cargo Vessel</div>
+                        <div class="stage-desc">Slick naval deck. Neutralize gunships.</div>
+                        <div class="stage-camo">Camo: Navy Blue</div>
+                    </div>
+                </div>
+
+                <!-- Stage 3 -->
+                <div class="stage-card locked" data-stage="3">
+                    <div class="stage-card-preview">
+                        <div class="icon-art"></div>
+                    </div>
+                    <div class="stage-card-body">
+                        <div class="stage-title">Military Airport</div>
+                        <div class="stage-desc">Airport runways and cargo airplane hangars.</div>
+                        <div class="stage-camo">Camo: Desert</div>
+                    </div>
+                </div>
+
+                <!-- Stage 4 -->
+                <div class="stage-card locked" data-stage="4">
+                    <div class="stage-card-preview">
+                        <div class="icon-art"></div>
+                    </div>
+                    <div class="stage-card-body">
+                        <div class="stage-title">Afghan Village</div>
+                        <div class="stage-desc">Desert sandstone ruins. Blow up armored armor.</div>
+                        <div class="stage-camo">Camo: Khaki</div>
+                    </div>
+                </div>
+
+                <!-- Stage 5 -->
+                <div class="stage-card locked" data-stage="5">
+                    <div class="stage-card-preview">
+                        <div class="icon-art"></div>
+                    </div>
+                    <div class="stage-card-body">
+                        <div class="stage-title">Jungle Fortress</div>
+                        <div class="stage-desc">Dense jungle foliage. Defeat Commander. Rescue POW.</div>
+                        <div class="stage-camo">Camo: Forest</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button id="back-to-menu-btn" class="menu-btn" style="text-align: center; width: 220px;">BACK TO MENU</button>
+                <button id="launch-stage-btn" class="menu-btn active" style="text-align: center; width: 220px;">LAUNCH MISSION</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Controls Dialog Modal -->
+    <div id="screen-controls" class="screen" style="display: none;">
+        <div class="screen-content" style="max-width: 600px;">
+            <h1 class="game-title" style="font-size: 36px;">Suit Calibration</h1>
+            <p class="game-subtitle">Control Interfaces</p>
+
+            <div class="info-panel" style="font-size: 15px; line-height: 1.8;">
+                <p><span style="color: #fff; font-weight: bold;">[Left Click]</span> - Fire Equipped Weapon</p>
+                <p><span style="color: #fff; font-weight: bold;">[Spacebar] (HOLD)</span> - Duck into Cover. Immune to fire, regenerates critical health, speed reload.</p>
+                <p><span style="color: #fff; font-weight: bold;">[Key R]</span> - Manual reload magazine</p>
+                <p><span style="color: #fff; font-weight: bold;">[Key 1]</span> - Swap to USP Match Pistol (Infinite ammo)</p>
+                <p><span style="color: #fff; font-weight: bold;">[Key 2]</span> - Swap to SPAS-12 Shotgun (Unlocked Stage 2)</p>
+                <p><span style="color: #fff; font-weight: bold;">[Key 3]</span> - Swap to M4A1 Assault Rifle (Unlocked Stage 3)</p>
+                <p><span style="color: var(--hev-blue); font-weight: bold;">Floating Items:</span> Shoot green crosses/blue containers dropped by enemies to collect health/shields.</p>
+            </div>
+
+            <button id="close-controls-btn" class="menu-btn active" style="text-align: center; margin-top: 10px;">BACK</button>
+        </div>
+    </div>
+
+    <!-- 6. Game Over Screen -->
+    <div id="screen-gameover" class="screen" style="display: none;">
+        <div class="screen-content" style="max-width: 500px; text-align: center;">
+            <div class="big-alert">SUIT POWER FLUID DEPLETED</div>
+            <p style="color: rgba(255, 51, 51, 0.6); font-size: 16px; letter-spacing: 2px;">VITAL SIGNS DROPPING</p>
+
+            <div class="score-board">
+                <div class="score-row">
+                    <span>Mission Score:</span>
+                    <span id="gameover-score">00000</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                <button id="retry-stage-btn" class="menu-btn active" style="text-align: center;">RETRY MISSION</button>
+                <button id="go-main-menu-btn" class="menu-btn" style="text-align: center;">RETURN TO TERMINAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Stage Clear / Victory Screen -->
+    <div id="screen-victory" class="screen" style="display: none;">
+        <div class="screen-content" style="max-width: 500px; text-align: center;">
+            <div class="big-alert victory-text">MISSION ACCOMPLISHED</div>
+            <p style="color: rgba(0, 221, 255, 0.6); font-size: 16px; letter-spacing: 2px;">THREAT SECURED // HEV SYSTEM STABILIZED</p>
+
+            <div class="score-board">
+                <div class="score-row">
+                    <span>Stage Score:</span>
+                    <span id="victory-score">00000</span>
+                </div>
+                <div class="score-row">
+                    <span>Hostiles Terminated:</span>
+                    <span id="victory-kills">0</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                <button id="next-stage-btn" class="menu-btn active" style="text-align: center;">PROCEED TO NEXT STAGE</button>
+                <button id="victory-menu-btn" class="menu-btn" style="text-align: center;">RETURN TO TERMINAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts Ingestion -->
+    <script src="audio.js"></script>
+    <script src="entities.js"></script>
+    <script src="engine.js"></script>
+    <script src="game.js"></script>
+
+    <!-- Initializer Hook -->
+    <script>
+        document.getElementById('activate-audio-btn').addEventListener('click', () => {
+            // Start audio synthesizer
+            window.gameAudio.init();
+            
+            // Hide sound query screen, show main menu
+            document.getElementById('sound-request-screen').style.display = 'none';
+            document.getElementById('screen-menu').style.display = 'flex';
+
+            // Start main game logic
+            window.game.init();
+
+            // Load high score from memory
+            document.getElementById('menu-highscore').innerText = window.game.highScore;
+            
+            // Trigger 3D WebGL engine
+            window.engine.init('canvas3d');
+
+            // Hook start loop
+            requestAnimationFrame((time) => window.game.runLoop(time));
+        });
+
+        // --- Main Menu Button Actions ---
+        document.getElementById('campaign-mode-btn').addEventListener('click', () => {
+            showStagesScreen('campaign');
+        });
+
+        document.getElementById('survival-mode-btn').addEventListener('click', () => {
+            // Survival loads random/stage 1 in endless wave mode
+            window.game.startStage(1, 'survival');
+        });
+
+        document.getElementById('show-controls-btn').addEventListener('click', () => {
+            document.getElementById('screen-menu').style.display = 'none';
+            document.getElementById('screen-controls').style.display = 'flex';
+        });
+
+        document.getElementById('close-controls-btn').addEventListener('click', () => {
+            document.getElementById('screen-controls').style.display = 'none';
+            document.getElementById('screen-menu').style.display = 'flex';
+        });
+
+        // --- Stage Select Button Actions ---
+        let selectedStageToLaunch = 1;
+
+        function showStagesScreen(mode) {
+            document.getElementById('screen-menu').style.display = 'none';
+            document.getElementById('screen-stages').style.display = 'flex';
+
+            // Refresh locking UI cards
+            const cards = document.querySelectorAll('.stage-card');
+            cards.forEach(card => {
+                const sIndex = parseInt(card.dataset.stage);
+                if (sIndex <= window.game.unlockedStage) {
+                    card.classList.remove('locked');
+                } else {
+                    card.classList.add('locked');
+                }
+            });
+
+            // Set Stage 1 as default selected
+            selectStageCard(1);
+        }
+
+        function selectStageCard(stageIndex) {
+            if (stageIndex > window.game.unlockedStage) return; // locked bypass
+
+            selectedStageToLaunch = stageIndex;
+            const cards = document.querySelectorAll('.stage-card');
+            cards.forEach(card => {
+                const sIndex = parseInt(card.dataset.stage);
+                if (sIndex === stageIndex) {
+                    card.classList.add('active-stage');
+                } else {
+                    card.classList.remove('active-stage');
+                }
+            });
+        }
+
+        // Add click events on cards
+        document.querySelectorAll('.stage-card').forEach(card => {
+            card.addEventListener('click', () => {
+                selectStageCard(parseInt(card.dataset.stage));
+            });
+        });
+
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+            document.getElementById('screen-stages').style.display = 'none';
+            document.getElementById('screen-menu').style.display = 'flex';
+        });
+
+        document.getElementById('launch-stage-btn').addEventListener('click', () => {
+            window.game.startStage(selectedStageToLaunch, 'campaign');
+        });
+
+        // --- Game Over Button Actions ---
+        document.getElementById('retry-stage-btn').addEventListener('click', () => {
+            window.game.startStage(window.game.activeStage, window.game.activeMode);
+        });
+
+        document.getElementById('go-main-menu-btn').addEventListener('click', () => {
+            document.getElementById('screen-gameover').style.display = 'none';
+            document.getElementById('screen-menu').style.display = 'flex';
+            document.getElementById('menu-highscore').innerText = window.game.highScore;
+        });
+
+        // --- Victory Button Actions ---
+        document.getElementById('next-stage-btn').addEventListener('click', () => {
+            if (window.game.activeStage < 5) {
+                window.game.startStage(window.game.activeStage + 1, window.game.activeMode);
+            }
+        });
+
+        document.getElementById('victory-menu-btn').addEventListener('click', () => {
+            document.getElementById('screen-victory').style.display = 'none';
+            document.getElementById('screen-menu').style.display = 'flex';
+            document.getElementById('menu-highscore').innerText = window.game.highScore;
+        });
+    </script>
+</body>
+</html>
