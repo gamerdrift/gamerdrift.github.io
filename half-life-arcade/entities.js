@@ -191,6 +191,168 @@ class ParticleManager {
     }
 }
 
+// FirstPersonWeapon procedural mesh builder
+class FirstPersonWeapon {
+    static build(type, camoType) {
+        const weaponGroup = new THREE.Group();
+        
+        // Materials
+        const darkMetal = new THREE.MeshStandardMaterial({ color: 0x181a1b, roughness: 0.5, metalness: 0.85 });
+        const steel = new THREE.MeshStandardMaterial({ color: 0x4a4d50, roughness: 0.35, metalness: 0.9 });
+        const plastic = new THREE.MeshStandardMaterial({ color: 0x222528, roughness: 0.8, metalness: 0.1 });
+        const glass = new THREE.MeshBasicMaterial({ color: 0x00ffaa, transparent: true, opacity: 0.6 });
+        
+        const camoMat = new THREE.MeshStandardMaterial({ 
+            map: ProceduralTextures.generateCamo(camoType),
+            roughness: 0.6,
+            metalness: 0.25
+        });
+
+        if (type === 'pistol') {
+            // USP Match Pistol
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.35), plastic);
+            frame.position.set(0, -0.04, 0.05);
+            weaponGroup.add(frame);
+
+            const slide = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.08, 0.38), steel);
+            slide.position.set(0, 0.04, 0.05);
+            weaponGroup.add(slide);
+
+            const comp = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.09, 0.1), steel);
+            comp.position.set(0, 0.03, 0.24);
+            weaponGroup.add(comp);
+
+            const innerBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.1, 8), darkMetal);
+            innerBarrel.geometry.rotateX(Math.PI / 2);
+            innerBarrel.position.set(0, 0.04, 0.28);
+            weaponGroup.add(innerBarrel);
+
+            const laser = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.15), plastic);
+            laser.position.set(0, -0.04, 0.18);
+            weaponGroup.add(laser);
+
+            const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.02, 8), glass);
+            lens.geometry.rotateX(Math.PI / 2);
+            lens.position.set(0, -0.04, 0.255);
+            weaponGroup.add(lens);
+
+            const grip = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.2, 0.08), plastic);
+            grip.position.set(0, -0.14, -0.03);
+            grip.rotation.x = -Math.PI / 10;
+            weaponGroup.add(grip);
+            
+            const guard = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.07, 0.09), darkMetal);
+            guard.position.set(0, -0.07, 0.1);
+            weaponGroup.add(guard);
+            
+        } else if (type === 'shotgun') {
+            // SPAS-12 Tactical Shotgun
+            const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.65), darkMetal);
+            receiver.position.set(0, 0.02, 0);
+            weaponGroup.add(receiver);
+
+            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.95, 10), steel);
+            barrel.geometry.rotateX(Math.PI / 2);
+            barrel.position.set(0, 0.05, 0.7);
+            weaponGroup.add(barrel);
+
+            const magTube = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.85, 8), steel);
+            magTube.geometry.rotateX(Math.PI / 2);
+            magTube.position.set(0, -0.02, 0.62);
+            weaponGroup.add(magTube);
+
+            const stockArm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.025, 0.55), steel);
+            stockArm.position.set(0, 0.085, -0.05);
+            weaponGroup.add(stockArm);
+
+            const stockButt = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.12, 0.025), darkMetal);
+            stockButt.position.set(0, 0.06, 0.22);
+            weaponGroup.add(stockButt);
+
+            const pumpGrip = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.38, 12), plastic);
+            pumpGrip.geometry.rotateX(Math.PI / 2);
+            pumpGrip.position.set(0, 0.01, 0.5);
+            weaponGroup.add(pumpGrip);
+
+            const pg = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.18, 0.07), plastic);
+            pg.position.set(0, -0.12, -0.22);
+            pg.rotation.x = -Math.PI / 7;
+            weaponGroup.add(pg);
+
+        } else if (type === 'rifle') {
+            // M4A1 Tactical Assault Rifle
+            const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.13, 0.6), camoMat);
+            receiver.position.set(0, 0.02, 0);
+            weaponGroup.add(receiver);
+
+            const magazine = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.28, 0.12), darkMetal);
+            magazine.position.set(0, -0.16, 0.11);
+            magazine.rotation.x = Math.PI / 16;
+            weaponGroup.add(magazine);
+
+            const handguard = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.55, 8), plastic);
+            handguard.geometry.rotateX(Math.PI / 2);
+            handguard.position.set(0, 0.02, 0.5);
+            weaponGroup.add(handguard);
+
+            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.75, 10), steel);
+            barrel.geometry.rotateX(Math.PI / 2);
+            barrel.position.set(0, 0.02, 0.95);
+            weaponGroup.add(barrel);
+
+            const flashHider = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.08, 8), darkMetal);
+            flashHider.geometry.rotateX(Math.PI / 2);
+            flashHider.position.set(0, 0.02, 1.34);
+            weaponGroup.add(flashHider);
+
+            const sight = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.04), darkMetal);
+            sight.position.set(0, 0.12, 1.15);
+            weaponGroup.add(sight);
+
+            const scopeGroup = new THREE.Group();
+            scopeGroup.position.set(0, 0.12, 0.05);
+            
+            const mount = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.06, 0.15), darkMetal);
+            scopeGroup.add(mount);
+
+            const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.028, 0.2, 8), darkMetal);
+            tube.geometry.rotateX(Math.PI / 2);
+            tube.position.y = 0.05;
+            scopeGroup.add(tube);
+
+            const glassFront = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.008, 8), glass);
+            glassFront.geometry.rotateX(Math.PI / 2);
+            glassFront.position.set(0, 0.05, 0.1);
+            scopeGroup.add(glassFront);
+
+            weaponGroup.add(scopeGroup);
+
+            const grip = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.16, 0.07), plastic);
+            grip.position.set(0, -0.11, -0.16);
+            grip.rotation.x = -Math.PI / 6;
+            weaponGroup.add(grip);
+
+            const buffer = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8), steel);
+            buffer.geometry.rotateX(Math.PI / 2);
+            buffer.position.set(0, 0.02, -0.4);
+            weaponGroup.add(buffer);
+
+            const stock = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.16, 0.28), camoMat);
+            stock.position.set(0, -0.01, -0.52);
+            weaponGroup.add(stock);
+        }
+
+        weaponGroup.traverse(child => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
+        return weaponGroup;
+    }
+}
+
 // Enemy base class
 class Enemy {
     constructor(scene, camoType, position, type = 'soldier') {
@@ -215,83 +377,118 @@ class Enemy {
     }
 
     buildModel() {
-        const camoMat = new THREE.MeshLambertMaterial({ 
-            map: ProceduralTextures.generateCamo(this.camoType) 
+        // High-definition tactical materials
+        const camoMat = new THREE.MeshStandardMaterial({ 
+            map: ProceduralTextures.generateCamo(this.camoType),
+            roughness: 0.7,
+            metalness: 0.1
         });
-        const skinMat = new THREE.MeshLambertMaterial({ color: 0xdfb08c }); // Caucasian skin
-        const helmetMat = new THREE.MeshLambertMaterial({ color: 0x4a5d43 }); // Dark olive helmet
-        const gunMat = new THREE.MeshLambertMaterial({ color: 0x1f1f1f }); // Steel black M4
+        const vestMat = new THREE.MeshStandardMaterial({ color: 0x1f2224, roughness: 0.8, metalness: 0.2 }); // Dark Kevlar
+        const skinMat = new THREE.MeshStandardMaterial({ color: 0xdfb08c, roughness: 0.6 }); // Head/hands skin
+        const maskMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 }); // Balaclava
+        const gearMat = new THREE.MeshStandardMaterial({ color: 0x2a2f32, roughness: 0.7, metalness: 0.3 }); // Webbing gear
+        const helmetMat = new THREE.MeshStandardMaterial({ color: 0x3a4237, roughness: 0.6, metalness: 0.3 }); // Kevlar olive green
+        const gunMat = new THREE.MeshStandardMaterial({ color: 0x1b1d1e, roughness: 0.5, metalness: 0.8 }); // Matte steel rifle
+        const visorMat = new THREE.MeshBasicMaterial({ color: 0x121212 }); // Dark goggles lens
 
-        // 1. Torso
-        const torsoGeo = new THREE.CylinderGeometry(0.5, 0.4, 1.2, 8);
-        const torso = new THREE.Mesh(torsoGeo, camoMat);
-        torso.position.y = 0.6;
-        torso.castShadow = true;
-        this.mesh.add(torso);
+        // Helper mesh creator
+        const addPart = (geo, mat, px, py, pz, rx=0, ry=0, rz=0, name="") => {
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(px, py, pz);
+            mesh.rotation.set(rx, ry, rz);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            if (name) mesh.name = name;
+            this.mesh.add(mesh);
+            return mesh;
+        };
 
-        // 2. Vest (Bulletproof)
-        const vestGeo = new THREE.CylinderGeometry(0.55, 0.5, 0.8, 8);
-        const vestMat = new THREE.MeshLambertMaterial({ color: 0x222222 }); // Black tactical vest
-        const vest = new THREE.Mesh(vestGeo, vestMat);
-        vest.position.y = 0.7;
-        vest.castShadow = true;
-        this.mesh.add(vest);
+        // 1. Torso (Combat Shirt)
+        addPart(new THREE.BoxGeometry(0.68, 0.85, 0.38), camoMat, 0, 0.62, 0);
 
-        // 3. Head
-        const headGeo = new THREE.SphereGeometry(0.3, 8, 8);
-        const head = new THREE.Mesh(headGeo, skinMat);
-        head.position.y = 1.4;
-        head.name = "head"; // for headshot raycasting!
-        head.castShadow = true;
-        this.mesh.add(head);
-
-        // 4. Helmet
-        const helmetGeo = new THREE.SphereGeometry(0.33, 8, 8, 0, Math.PI * 2, 0, Math.PI * 0.6);
-        const helmet = new THREE.Mesh(helmetGeo, helmetMat);
-        helmet.position.y = 1.45;
-        helmet.name = "head";
-        this.mesh.add(helmet);
-
-        // 5. Goggles / Visor
-        const visorGeo = new THREE.BoxGeometry(0.4, 0.1, 0.15);
-        const visorMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
-        const visor = new THREE.Mesh(visorGeo, visorMat);
-        visor.position.set(0, 1.45, 0.22);
-        this.mesh.add(visor);
-
-        // 6. Arms and Gun pointing forward
-        const armGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.7, 6);
+        // 2. Tactical Bulletproof Kevlar Vest
+        addPart(new THREE.BoxGeometry(0.72, 0.72, 0.44), vestMat, 0, 0.68, 0);
         
-        const leftArm = new THREE.Mesh(armGeo, camoMat);
-        leftArm.position.set(-0.5, 0.9, 0.2);
-        leftArm.rotation.x = Math.PI / 2.5;
-        leftArm.rotation.z = -Math.PI / 6;
-        this.mesh.add(leftArm);
+        // Armor Plate Inserts (Detail)
+        addPart(new THREE.BoxGeometry(0.52, 0.58, 0.46), vestMat, 0, 0.68, 0.01);
+        addPart(new THREE.BoxGeometry(0.52, 0.58, 0.46), vestMat, 0, 0.68, -0.01);
 
-        const rightArm = new THREE.Mesh(armGeo, camoMat);
-        rightArm.position.set(0.5, 0.9, 0.2);
-        rightArm.rotation.x = Math.PI / 2.5;
-        rightArm.rotation.z = Math.PI / 6;
-        this.mesh.add(rightArm);
+        // Ammo Pouches (Tactical belt / Front chest)
+        addPart(new THREE.BoxGeometry(0.15, 0.22, 0.1), gearMat, -0.18, 0.48, 0.23);
+        addPart(new THREE.BoxGeometry(0.15, 0.22, 0.1), gearMat, 0, 0.48, 0.23);
+        addPart(new THREE.BoxGeometry(0.15, 0.22, 0.1), gearMat, 0.18, 0.48, 0.23);
 
-        // 7. Weapon (M4/M16 look)
+        // Waist / Belt
+        addPart(new THREE.BoxGeometry(0.66, 0.12, 0.4), gearMat, 0, 0.25, 0);
+        
+        // 3. Pelvis & Leg Joints
+        addPart(new THREE.BoxGeometry(0.62, 0.2, 0.36), camoMat, 0, 0.15, 0);
+
+        // Left Leg (Camouflage Pants)
+        addPart(new THREE.CylinderGeometry(0.14, 0.11, 0.5, 8), camoMat, -0.22, -0.15, 0); // Thigh
+        addPart(new THREE.BoxGeometry(0.16, 0.16, 0.16), gearMat, -0.22, -0.4, 0.08); // Knee Pad
+        addPart(new THREE.CylinderGeometry(0.11, 0.09, 0.5, 8), camoMat, -0.22, -0.55, 0); // Shin
+        addPart(new THREE.BoxGeometry(0.16, 0.18, 0.3), gearMat, -0.22, -0.85, 0.04); // Tactical Boot
+
+        // Right Leg (Camouflage Pants)
+        addPart(new THREE.CylinderGeometry(0.14, 0.11, 0.5, 8), camoMat, 0.22, -0.15, 0); // Thigh
+        addPart(new THREE.BoxGeometry(0.16, 0.16, 0.16), gearMat, 0.22, -0.4, 0.08); // Knee Pad
+        addPart(new THREE.CylinderGeometry(0.11, 0.09, 0.5, 8), camoMat, 0.22, -0.55, 0); // Shin
+        addPart(new THREE.BoxGeometry(0.16, 0.18, 0.3), gearMat, 0.22, -0.85, 0.04); // Tactical Boot
+
+        // 4. Detailed Tactical Head
+        addPart(new THREE.SphereGeometry(0.25, 10, 10), skinMat, 0, 1.22, 0, 0, 0, 0, "head"); // Neck & Face base
+        addPart(new THREE.SphereGeometry(0.254, 10, 10), maskMat, 0, 1.23, 0, 0, 0, 0, "head"); // Balaclava overlay
+
+        // Kevlar Helmet (Realistic curved shell)
+        addPart(new THREE.CylinderGeometry(0.27, 0.27, 0.16, 12), helmetMat, 0, 1.34, 0, 0, 0, 0, "head");
+        addPart(new THREE.SphereGeometry(0.27, 10, 10, 0, Math.PI * 2, 0, Math.PI * 0.5), helmetMat, 0, 1.35, 0, 0, 0, 0, "head"); // Top dome
+
+        // Goggles
+        addPart(new THREE.BoxGeometry(0.36, 0.1, 0.08), visorMat, 0, 1.28, 0.2, 0, 0, 0, "head"); // Tinted lens
+        addPart(new THREE.BoxGeometry(0.38, 0.13, 0.06), helmetMat, 0, 1.28, 0.19, 0, 0, 0, "head"); // Goggles strap/frame
+
+        // Radio Headset (ear protectors) on helmet sides
+        addPart(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 8), gearMat, -0.25, 1.26, -0.04, 0, 0, Math.PI/2, "head");
+        addPart(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 8), gearMat, 0.25, 1.26, -0.04, 0, 0, Math.PI/2, "head");
+        
+        // 5. Shoulder Pads & Arms
+        addPart(new THREE.BoxGeometry(0.2, 0.2, 0.2), camoMat, -0.42, 0.95, 0); // Left shoulder pad
+        addPart(new THREE.BoxGeometry(0.2, 0.2, 0.2), camoMat, 0.42, 0.95, 0); // Right shoulder pad
+
+        // Arms pointing weapon forward
+        const armGeo = new THREE.CylinderGeometry(0.09, 0.08, 0.6, 8);
+        const lArm = addPart(armGeo, camoMat, -0.42, 0.74, 0.16, Math.PI / 2.8, 0, -Math.PI / 8); // Upper arm left
+        addPart(new THREE.BoxGeometry(0.12, 0.12, 0.12), gearMat, -0.46, 0.62, 0.35); // Elbow Pad
+        
+        const rArm = addPart(armGeo, camoMat, 0.42, 0.74, 0.16, Math.PI / 2.8, 0, Math.PI / 8); // Upper arm right
+        addPart(new THREE.BoxGeometry(0.12, 0.12, 0.12), gearMat, 0.46, 0.62, 0.35); // Elbow Pad
+
+        // Hands (Tactical gloves)
+        const gloveMat = new THREE.MeshStandardMaterial({ color: 0x181a1b, roughness: 0.8 });
+        addPart(new THREE.BoxGeometry(0.12, 0.08, 0.12), gloveMat, -0.44, 0.52, 0.52);
+        addPart(new THREE.BoxGeometry(0.12, 0.08, 0.12), gloveMat, 0.44, 0.52, 0.52);
+
+        // 6. Tactical Weapon (Assault Rifle M4 / Sniper Rifle)
         const weaponGroup = new THREE.Group();
-        weaponGroup.position.set(0.2, 0.8, 0.5);
+        weaponGroup.position.set(0.15, 0.64, 0.45);
         weaponGroup.rotation.x = Math.PI / 2;
 
-        const barrelGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.8, 4);
-        const barrel = new THREE.Mesh(barrelGeo, gunMat);
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.8, 8), gunMat);
         barrel.position.y = 0.4;
         weaponGroup.add(barrel);
 
-        const stockGeo = new THREE.BoxGeometry(0.1, 0.15, 0.4);
-        const stock = new THREE.Mesh(stockGeo, gunMat);
-        stock.position.y = -0.2;
+        const stock = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.35), gunMat);
+        stock.position.y = -0.15;
         weaponGroup.add(stock);
 
-        const scopeGeo = new THREE.BoxGeometry(0.06, 0.08, 0.2);
-        const scope = new THREE.Mesh(scopeGeo, gunMat);
-        scope.position.set(0, 0.1, 0.15);
+        const mag = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.22, 0.1), gunMat);
+        mag.position.set(0, 0.12, -0.1);
+        mag.rotation.x = -Math.PI / 12;
+        weaponGroup.add(mag);
+
+        const scope = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.24), gearMat);
+        scope.position.set(0, 0.08, 0.15);
         weaponGroup.add(scope);
 
         this.mesh.add(weaponGroup);
@@ -300,31 +497,37 @@ class Enemy {
 
         // Custom features based on type
         if (this.type === 'sniper') {
-            // Draw laser sight line
+            const laserMat = new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
             const laserGeo = new THREE.BufferGeometry().setFromPoints([
                 new THREE.Vector3(0, 0, 0),
                 new THREE.Vector3(0, 0, 50)
             ]);
-            const laserMat = new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 });
             this.laserMesh = new THREE.Line(laserGeo, laserMat);
             this.mesh.add(this.laserMesh);
             
-            // Change helmet color to reflect elite / sniper class (e.g. desert/forest hood)
-            helmet.material = new THREE.MeshLambertMaterial({ color: 0x7a6348 });
+            // Add Ghillie leaf meshes on shoulder/helmet
+            const leafGeo = new THREE.ConeGeometry(0.18, 0.3, 4);
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x5a6332, roughness: 0.9 });
+            addPart(leafGeo, leafMat, -0.22, 1.44, 0, Math.PI/4, 0, 0, "head");
+            addPart(leafGeo, leafMat, 0.22, 1.44, 0, -Math.PI/4, 0, 0, "head");
+            
+            // Long sniper barrel
+            barrel.scale.y = 1.6;
+            barrel.position.y = 0.65;
             this.health = 80;
         } else if (this.type === 'heavy') {
-            // Heavy armor: metallic textures
             this.health = 250;
             this.maxHealth = 250;
             this.mesh.scale.set(1.15, 1.15, 1.15);
-            // Add custom heavy shield on left side
-            const shieldGeo = new THREE.BoxGeometry(0.7, 1.5, 0.08);
-            const shieldMat = new THREE.MeshLambertMaterial({ color: 0x3a3d40, roughness: 0.8 });
-            const shield = new THREE.Mesh(shieldGeo, shieldMat);
-            shield.position.set(-0.8, 0.7, 0.4);
-            shield.rotation.y = Math.PI / 10;
-            shield.name = "shield";
-            this.mesh.add(shield);
+            
+            // Titanium armored heavy shield on left arm
+            const shieldMat = new THREE.MeshStandardMaterial({ color: 0x2d3235, roughness: 0.5, metalness: 0.8 });
+            const shield = addPart(new THREE.BoxGeometry(0.72, 1.4, 0.06), shieldMat, -0.74, 0.64, 0.42, 0, Math.PI / 10, 0, "shield");
+            
+            // Heavy metallic shoulder guards
+            const plateMat = new THREE.MeshStandardMaterial({ color: 0x42494d, roughness: 0.4, metalness: 0.75 });
+            addPart(new THREE.CylinderGeometry(0.16, 0.16, 0.25, 8), plateMat, -0.45, 0.96, 0, 0, 0, Math.PI/4);
+            addPart(new THREE.CylinderGeometry(0.16, 0.16, 0.25, 8), plateMat, 0.45, 0.96, 0, 0, 0, -Math.PI/4);
         }
     }
 

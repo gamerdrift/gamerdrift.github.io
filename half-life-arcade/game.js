@@ -12,6 +12,7 @@ class GameManager {
         
         // Covering state
         this.isCovering = false;
+        this.isAimingDownSights = false;
         
         // Weapons
         this.weapons = {
@@ -73,12 +74,25 @@ class GameManager {
             this.checkCrosshairHover();
         });
 
-        // Mouse click: shooting
+        // Mouse click: shooting (left) & ADS (right)
         gameContainer.addEventListener('mousedown', (e) => {
             if (this.gameState !== 'playing') return;
             if (e.button === 0) { // Left click
                 this.shootActiveWeapon();
+            } else if (e.button === 2) { // Right click
+                this.isAimingDownSights = true;
             }
+        });
+
+        gameContainer.addEventListener('mouseup', (e) => {
+            if (e.button === 2) { // Right click release
+                this.isAimingDownSights = false;
+            }
+        });
+
+        // Prevent right-click context menu in game area
+        gameContainer.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
         });
 
         // Key listeners
@@ -146,6 +160,9 @@ class GameManager {
     setCoverState(cover) {
         if (cover === this.isCovering) return;
         this.isCovering = cover;
+        if (cover) {
+            this.isAimingDownSights = false; // exit ADS
+        }
 
         const coverIndicator = document.getElementById('cover-indicator');
         const screenFilter = document.getElementById('screen-filter');
@@ -174,6 +191,12 @@ class GameManager {
         }
 
         this.activeWeaponKey = weaponKey;
+        const camoNames = { 1: 'urban', 2: 'navy', 3: 'desert', 4: 'desert', 5: 'forest' };
+        const camo = camoNames[this.activeStage];
+        if (window.engine) {
+            window.engine.setupFirstPersonWeapon(weaponKey, camo);
+            window.engine.triggerWeaponDraw();
+        }
         window.gameAudio.playHevWarning('combat_ready'); // weapon click chime
         this.updateHUD();
         this.checkCrosshairHover();
@@ -202,6 +225,9 @@ class GameManager {
 
         // Gun kick effect (recoil)
         this.triggerRecoilEffect();
+        if (window.engine) {
+            window.engine.triggerWeaponRecoil();
+        }
 
         // Shoot Audio
         if (this.activeWeaponKey === 'pistol') {
@@ -262,7 +288,12 @@ class GameManager {
         if (this.isReloading || weapon.clip === weapon.maxClip || weapon.reserve <= 0) return;
 
         this.isReloading = true;
+        this.isAimingDownSights = false; // exit ADS
         this.updateHUD();
+        
+        if (window.engine) {
+            window.engine.triggerWeaponReload();
+        }
 
         window.gameAudio.playReloadSound();
         this.promptWarning('RELOADING');
@@ -488,6 +519,11 @@ class GameManager {
         // Set Engine environment
         if (window.engine) {
             window.engine.setStageEnvironment(stageIndex);
+            
+            const camoNames = { 1: 'urban', 2: 'navy', 3: 'desert', 4: 'desert', 5: 'forest' };
+            const camo = camoNames[stageIndex];
+            window.engine.setupFirstPersonWeapon(this.activeWeaponKey, camo);
+            window.engine.triggerWeaponDraw();
         }
 
         // Start dynamic synthesizer track and change voice announce

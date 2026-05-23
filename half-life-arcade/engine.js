@@ -29,6 +29,22 @@ class GameEngine {
         // Cover height offset
         this.coverOffset = 0;
         this.coverMaxOffset = 1.3;
+
+        // First Person Weapon properties
+        this.fpWeapon = null;
+        this.fpWeaponGroup = new THREE.Group();
+        this.muzzleFlashMesh = null;
+        this.muzzleFlashLight = null;
+        this.muzzleFlashTimer = 0;
+        this.swayX = 0;
+        this.swayY = 0;
+        this.swayTargetX = 0;
+        this.swayTargetY = 0;
+        this.recoilOffsetZ = 0;
+        this.recoilRotX = 0;
+        this.reloadOffsetY = 0;
+        this.reloadRotX = 0;
+        this.barrelTipZ = 0;
     }
 
     init(containerId) {
@@ -41,7 +57,10 @@ class GameEngine {
         // Create Camera
         this.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.scene.add(this.camera);
-
+        
+        // Add first-person weapon group to camera
+        this.camera.add(this.fpWeaponGroup);
+ 
         // Create Renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -65,6 +84,117 @@ class GameEngine {
         this.mouse = new THREE.Vector2();
     }
 
+    setupFirstPersonWeapon(weaponKey, camoType) {
+        // Remove existing weapon mesh
+        if (this.fpWeapon) {
+            this.fpWeaponGroup.remove(this.fpWeapon);
+            this.fpWeapon.traverse(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                    else child.material.dispose();
+                }
+            });
+            this.fpWeapon = null;
+        }
+
+        // Remove old muzzle flash and light (already children of weapon, but dispose anyway)
+        if (this.muzzleFlashMesh) {
+            this.muzzleFlashMesh.traverse(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) child.material.dispose();
+            });
+            this.muzzleFlashMesh = null;
+        }
+        this.muzzleFlashLight = null;
+
+        // Build new weapon mesh
+        this.fpWeapon = FirstPersonWeapon.build(weaponKey, camoType);
+        
+        // Align and position weapon based on type
+        if (weaponKey === 'pistol') {
+            this.fpWeapon.position.set(0.12, -0.16, -0.32);
+            this.fpWeapon.rotation.set(0.02, -0.06, 0);
+            this.barrelTipZ = 0.33;
+        } else if (weaponKey === 'shotgun') {
+            this.fpWeapon.position.set(0.15, -0.18, -0.38);
+            this.fpWeapon.rotation.set(0.04, -0.08, -0.02);
+            this.barrelTipZ = 0.95;
+        } else if (weaponKey === 'rifle') {
+            this.fpWeapon.position.set(0.14, -0.18, -0.36);
+            this.fpWeapon.rotation.set(0.02, -0.08, -0.02);
+            this.barrelTipZ = 1.34;
+        }
+
+        this.fpWeaponGroup.add(this.fpWeapon);
+
+        // Build muzzle flash mesh (starburst shape)
+        const flashGroup = new THREE.Group();
+        const flashMat = new THREE.MeshBasicMaterial({ color: 0xffcc00, transparent: true, opacity: 0.9 });
+        
+        const core = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), flashMat);
+        flashGroup.add(core);
+
+        const spikeGeo = new THREE.ConeGeometry(0.02, 0.18, 4);
+        spikeGeo.rotateX(Math.PI / 2);
+        
+        const spike1 = new THREE.Mesh(spikeGeo, flashMat);
+        spike1.position.z = 0.08;
+        flashGroup.add(spike1);
+        
+        const spike2 = new THREE.Mesh(spikeGeo, flashMat);
+        spike2.rotation.y = Math.PI / 2;
+        spike2.position.x = 0.08;
+        flashGroup.add(spike2);
+        
+        const spike3 = new THREE.Mesh(spikeGeo, flashMat);
+        spike3.rotation.x = Math.PI / 2;
+        spike3.position.y = 0.08;
+        flashGroup.add(spike3);
+
+        // Position flash at barrel tip local coordinates
+        const localY = weaponKey === 'pistol' ? 0.03 : (weaponKey === 'shotgun' ? 0.05 : 0.02);
+        flashGroup.position.set(0, localY, this.barrelTipZ);
+        flashGroup.visible = false;
+        this.muzzleFlashMesh = flashGroup;
+        this.fpWeapon.add(this.muzzleFlashMesh);
+
+        // Muzzle flash light
+        this.muzzleFlashLight = new THREE.PointLight(0xffaa00, 0, 5);
+        this.muzzleFlashLight.position.set(0, localY, this.barrelTipZ);
+        this.fpWeapon.add(this.muzzleFlashLight);
+    }
+
+    triggerWeaponRecoil() {
+        this.recoilOffsetZ = -0.08;
+        this.recoilRotX = 0.15;
+        this.muzzleFlashTimer = 0.05; // Flash visible for 50ms
+        if (this.muzzleFlashMesh) this.muzzleFlashMesh.visible = true;
+        if (this.muzzleFlashLight) this.muzzleFlashLight.intensity = 4.0;
+    }
+
+    triggerWeaponReload() {
+        this.reloadOffsetY = -0.5;
+        this.reloadRotX = -Math.PI / 4;
+        
+        const duration = window.game ? window.game.weapons[window.game.activeWeaponKey].reloadTime : 1500;
+        const activeReloadTime = window.game && window.game.isCovering ? duration * 0.75 : duration;
+        
+        new TWEEN.Tween(this)
+            .to({ reloadOffsetY: 0, reloadRotX: 0 }, activeReloadTime)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+    }
+
+    triggerWeaponDraw() {
+        this.reloadOffsetY = -0.5;
+        this.reloadRotX = -Math.PI / 4;
+        new TWEEN.Tween(this)
+            .to({ reloadOffsetY: 0, reloadRotX: 0 }, 400)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+    }
+ 
     setupLighting() {
         // Ambient Light
         this.lights.ambient = new THREE.AmbientLight(0xffffff, 0.2);
@@ -642,6 +772,83 @@ class GameEngine {
     }
 
     update(delta, playerPos, playerCovering) {
+        // Update first-person weapon positioning
+        if (this.fpWeaponGroup && this.fpWeapon) {
+            // Muzzle flash timer
+            if (this.muzzleFlashTimer > 0) {
+                this.muzzleFlashTimer -= delta;
+                if (this.muzzleFlashTimer <= 0) {
+                    if (this.muzzleFlashMesh) this.muzzleFlashMesh.visible = false;
+                    if (this.muzzleFlashLight) this.muzzleFlashLight.intensity = 0.0;
+                }
+            }
+
+            // Sway targets
+            const targetCoverY = playerCovering ? -0.4 : 0;
+            const targetCoverZ = playerCovering ? -0.2 : 0;
+            
+            const isADS = window.game && window.game.isAimingDownSights;
+            
+            this.swayTargetX = -this.mouse.x * 0.03;
+            this.swayTargetY = -this.mouse.y * 0.02;
+
+            if (isADS) {
+                this.swayTargetX = 0;
+                this.swayTargetY = 0;
+            }
+
+            this.swayX = THREE.MathUtils.lerp(this.swayX, this.swayTargetX, 8 * delta);
+            this.swayY = THREE.MathUtils.lerp(this.swayY, this.swayTargetY, 8 * delta);
+
+            // Recoil recovery
+            this.recoilOffsetZ = THREE.MathUtils.lerp(this.recoilOffsetZ, 0, 10 * delta);
+            this.recoilRotX = THREE.MathUtils.lerp(this.recoilRotX, 0, 10 * delta);
+
+            let weaponX = this.swayX;
+            let weaponY = this.swayY + targetCoverY + this.reloadOffsetY;
+            let weaponZ = targetCoverZ + this.recoilOffsetZ;
+
+            if (isADS) {
+                this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, 48, 10 * delta);
+                this.camera.updateProjectionMatrix();
+
+                const adsX = 0;
+                const adsY = -0.1;
+                const adsZ = -0.22;
+                
+                this.fpWeaponGroup.position.set(
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.position.x, adsX, 12 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.position.y, adsY + targetCoverY + this.reloadOffsetY, 12 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.position.z, adsZ + this.recoilOffsetZ, 12 * delta)
+                );
+                
+                this.fpWeaponGroup.rotation.set(
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.rotation.x, this.recoilRotX + this.reloadRotX, 12 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.rotation.y, 0, 12 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.rotation.z, 0, 12 * delta)
+                );
+            } else {
+                this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, 65, 10 * delta);
+                this.camera.updateProjectionMatrix();
+
+                const time = performance.now() * 0.0025;
+                const bobY = Math.sin(time) * 0.005;
+                const bobX = Math.cos(time * 0.5) * 0.005;
+
+                this.fpWeaponGroup.position.set(
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.position.x, weaponX + bobX, 10 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.position.y, weaponY + bobY, 10 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.position.z, weaponZ, 10 * delta)
+                );
+
+                this.fpWeaponGroup.rotation.set(
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.rotation.x, this.recoilRotX + this.reloadRotX, 10 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.rotation.y, 0, 10 * delta),
+                    THREE.MathUtils.lerp(this.fpWeaponGroup.rotation.z, 0, 10 * delta)
+                );
+            }
+        }
+
         // 1. Cover Lerping (Camera dips down and angles up)
         const targetCoverOffset = playerCovering ? this.coverMaxOffset : 0;
         this.coverOffset = THREE.MathUtils.lerp(this.coverOffset, targetCoverOffset, 10 * delta);
