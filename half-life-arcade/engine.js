@@ -1,3 +1,212 @@
+class WeatherSystem {
+    constructor(scene, camera) {
+        this.scene = scene;
+        this.camera = camera;
+        this.points = null;
+        this.geometry = null;
+        this.material = null;
+        this.type = 'none';
+        this.particles = [];
+        this.flashTimer = 0;
+    }
+
+    init(stageIndex) {
+        this.clear();
+        this.type = stageIndex === 1 ? 'rain' : 
+                    stageIndex === 2 ? 'storm' : 
+                    stageIndex === 3 ? 'embers' : 
+                    stageIndex === 4 ? 'sandstorm' : 
+                    stageIndex === 5 ? 'leaves' : 'none';
+
+        if (this.type === 'none') return;
+
+        const count = this.type === 'rain' || this.type === 'storm' ? 800 :
+                      this.type === 'sandstorm' ? 500 :
+                      this.type === 'embers' ? 300 : 150; // leaves
+
+        if (this.type === 'leaves') {
+            const leafGeo = new THREE.PlaneGeometry(0.08, 0.12);
+            const leafColors = [0x2d4a22, 0x3b2612, 0x4d5c43, 0x1b4314];
+            for (let i = 0; i < count; i++) {
+                const mat = new THREE.MeshBasicMaterial({
+                    color: leafColors[Math.floor(Math.random() * leafColors.length)],
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const mesh = new THREE.Mesh(leafGeo, mat);
+                this.resetParticle(mesh);
+                mesh.position.y = this.camera.position.y - 5 + Math.random() * 20;
+                this.scene.add(mesh);
+                this.particles.push(mesh);
+            }
+        } else {
+            this.geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(count * 3);
+            
+            for (let i = 0; i < count; i++) {
+                const p = new THREE.Vector3();
+                this.resetPoint(p);
+                p.y = this.camera.position.y - 5 + Math.random() * 20;
+                positions[i * 3] = p.x;
+                positions[i * 3 + 1] = p.y;
+                positions[i * 3 + 2] = p.z;
+                
+                this.particles.push({
+                    pos: p,
+                    vel: this.getVelocityForType(),
+                    size: this.type === 'embers' ? 0.08 + Math.random() * 0.08 : 0.05
+                });
+            }
+
+            this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            let color = 0x88ccff;
+            if (this.type === 'embers') color = 0xffaa00;
+            else if (this.type === 'sandstorm') color = 0xdfb48f;
+            else if (this.type === 'storm') color = 0x7799aa;
+
+            this.material = new THREE.PointsMaterial({
+                color: color,
+                size: this.type === 'embers' ? 0.25 : (this.type === 'sandstorm' ? 0.35 : 0.15),
+                transparent: true,
+                opacity: this.type === 'storm' || this.type === 'rain' ? 0.4 : 0.65,
+                blending: this.type === 'embers' ? THREE.AdditiveBlending : THREE.NormalBlending
+            });
+
+            this.points = new THREE.Points(this.geometry, this.material);
+            this.scene.add(this.points);
+        }
+    }
+
+    resetPoint(p) {
+        p.x = this.camera.position.x + (Math.random() - 0.5) * 25;
+        p.y = this.camera.position.y + 10 + Math.random() * 5;
+        p.z = this.camera.position.z + (Math.random() - 0.7) * 30;
+    }
+
+    resetParticle(mesh) {
+        mesh.position.x = this.camera.position.x + (Math.random() - 0.5) * 25;
+        mesh.position.y = this.camera.position.y + 10 + Math.random() * 5;
+        mesh.position.z = this.camera.position.z + (Math.random() - 0.7) * 30;
+        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    }
+
+    getVelocityForType() {
+        if (this.type === 'rain') {
+            return new THREE.Vector3(0, -12 - Math.random() * 4, 0);
+        } else if (this.type === 'storm') {
+            return new THREE.Vector3(-3 - Math.random() * 2, -14 - Math.random() * 4, -1 - Math.random() * 2);
+        } else if (this.type === 'embers') {
+            return new THREE.Vector3((Math.random() - 0.5) * 0.5, 0.4 + Math.random() * 0.6, (Math.random() - 0.5) * 0.5);
+        } else if (this.type === 'sandstorm') {
+            return new THREE.Vector3(-6 - Math.random() * 4, -1.0 - Math.random() * 1.5, -2 - Math.random() * 2);
+        }
+        return new THREE.Vector3(0, 0, 0);
+    }
+
+    update(delta) {
+        if (this.type === 'none') return;
+
+        const camPos = this.camera.position;
+
+        if (this.type === 'leaves') {
+            this.particles.forEach(mesh => {
+                mesh.position.y -= (1.5 + Math.sin(performance.now() * 0.002 + mesh.position.x) * 0.5) * delta;
+                mesh.position.x += Math.sin(performance.now() * 0.003 + mesh.position.y) * 0.8 * delta;
+                mesh.position.z -= (0.5 + Math.random() * 0.5) * delta;
+
+                mesh.rotation.x += 1.5 * delta;
+                mesh.rotation.y += 0.8 * delta;
+
+                if (mesh.position.y < camPos.y - 8 || mesh.position.z > camPos.z + 10 || mesh.position.z < camPos.z - 35) {
+                    this.resetParticle(mesh);
+                }
+            });
+        } else if (this.points && this.geometry) {
+            const positions = this.geometry.attributes.position.array;
+
+            this.particles.forEach((p, i) => {
+                p.pos.addScaledVector(p.vel, delta);
+
+                if (this.type === 'embers') {
+                    p.pos.x += Math.sin(performance.now() * 0.001 + i) * 0.3 * delta;
+                } else if (this.type === 'sandstorm') {
+                    p.pos.y += Math.sin(performance.now() * 0.002 + i) * 0.2 * delta;
+                }
+
+                if (this.type === 'embers') {
+                    if (p.pos.y > camPos.y + 12 || p.pos.z > camPos.z + 10 || p.pos.z < camPos.z - 35) {
+                        this.resetPoint(p.pos);
+                        p.pos.y = camPos.y - 2 - Math.random() * 3;
+                    }
+                } else {
+                    if (p.pos.y < camPos.y - 8 || p.pos.z > camPos.z + 10 || p.pos.z < camPos.z - 35 || p.pos.x < camPos.x - 15 || p.pos.x > camPos.x + 15) {
+                        this.resetPoint(p.pos);
+                    }
+                }
+
+                positions[i * 3] = p.pos.x;
+                positions[i * 3 + 1] = p.pos.y;
+                positions[i * 3 + 2] = p.pos.z;
+            });
+
+            this.geometry.attributes.position.needsUpdate = true;
+        }
+
+        if (this.type === 'storm') {
+            this.flashTimer -= delta;
+            if (this.flashTimer <= 0) {
+                if (Math.random() < 0.003) {
+                    this.flashTimer = 0.15 + Math.random() * 0.1;
+                    if (window.engine.lights.ambient && window.engine.lights.sun) {
+                        window.engine.lights.ambient.intensity = 6.0;
+                        window.engine.lights.sun.intensity = 7.0;
+                        setTimeout(() => {
+                            if (window.engine.lights.ambient && window.engine.lights.sun) {
+                                window.engine.lights.ambient.intensity = 0.2;
+                                window.engine.lights.sun.intensity = 1.0;
+                            }
+                        }, 50);
+                        if (Math.random() > 0.5) {
+                            setTimeout(() => {
+                                if (window.engine.lights.ambient && window.engine.lights.sun) {
+                                    window.engine.lights.ambient.intensity = 5.0;
+                                    window.engine.lights.sun.intensity = 5.0;
+                                }
+                                setTimeout(() => {
+                                    if (window.engine.lights.ambient && window.engine.lights.sun) {
+                                        window.engine.lights.ambient.intensity = 0.2;
+                                        window.engine.lights.sun.intensity = 1.0;
+                                    }
+                                }, 40);
+                            }, 120);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    clear() {
+        if (this.points) {
+            this.scene.remove(this.points);
+            this.geometry.dispose();
+            this.material.dispose();
+            this.points = null;
+        }
+        this.particles.forEach(p => {
+            if (p instanceof THREE.Mesh) {
+                this.scene.remove(p);
+                p.geometry.dispose();
+                p.material.dispose();
+            }
+        });
+        this.particles = [];
+        this.type = 'none';
+    }
+}
+
 class GameEngine {
     constructor() {
         this.container = null;
@@ -45,6 +254,8 @@ class GameEngine {
         this.reloadOffsetY = 0;
         this.reloadRotX = 0;
         this.barrelTipZ = 0;
+        this.weather = null;
+        this.decals = [];
     }
 
     init(containerId) {
@@ -75,6 +286,9 @@ class GameEngine {
 
         // Particles
         this.particles = new ParticleManager(this.scene);
+
+        // Weather System
+        this.weather = new WeatherSystem(this.scene, this.camera);
 
         // Handle resize
         window.addEventListener('resize', () => this.onWindowResize());
@@ -171,6 +385,18 @@ class GameEngine {
         this.muzzleFlashTimer = 0.05; // Flash visible for 50ms
         if (this.muzzleFlashMesh) this.muzzleFlashMesh.visible = true;
         if (this.muzzleFlashLight) this.muzzleFlashLight.intensity = 4.0;
+
+        // AAA barrel tip smoke
+        if (this.muzzleFlashMesh) {
+            const tipPos = new THREE.Vector3();
+            this.muzzleFlashMesh.getWorldPosition(tipPos);
+            this.particles.spawnSmoke(tipPos, 3);
+        }
+
+        // AAA brass shell eject
+        const ejectPos = new THREE.Vector3(0.12, -0.16, -0.32);
+        ejectPos.applyMatrix4(this.camera.matrixWorld);
+        this.particles.spawnCasing(ejectPos, 'right');
     }
 
     triggerWeaponReload() {
@@ -204,8 +430,10 @@ class GameEngine {
         this.lights.sun = new THREE.DirectionalLight(0xffffff, 1.2);
         this.lights.sun.position.set(20, 40, 20);
         this.lights.sun.castShadow = true;
-        this.lights.sun.shadow.mapSize.width = 1024;
-        this.lights.sun.shadow.mapSize.height = 1024;
+        this.lights.sun.shadow.mapSize.width = 4096; // High definition shadow resolution
+        this.lights.sun.shadow.mapSize.height = 4096;
+        this.lights.sun.shadow.bias = -0.0002;       // Prevent shadow acne
+        this.lights.sun.shadow.normalBias = 0.02;
         this.lights.sun.shadow.camera.near = 0.5;
         this.lights.sun.shadow.camera.far = 150;
         const d = 30;
@@ -219,6 +447,9 @@ class GameEngine {
         this.lights.spot = new THREE.SpotLight(0xff9900, 5, 60, Math.PI / 4, 0.5, 1);
         this.lights.spot.position.set(0, 20, 0);
         this.lights.spot.castShadow = true;
+        this.lights.spot.shadow.mapSize.width = 2048;
+        this.lights.spot.shadow.mapSize.height = 2048;
+        this.lights.spot.shadow.bias = -0.0001;
         this.scene.add(this.lights.spot);
     }
 
@@ -275,6 +506,11 @@ class GameEngine {
         // Build Stage Geometries
         this.buildStageAssets(stageIndex);
         this.buildCameraRail(stageIndex);
+
+        // Initialize stage atmospheric weather system
+        if (this.weather) {
+            this.weather.init(stageIndex);
+        }
     }
 
     clearLevel() {
@@ -289,6 +525,16 @@ class GameEngine {
         });
         this.levelMeshes = [];
 
+        // Clear active decals
+        if (this.decals) {
+            this.decals.forEach(d => {
+                this.scene.remove(d);
+                d.geometry.dispose();
+                d.material.dispose();
+            });
+            this.decals = [];
+        }
+
         // Clear active entities
         this.activeEnemies.forEach(e => this.scene.remove(e.mesh));
         this.activeEnemies = [];
@@ -299,130 +545,223 @@ class GameEngine {
         }
 
         this.particles.clear();
+
+        if (this.weather) {
+            this.weather.clear();
+        }
     }
 
-    // Dynamic procedural level elements
+    // Dynamic procedural level elements with realistic PBR shading and names
     buildStageAssets(stage) {
-        const createMesh = (geo, mat, x, y, z, rx=0, ry=0, rz=0, shadow=true) => {
+        const createMesh = (geo, mat, x, y, z, rx=0, ry=0, rz=0, shadow=true, name="") => {
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(x, y, z);
             mesh.rotation.set(rx, ry, rz);
             mesh.receiveShadow = shadow;
             mesh.castShadow = shadow;
+            if (name) mesh.name = name;
             this.scene.add(mesh);
             this.levelMeshes.push(mesh);
             return mesh;
         };
 
-        // Floor
-        const groundMat = new THREE.MeshLambertMaterial({ 
-            color: stage === 1 ? 0x222225 : (stage === 4 ? 0xcaa06a : (stage === 5 ? 0x1a3311 : 0x3c454e)) 
-        });
+        // High-definition concrete floor
         const floorGeo = new THREE.PlaneGeometry(300, 300);
-        const floor = createMesh(floorGeo, groundMat, 0, 0, 0, -Math.PI/2, 0, 0, true);
+        const groundMat = new THREE.MeshStandardMaterial({ 
+            color: stage === 1 ? 0x1e1e20 : (stage === 4 ? 0xcaa06a : (stage === 5 ? 0x14280d : 0x2e353b)),
+            bumpMap: ProceduralTextures.generateConcreteBump(),
+            bumpScale: stage === 4 ? 0.04 : 0.015, // rough sand vs concrete floor
+            roughness: stage === 4 ? 0.95 : 0.72,
+            metalness: 0.1
+        });
+        const floor = createMesh(floorGeo, groundMat, 0, 0, 0, -Math.PI/2, 0, 0, true, "concrete_floor");
 
         if (stage === 1) {
             // --- STAGE 1: Container Yard ---
-            // Colors of containers
             const containerColors = [0x9b2226, 0x005f73, 0x0a9396, 0xca6702, 0xae2012, 0x1d3557];
             const size = new THREE.BoxGeometry(3.5, 3.5, 8.0);
+            const containerBump = ProceduralTextures.generateCorrugatedMetal();
             
-            // Spawn blocks of containers along the pathway
             for (let z = 10; z < 140; z += 20) {
                 const colLeft = containerColors[Math.floor(Math.random() * containerColors.length)];
                 const colRight = containerColors[Math.floor(Math.random() * containerColors.length)];
 
+                const leftMat = new THREE.MeshStandardMaterial({
+                    color: colLeft,
+                    bumpMap: containerBump,
+                    bumpScale: 0.04,
+                    roughness: 0.35,
+                    metalness: 0.75
+                });
+
+                const rightMat = new THREE.MeshStandardMaterial({
+                    color: colRight,
+                    bumpMap: containerBump,
+                    bumpScale: 0.04,
+                    roughness: 0.35,
+                    metalness: 0.75
+                });
+
                 // Left barrier
-                createMesh(size, new THREE.MeshLambertMaterial({ color: colLeft }), -6, 1.75, z);
-                createMesh(size, new THREE.MeshLambertMaterial({ color: colLeft }), -6, 5.25, z, 0, Math.PI/24); // stacked
+                createMesh(size, leftMat, -6, 1.75, z, 0, 0, 0, true, "metal_container");
+                createMesh(size, leftMat, -6, 5.25, z, 0, Math.PI/24, 0, true, "metal_container"); // stacked
 
                 // Right barrier
-                createMesh(size, new THREE.MeshLambertMaterial({ color: colRight }), 6, 1.75, z + 5);
-                createMesh(size, new THREE.MeshLambertMaterial({ color: colRight }), 5.5, 1.75, z + 12);
+                createMesh(size, rightMat, 6, 1.75, z + 5, 0, 0, 0, true, "metal_container");
+                createMesh(size, rightMat, 5.5, 1.75, z + 12, 0, 0, 0, true, "metal_container");
 
                 // Obstacles/cover on pathway
                 const crateGeo = new THREE.BoxGeometry(2.0, 1.3, 2.0);
-                const coverMat = new THREE.MeshLambertMaterial({ map: ProceduralTextures.generateMetalPlates() });
-                createMesh(crateGeo, coverMat, 0, 0.65, z + 8);
+                const coverMat = new THREE.MeshStandardMaterial({ 
+                    map: ProceduralTextures.generateMetalPlates(),
+                    bumpMap: ProceduralTextures.generateMetalPlatesBump(),
+                    bumpScale: 0.03,
+                    roughness: 0.45,
+                    metalness: 0.8
+                });
+                createMesh(crateGeo, coverMat, 0, 0.65, z + 8, 0, 0, 0, true, "metal_crate");
             }
 
             // Giant Crane Gantry in distance
             const beamGeo = new THREE.BoxGeometry(20, 1, 2);
             const legGeo = new THREE.CylinderGeometry(0.3, 0.3, 15);
-            const craneMat = new THREE.MeshLambertMaterial({ color: 0xe0a96d });
+            const craneMat = new THREE.MeshStandardMaterial({
+                color: 0xc4935a,
+                roughness: 0.4,
+                metalness: 0.8,
+                bumpMap: ProceduralTextures.generateSteelGrain(),
+                bumpScale: 0.015
+            });
 
-            createMesh(beamGeo, craneMat, 0, 15, 60);
-            createMesh(legGeo, craneMat, -8, 7.5, 60);
-            createMesh(legGeo, craneMat, 8, 7.5, 60);
+            createMesh(beamGeo, craneMat, 0, 15, 60, 0, 0, 0, true, "metal_crane");
+            createMesh(legGeo, craneMat, -8, 7.5, 60, 0, 0, 0, true, "metal_crane");
+            createMesh(legGeo, craneMat, 8, 7.5, 60, 0, 0, 0, true, "metal_crane");
 
         } else if (stage === 2) {
             // --- STAGE 2: Cargo Ship ---
-            // Draw Cargo Ship Deck rising above floor (water level)
             const hullGeo = new THREE.BoxGeometry(15, 6, 120);
-            const hullMat = new THREE.MeshLambertMaterial({ color: 0x202830 });
-            createMesh(hullGeo, hullMat, 0, 3, 70); // Hull deck
+            const hullMat = new THREE.MeshStandardMaterial({ 
+                color: 0x1c2126,
+                roughness: 0.28,
+                metalness: 0.82,
+                bumpMap: ProceduralTextures.generateMetalPlatesBump(),
+                bumpScale: 0.02
+            });
+            createMesh(hullGeo, hullMat, 0, 3, 70, 0, 0, 0, true, "metal_hull"); // Hull deck
 
             // Animated water side panels
             const waterMat = new THREE.MeshPhongMaterial({ color: 0x002244, shininess: 80, transparent: true, opacity: 0.85 });
-            const leftWater = createMesh(new THREE.PlaneGeometry(100, 120), waterMat, -25, 0.05, 70, -Math.PI/2, 0, 0);
-            const rightWater = createMesh(new THREE.PlaneGeometry(100, 120), waterMat, 25, 0.05, 70, -Math.PI/2, 0, 0);
+            const leftWater = createMesh(new THREE.PlaneGeometry(100, 120), waterMat, -25, 0.05, 70, -Math.PI/2, 0, 0, false, "water");
+            const rightWater = createMesh(new THREE.PlaneGeometry(100, 120), waterMat, 25, 0.05, 70, -Math.PI/2, 0, 0, false, "water");
 
-            // Animate water scaling effect to mimic waves
             this.waterRef = [leftWater, rightWater];
 
             // Ship superstructure / Bridge
             const bridgeGeo = new THREE.BoxGeometry(12, 10, 15);
-            const bridgeMat = new THREE.MeshLambertMaterial({ color: 0x5a6065 });
-            createMesh(bridgeGeo, bridgeMat, 0, 11, 110);
+            const bridgeMat = new THREE.MeshStandardMaterial({ 
+                color: 0x484e52,
+                roughness: 0.35,
+                metalness: 0.78,
+                bumpMap: ProceduralTextures.generateCorrugatedMetal(),
+                bumpScale: 0.02
+            });
+            createMesh(bridgeGeo, bridgeMat, 0, 11, 110, 0, 0, 0, true, "metal_bridge");
 
             // Containers stacked on deck
             const containerGeo = new THREE.BoxGeometry(3, 3, 7);
-            const cMat = new THREE.MeshLambertMaterial({ color: 0xae2012 });
-            const cMat2 = new THREE.MeshLambertMaterial({ color: 0x005f73 });
+            const containerBump = ProceduralTextures.generateCorrugatedMetal();
+            const cMat = new THREE.MeshStandardMaterial({ 
+                color: 0xae2012, 
+                bumpMap: containerBump, 
+                bumpScale: 0.04, 
+                roughness: 0.35, 
+                metalness: 0.75 
+            });
+            const cMat2 = new THREE.MeshStandardMaterial({ 
+                color: 0x005f73, 
+                bumpMap: containerBump, 
+                bumpScale: 0.04, 
+                roughness: 0.35, 
+                metalness: 0.75 
+            });
 
-            createMesh(containerGeo, cMat, -4, 7.5, 30);
-            createMesh(containerGeo, cMat2, 4, 7.5, 45);
-            createMesh(containerGeo, cMat, -3.8, 7.5, 65);
-            createMesh(containerGeo, cMat2, 0, 7.5, 85); // blocking pathway
+            createMesh(containerGeo, cMat, -4, 7.5, 30, 0, 0, 0, true, "metal_container");
+            createMesh(containerGeo, cMat2, 4, 7.5, 45, 0, 0, 0, true, "metal_container");
+            createMesh(containerGeo, cMat, -3.8, 7.5, 65, 0, 0, 0, true, "metal_container");
+            createMesh(containerGeo, cMat2, 0, 7.5, 85, 0, 0, 0, true, "metal_container"); // blocking pathway
 
             // Defensive deck shields (cover)
             const ironShield = new THREE.BoxGeometry(2.5, 1.4, 0.3);
-            const coverMat = new THREE.MeshLambertMaterial({ color: 0x333333 });
-            createMesh(ironShield, coverMat, 0, 6.7, 40);
-            createMesh(ironShield, coverMat, -2.5, 6.7, 60);
-            createMesh(ironShield, coverMat, 2.5, 6.7, 80);
+            const coverMat = new THREE.MeshStandardMaterial({ 
+                color: 0x222222,
+                roughness: 0.38,
+                metalness: 0.88,
+                bumpMap: ProceduralTextures.generateMetalPlatesBump(),
+                bumpScale: 0.03
+            });
+            createMesh(ironShield, coverMat, 0, 6.7, 40, 0, 0, 0, true, "metal_shield");
+            createMesh(ironShield, coverMat, -2.5, 6.7, 60, 0, 0, 0, true, "metal_shield");
+            createMesh(ironShield, coverMat, 2.5, 6.7, 80, 0, 0, 0, true, "metal_shield");
 
         } else if (stage === 3) {
             // --- STAGE 3: Airport Hangar ---
-            // Runway markings
             const markMat = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
             const runwayLineGeo = new THREE.PlaneGeometry(0.4, 10);
             for (let z = 10; z < 150; z += 20) {
-                createMesh(runwayLineGeo, markMat, 0, 0.02, z, -Math.PI/2, 0, 0, false);
+                createMesh(runwayLineGeo, markMat, 0, 0.02, z, -Math.PI/2, 0, 0, false, "concrete_runway_line");
             }
 
             // Hangar dome building in distance
             const hangarGeo = new THREE.CylinderGeometry(15, 15, 40, 16, 1, false, 0, Math.PI);
-            const hangarMat = new THREE.MeshLambertMaterial({ color: 0x4a4d52, side: THREE.DoubleSide });
-            createMesh(hangarGeo, hangarMat, -20, 0, 80, 0, 0, Math.PI/2);
+            const hangarMat = new THREE.MeshStandardMaterial({ 
+                color: 0x3e4145, 
+                side: THREE.DoubleSide,
+                roughness: 0.45,
+                metalness: 0.72,
+                bumpMap: ProceduralTextures.generateCorrugatedMetal(),
+                bumpScale: 0.03
+            });
+            createMesh(hangarGeo, hangarMat, -20, 0, 80, 0, 0, Math.PI/2, true, "metal_hangar");
 
             // Giant Cargo Airplane parked procedurally
             const planeGroup = new THREE.Group();
             planeGroup.position.set(10, 0.2, 70);
             planeGroup.rotation.y = -Math.PI / 3;
 
-            const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 25, 8), new THREE.MeshLambertMaterial({ color: 0xdfdfdf }));
+            const planeMat = new THREE.MeshStandardMaterial({ 
+                color: 0xd5d8dc,
+                roughness: 0.22,
+                metalness: 0.9,
+                bumpMap: ProceduralTextures.generateSteelGrain(),
+                bumpScale: 0.005
+            });
+            const tailMat = new THREE.MeshStandardMaterial({
+                color: 0x9b0000,
+                roughness: 0.3,
+                metalness: 0.7
+            });
+
+            const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 25, 8), planeMat);
             fuselage.position.y = 4.5;
             fuselage.rotation.x = Math.PI/2;
+            fuselage.castShadow = true;
+            fuselage.receiveShadow = true;
+            fuselage.name = "metal_airplane";
             planeGroup.add(fuselage);
 
             const wingGeo = new THREE.BoxGeometry(22, 0.2, 4);
-            const wings = new THREE.Mesh(wingGeo, new THREE.MeshLambertMaterial({ color: 0xcfcfcf }));
+            const wings = new THREE.Mesh(wingGeo, planeMat);
             wings.position.set(0, 4.5, 2);
+            wings.castShadow = true;
+            wings.receiveShadow = true;
+            wings.name = "metal_airplane";
             planeGroup.add(wings);
 
-            const tailFin = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 3), new THREE.MeshLambertMaterial({ color: 0xa8201a }));
+            const tailFin = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 3), tailMat);
             tailFin.position.set(0, 8.0, -10);
+            tailFin.castShadow = true;
+            tailFin.receiveShadow = true;
+            tailFin.name = "metal_airplane";
             planeGroup.add(tailFin);
 
             this.scene.add(planeGroup);
@@ -430,43 +769,68 @@ class GameEngine {
 
             // Fuel tanks / cover crates
             const cylinderGeo = new THREE.CylinderGeometry(1.2, 1.2, 2.0, 8);
-            const tankMat = new THREE.MeshLambertMaterial({ color: 0xd62828 });
-            createMesh(cylinderGeo, tankMat, -3, 1.0, 25);
-            createMesh(cylinderGeo, tankMat, 3, 1.0, 50);
+            const tankMat = new THREE.MeshStandardMaterial({ 
+                color: 0xa8201a,
+                roughness: 0.35,
+                metalness: 0.8,
+                bumpMap: ProceduralTextures.generateMetalPlatesBump(),
+                bumpScale: 0.03
+            });
+            createMesh(cylinderGeo, tankMat, -3, 1.0, 25, 0, 0, 0, true, "metal_tank");
+            createMesh(cylinderGeo, tankMat, 3, 1.0, 50, 0, 0, 0, true, "metal_tank");
 
         } else if (stage === 4) {
             // --- STAGE 4: Afghan Ruins ---
-            // Sand dunes, crumbling sandstone walls
-            const wallMat = new THREE.MeshLambertMaterial({ color: 0xc8a27d, roughness: 0.9 });
+            const wallMat = new THREE.MeshStandardMaterial({ 
+                color: 0xcaa06a, 
+                roughness: 0.95,
+                metalness: 0.05,
+                bumpMap: ProceduralTextures.generateConcreteBump(),
+                bumpScale: 0.04
+            });
             const blockGeo = new THREE.BoxGeometry(3.5, 2.5, 1.2);
             const lowBlockGeo = new THREE.BoxGeometry(3.5, 1.3, 1.2);
 
             for (let z = 15; z < 140; z += 25) {
-                // Alternating ruined gates
                 if (z % 50 === 15) {
-                    createMesh(blockGeo, wallMat, -5, 1.25, z, 0, Math.PI/8);
-                    createMesh(blockGeo, wallMat, 5, 1.25, z, 0, -Math.PI/6);
-                    createMesh(lowBlockGeo, wallMat, 0, 0.65, z + 5); // cover in center
+                    createMesh(blockGeo, wallMat, -5, 1.25, z, 0, Math.PI/8, 0, true, "concrete_wall");
+                    createMesh(blockGeo, wallMat, 5, 1.25, z, 0, -Math.PI/6, 0, true, "concrete_wall");
+                    createMesh(lowBlockGeo, wallMat, 0, 0.65, z + 5, 0, 0, 0, true, "concrete_wall"); // cover
                 } else {
-                    createMesh(blockGeo, wallMat, -2, 1.25, z);
-                    createMesh(blockGeo, wallMat, 6, 1.25, z - 4);
-                    createMesh(lowBlockGeo, wallMat, -5, 0.65, z + 8);
+                    createMesh(blockGeo, wallMat, -2, 1.25, z, 0, 0, 0, true, "concrete_wall");
+                    createMesh(blockGeo, wallMat, 6, 1.25, z - 4, 0, 0, 0, true, "concrete_wall");
+                    createMesh(lowBlockGeo, wallMat, -5, 0.65, z + 8, 0, 0, 0, true, "concrete_wall");
                 }
             }
 
             // Scattered sandbags
             const bagGeo = new THREE.BoxGeometry(2.0, 0.5, 0.8);
-            const sandbagMat = new THREE.MeshLambertMaterial({ color: 0xcaa06a });
+            const sandbagMat = new THREE.MeshStandardMaterial({ 
+                color: 0xba9b7c,
+                roughness: 0.9,
+                metalness: 0.1,
+                bumpMap: ProceduralTextures.generateSandbagWeave(),
+                bumpScale: 0.02
+            });
             for (let z = 20; z < 150; z += 40) {
-                createMesh(bagGeo, sandbagMat, 0, 0.25, z);
-                createMesh(bagGeo, sandbagMat, 0, 0.75, z, 0, Math.PI/12); // stack
+                createMesh(bagGeo, sandbagMat, 0, 0.25, z, 0, 0, 0, true, "sandbag");
+                createMesh(bagGeo, sandbagMat, 0, 0.75, z, 0, Math.PI/12, 0, true, "sandbag"); // stack
             }
 
         } else if (stage === 5) {
             // --- STAGE 5: Jungle Outpost & POW Rescue ---
-            // Green trees, foliage watchtowers, prison cage
-            const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4d3821 });
-            const leafMat = new THREE.MeshLambertMaterial({ color: 0x1b4314 });
+            const trunkMat = new THREE.MeshStandardMaterial({ 
+                color: 0x3d2b1a,
+                roughness: 0.9,
+                metalness: 0.05,
+                bumpMap: ProceduralTextures.generateWoodGrain(),
+                bumpScale: 0.03
+            });
+            const leafMat = new THREE.MeshStandardMaterial({ 
+                color: 0x163510,
+                roughness: 0.85,
+                metalness: 0.1
+            });
             const trunkGeo = new THREE.CylinderGeometry(0.2, 0.4, 7.0, 6);
             const leafGeo = new THREE.ConeGeometry(2.2, 4.0, 5);
 
@@ -476,10 +840,16 @@ class GameEngine {
 
                 const trunk = new THREE.Mesh(trunkGeo, trunkMat);
                 trunk.position.y = 3.5;
+                trunk.castShadow = true;
+                trunk.receiveShadow = true;
+                trunk.name = "wood_trunk";
                 group.add(trunk);
 
                 const leaves = new THREE.Mesh(leafGeo, leafMat);
                 leaves.position.y = 6.5;
+                leaves.castShadow = true;
+                leaves.receiveShadow = true;
+                leaves.name = "wood_leaves";
                 group.add(leaves);
 
                 this.scene.add(group);
@@ -494,16 +864,22 @@ class GameEngine {
 
             // Wooden huts (crates/wooden sheets)
             const hutGeo = new THREE.BoxGeometry(4.0, 3.5, 4.0);
-            const woodMat = new THREE.MeshLambertMaterial({ color: 0x5c4033 });
-            createMesh(hutGeo, woodMat, -5, 1.75, 40);
-            createMesh(hutGeo, woodMat, 5, 1.75, 80);
+            const woodMat = new THREE.MeshStandardMaterial({ 
+                color: 0x483226,
+                roughness: 0.85,
+                metalness: 0.1,
+                bumpMap: ProceduralTextures.generateWoodGrain(),
+                bumpScale: 0.03
+            });
+            createMesh(hutGeo, woodMat, -5, 1.75, 40, 0, 0, 0, true, "wood_hut");
+            createMesh(hutGeo, woodMat, 5, 1.75, 80, 0, 0, 0, true, "wood_hut");
 
             // Defensive cover logs
             const logGeo = new THREE.CylinderGeometry(0.5, 0.5, 3.5, 8);
             logGeo.rotateZ(Math.PI / 2);
-            createMesh(logGeo, trunkMat, 0, 0.5, 30);
-            createMesh(logGeo, trunkMat, 0, 0.5, 70);
-            createMesh(logGeo, trunkMat, 0, 0.5, 110);
+            createMesh(logGeo, trunkMat, 0, 0.5, 30, 0, 0, 0, true, "wood_log");
+            createMesh(logGeo, trunkMat, 0, 0.5, 70, 0, 0, 0, true, "wood_log");
+            createMesh(logGeo, trunkMat, 0, 0.5, 110, 0, 0, 0, true, "wood_log");
         }
     }
 
@@ -688,6 +1064,71 @@ class GameEngine {
         window.game.updateObjective("Moving forward...");
     }
 
+    // Decal spawning helper
+    spawnBulletDecal(hitPoint, normal, type = 'concrete') {
+        const size = 0.06 + Math.random() * 0.04;
+        const geo = new THREE.PlaneGeometry(size, size);
+        
+        // Generate procedural bullet hole texture on canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = 'rgba(0,0,0,0)';
+        ctx.fillRect(0, 0, 32, 32);
+        
+        // Inner impact center
+        ctx.fillStyle = '#121212';
+        ctx.beginPath();
+        ctx.arc(16, 16, 3.5 + Math.random()*2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Cracked/shattered ring around impact
+        ctx.strokeStyle = type === 'wood' ? '#3d2b1a' : (type === 'metal' ? '#7a8288' : '#52575c');
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(16, 16, 7.5 + Math.random()*2.5, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Minor cracks radiating out
+        for (let i = 0; i < 4; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const r1 = 3.5;
+            const r2 = 9 + Math.random() * 3;
+            ctx.beginPath();
+            ctx.moveTo(16 + Math.cos(angle)*r1, 16 + Math.sin(angle)*r1);
+            ctx.lineTo(16 + Math.cos(angle)*r2, 16 + Math.sin(angle)*r2);
+            ctx.stroke();
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            polygonOffset: true,
+            polygonOffsetFactor: -4,
+            polygonOffsetUnits: -4,
+            depthWrite: false
+        });
+
+        const decal = new THREE.Mesh(geo, mat);
+        decal.position.copy(hitPoint).addScaledVector(normal, 0.003); // Slight offset to prevent Z-fighting
+        decal.lookAt(hitPoint.clone().add(normal));
+        
+        this.scene.add(decal);
+        this.levelMeshes.push(decal); // Automatically disposed on clearLevel
+
+        if (!this.decals) this.decals = [];
+        this.decals.push(decal);
+        if (this.decals.length > 50) {
+            const oldest = this.decals.shift();
+            this.scene.remove(oldest);
+            oldest.geometry.dispose();
+            oldest.material.dispose();
+        }
+    }
+
     triggerRaycast(x, y, damage) {
         // Transform screen coordinates (-1 to 1) for Raycaster
         this.mouse.x = x;
@@ -725,6 +1166,7 @@ class GameEngine {
             const hit = intersects[0];
             const hitMesh = hit.object;
             const enemy = meshToEnemyMap.get(hitMesh);
+            const normal = hit.face ? hit.face.normal.clone().applyQuaternion(hitMesh.getWorldQuaternion(new THREE.Quaternion())).normalize() : new THREE.Vector3(0, 1, 0);
 
             if (enemy) {
                 if (enemy === this.prisoner) {
@@ -737,16 +1179,16 @@ class GameEngine {
                 // Call takeDamage on custom enemy object
                 const hitResult = enemy.takeDamage(damage, hitMesh.name);
                 
-                // Spawn particles on impact
+                // Spawn particles on impact based on material
                 if (hitResult.isShield) {
-                    // blue energy rings
-                    this.particles.spawn(hit.point, 0x00ffff, 6, 2, 0.1);
+                    // blue energy rings / sparks
+                    this.particles.spawnSparks(hit.point, normal, 0x00ffff, 8);
                 } else if (enemy.type === 'drone' || enemy.type === 'boss') {
-                    // sparks
-                    this.particles.spawn(hit.point, 0xffaa00, 8, 3, 0.12);
+                    // metal sparks
+                    this.particles.spawnSparks(hit.point, normal, 0xffaa00, 10);
                 } else {
                     // blood splatter
-                    this.particles.spawn(hit.point, 0x990000, 8, 2, 0.1);
+                    this.particles.spawnBloodSpurt(hit.point, normal, 12);
                 }
 
                 window.gameAudio.playHit();
@@ -758,7 +1200,26 @@ class GameEngine {
         const bgIntersects = this.raycaster.intersectObjects(this.levelMeshes);
         if (bgIntersects.length > 0) {
             const hit = bgIntersects[0];
-            this.particles.spawn(hit.point, 0xdddd99, 4, 1.5, 0.08);
+            const normal = hit.face ? hit.face.normal.clone().applyQuaternion(hit.object.getWorldQuaternion(new THREE.Quaternion())).normalize() : new THREE.Vector3(0, 1, 0);
+            
+            let hitType = 'concrete';
+            let sparkColor = 0xdddd99;
+            
+            if (hit.object.name && hit.object.name.includes('metal')) {
+                hitType = 'metal';
+                sparkColor = 0xffaa00;
+                this.particles.spawnSparks(hit.point, normal, sparkColor, 8);
+            } else if (hit.object.name && hit.object.name.includes('wood')) {
+                hitType = 'wood';
+                sparkColor = 0xd2b48c;
+                // spawn wood splinters
+                this.particles.spawn(hit.point, 0x5c4033, 6, 2, 0.08);
+            } else {
+                // concrete dust
+                this.particles.spawn(hit.point, 0x999999, 6, 1.5, 0.08);
+            }
+
+            this.spawnBulletDecal(hit.point, normal, hitType);
             return { hit: false };
         }
 
@@ -908,7 +1369,12 @@ class GameEngine {
         // 4. Update particles
         this.particles.update(delta);
 
-        // 5. Water waves simulation
+        // 5. Update weather system atmospheric effects
+        if (this.weather) {
+            this.weather.update(delta);
+        }
+
+        // 6. Water waves simulation
         if (this.waterRef) {
             const time = performance.now() * 0.001;
             this.waterRef.forEach((w, idx) => {
