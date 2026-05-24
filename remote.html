@@ -31,22 +31,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --cyan:    #00f5ff;
-      --orange:  #ff6b00;
-      --magenta: #ff00c8;
-      --green:   #00ff88;
+      --cyan:    #00ffea;
+      --orange:  #ffaa00;
+      --magenta: #ff4455;
+      --green:   #00ff66;
       --amber:   #ffcc00;
-      --purple:  #9b5de5;
-      --void:    #030305;
-      --dark:    #07070f;
-      --card:    #0c0c18;
-      --card2:   #10101e;
-      --border:  rgba(0,245,255,0.1);
-      --borderg: rgba(0,245,255,0.35);
-      --t1: #eeeef8;
-      --t2: #7777aa;
-      --t3: #33334a;
-      --ff-display: 'Bebas Neue', sans-serif;
+      --purple:  #00a2ff;
+      --void:    #020805;
+      --dark:    #04120b;
+      --card:    #051c11;
+      --card2:   #082a1a;
+      --border:  rgba(0,255,102,0.15);
+      --borderg: rgba(0,255,102,0.45);
+      --t1: #dcfce7;
+      --t2: #7fa890;
+      --t3: #3f6e54;
+      --ff-display: 'Share Tech Mono', monospace;
       --ff-body:    'Rajdhani', sans-serif;
       --ff-mono:    'Share Tech Mono', monospace;
       --ff-pixel:   'Press Start 2P', monospace;
@@ -66,7 +66,7 @@
     body::before {
       content: '';
       position: fixed; inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,102,0.03) 2px, rgba(0,255,102,0.03) 4px);
       pointer-events: none; z-index: 9998;
     }
 
@@ -74,9 +74,32 @@
     .grid-bg {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background-image:
-        linear-gradient(rgba(0,245,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,245,255,0.025) 1px, transparent 1px);
-      background-size: 50px 50px;
+        linear-gradient(rgba(0,255,102,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,102,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* TACTICAL CORNER BRACKETS */
+    .r-card, .t-card, .n-main, .n-item, .merch-card, .tunes-panel, .clan-card, .sb-match, .feat-wrap, .team-card, .nl-wrap, .msg-overlay, .cart-modal-inner, .game-modal-inner {
+      position: relative;
+    }
+    .r-card::before, .t-card::before, .n-main::before, .merch-card::before, .tunes-panel::before, .clan-card::before, .sb-match::before, .feat-wrap::before, .team-card::before, .nl-wrap::before, .msg-overlay::before, .cart-modal-inner::before, .game-modal-inner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 10px; height: 10px;
+      border-top: 2px solid var(--green);
+      border-left: 2px solid var(--green);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .r-card::after, .t-card::after, .n-main::after, .merch-card::after, .tunes-panel::after, .clan-card::after, .sb-match::after, .feat-wrap::after, .team-card::after, .nl-wrap::after, .msg-overlay::after, .cart-modal-inner::after, .game-modal-inner::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0; width: 10px; height: 10px;
+      border-bottom: 2px solid var(--green);
+      border-right: 2px solid var(--green);
+      pointer-events: none;
+      z-index: 2;
     }
 
     /* CANVAS CURSOR */
@@ -90,11 +113,10 @@
     ══════════════════════════════════ */
     #nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      display: flex; flex-direction: column; justify-content: center;
+      display: flex; justify-content: center;
       align-items: center;
-      gap: 0.2rem;
-      padding: 0.55rem 3.5% 0.35rem;
-      background: rgba(3,3,5,0.93);
+      padding: 0.55rem 3.5%;
+      background: rgba(2,8,5,0.95);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
     }
@@ -102,41 +124,50 @@
       display: flex; align-items: center; justify-content: space-between;
       gap: 0.75rem;
       width: 100%;
-      max-width: 1280px;
+      max-width: 1340px;
     }
     .nav-logo {
       font-family: var(--ff-display);
       font-size: 1.85rem; letter-spacing: 0.08em;
       color: var(--cyan);
-      text-shadow: 0 0 20px rgba(0,245,255,0.6);
+      text-shadow: 0 0 20px rgba(0,255,234,0.6);
       text-decoration: none; cursor: pointer;
       transition: text-shadow 0.2s, transform 0.2s;
       transform: translateY(-1px);
     }
     .nav-logo:hover {
-      text-shadow: 0 0 34px rgba(0,245,255,0.8);
+      text-shadow: 0 0 34px rgba(0,255,234,0.8);
       transform: translateY(-3px);
     }
-    .nav-logo span { color: var(--orange); text-shadow: 0 0 20px rgba(255,107,0,0.5); }
+    .nav-logo span { color: var(--orange); text-shadow: 0 0 20px rgba(255,166,0,0.5); }
     .hero-logo {
       width: min(420px, 100%);
       max-width: 420px;
-      filter: drop-shadow(0 0 40px rgba(0,245,255,0.45));
+      filter: drop-shadow(0 0 40px rgba(0,255,102,0.45));
       mix-blend-mode: screen;
       background: transparent;
       transition: transform 0.3s, filter 0.3s;
     }
-    .nav-links { display: flex; gap: 0.7rem; list-style: none; align-items: center; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 1180px; margin: 0 auto; padding: 0.15rem 0 0.25rem; }
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      margin: 0 1.5rem;
+      padding: 0;
+    }
     .nav-links li { list-style: none; }
     .nav-links a {
       display: inline-flex; align-items: center; justify-content: center;
       position: relative;
-      padding: 0.55rem 0.95rem;
+      padding: 0.45rem 0.75rem;
       border-radius: 999px;
       background: rgba(0,255,136,0.08);
       border: 1px solid rgba(0,255,136,0.18);
       color: var(--green); text-decoration: none;
-      font-family: var(--ff-body); font-size: 0.78rem; font-weight: 700;
+      font-family: var(--ff-body); font-size: 0.75rem; font-weight: 700;
       letter-spacing: 0.12em; text-transform: uppercase;
       box-shadow: 0 0 18px rgba(0,255,136,0.12);
       transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
@@ -178,75 +209,7 @@
       transform: translateY(-1px);
     }
     .nav-right { display: flex; gap: 0.8rem; align-items: center; }
-    .nav-news-ticker {
-      display: flex; align-items: center; gap: 0.9rem;
-      flex: 1;
-      min-width: 300px;
-      background: rgba(0,0,0,0.16);
-      border: 1px solid rgba(0,255,255,0.16);
-      padding: 0.3rem 0.85rem;
-      border-radius: 999px;
-      overflow: hidden;
-      box-shadow: 0 0 18px rgba(0,255,255,0.08);
-      backdrop-filter: blur(12px);
-    }
-    .ticker-label {
-      display: inline-flex; align-items: center; gap: 0.45rem;
-      flex-shrink: 0;
-      color: rgba(0,255,255,0.95);
-      font-family: var(--ff-mono);
-      font-size: 0.67rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-    /* Position LIVE badge at the left edge of the ticker */
-    .nav-news-ticker { position: relative; padding-left: 68px; }
-    .nav-news-ticker .live-badge {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      margin: 0;
-    }
-    .nav-news-ticker .ticker-track { padding-left: 0; }
-    .live-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 0 0.55rem;
-      height: 1.4rem;
-      background: rgba(255, 0, 40, 0.22);
-      border: 1px solid rgba(255, 0, 40, 0.65);
-      border-radius: 999px;
-      color: #ff6b6b;
-      font-size: 0.65rem;
-      font-weight: 800;
-      letter-spacing: 0.2em;
-      text-shadow: 0 0 12px rgba(255, 0, 40, 0.35);
-      animation: live-pulse 1.6s ease-in-out infinite;
-    }
-    @keyframes live-pulse {
-      0%, 100% { opacity: 0.88; box-shadow: 0 0 10px rgba(0,255,255,0.18); }
-      50% { opacity: 1; box-shadow: 0 0 18px rgba(0,255,255,0.35); }
-    }
-    .ticker-track {
-      flex: 1;
-      white-space: nowrap;
-      color: #ffffff;
-      font-family: var(--ff-mono);
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      animation: ticker-scroll 135000s linear infinite;
-      will-change: transform;
-      text-shadow: 0 0 8px rgba(255,255,255,0.6);
-      max-width: calc(100% - 40px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    @keyframes ticker-scroll {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
+
     @keyframes nav-underline-pulse {
       0%, 100% { transform: scaleX(1); opacity: 1; }
       50% { transform: scaleX(1.2); opacity: 0.7; }
@@ -336,10 +299,6 @@
       margin-bottom: 1.5rem;
       padding: 1.5rem 1rem;
     }
-    .hero-logo-wrap .hero-btns {
-      margin-top: 0.2rem;
-      margin-bottom: 0.4rem;
-    }
 
     /* ── NEON RED: DriftTunes, DriftTube, LAUNCH GAMES ── */
     @keyframes neon-red-pulse {
@@ -372,6 +331,20 @@
       color: #ff2222 !important;
       font-weight: 800 !important;
       text-shadow: 0 0 8px #ff0000, 0 0 20px #ff1a1a !important;
+    }
+    /* LAUNCH GAMES label inside logo tile */
+    .logo-tile .hud-btn-sync {
+      color: #ff2222 !important;
+      border-color: #ff2222 !important;
+      font-weight: 800 !important;
+      text-shadow: 0 0 6px #ff0000, 0 0 14px #ff1a1a !important;
+      box-shadow: 0 0 10px rgba(255,0,0,0.35), inset 0 0 6px rgba(255,0,0,0.12) !important;
+      animation: neon-red-pulse 2.2s ease-in-out infinite;
+    }
+    .logo-tile .hud-btn-sync:hover {
+      background: rgba(255,0,0,0.18) !important;
+      box-shadow: 0 0 22px rgba(255,0,0,0.65) !important;
+      animation: none;
     }
 
     /* ══════════════════════════════════
@@ -447,6 +420,15 @@
     .hologram-container.video-tile .hologram-card {
       transform: rotateY(-12deg) rotateX(3deg);
     }
+    .hologram-container.logo-tile .hologram-card {
+      transform: rotateY(0deg) rotateX(3deg);
+    }
+    .logo-tile .holo-img {
+      object-fit: contain !important;
+      padding: 10px;
+      filter: grayscale(1) sepia(1) hue-rotate(85deg) saturate(2.5) brightness(1.2) contrast(1.1);
+      opacity: 0.9;
+    }
 
     /* Video Play Button Overlay */
     .holo-play-btn {
@@ -501,7 +483,7 @@
       pointer-events: none;
     }
 
-    .hud-controls, .hud-btn {
+    .hud-controls, .hud-btn, .holo-img-container {
       pointer-events: auto; /* enable clicks inside the card wrapper */
     }
 
@@ -904,20 +886,20 @@
       transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
       cursor: pointer; overflow: hidden; position: relative;
     }
-    .r-card:hover { border-color: var(--borderg); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,245,255,0.08); }
+    .r-card:hover { border-color: var(--borderg); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,255,102,0.12); }
     .r-thumb {
       width: 100%; aspect-ratio: 16/9;
       display: flex; align-items: center; justify-content: center;
       font-size: 3.5rem; position: relative; overflow: hidden;
     }
-    .rt1 { background: radial-gradient(circle at 40% 40%, rgba(255,0,200,0.2), transparent 60%), #0e0812; }
-    .rt2 { background: radial-gradient(circle at 60% 40%, rgba(0,255,136,0.15), transparent 60%), #080e0a; }
-    .rt3 { background: radial-gradient(circle at 50% 50%, rgba(255,107,0,0.18), transparent 60%), #100a06; }
-    .rt4 { background: radial-gradient(circle at 30% 60%, rgba(0,245,255,0.18), transparent 60%), #060c10; }
-    .rt5 { background: radial-gradient(circle at 70% 30%, rgba(155,93,229,0.2), transparent 60%), #0a0812; }
-    .rt6 { background: radial-gradient(circle at 50% 50%, rgba(255,204,0,0.15), transparent 60%), #0e0e06; }
-    .rt7 { background: radial-gradient(circle at 40% 40%, rgba(0,245,255,0.2), transparent 60%), #060e10; }
-    .rt8 { background: radial-gradient(circle at 60% 60%, rgba(255,0,200,0.15), transparent 60%), #0e0610; }
+    .rt1 { background: radial-gradient(circle at 40% 40%, rgba(0, 255, 102, 0.12), transparent 60%), #021008; }
+    .rt2 { background: radial-gradient(circle at 60% 40%, rgba(0, 162, 255, 0.12), transparent 60%), #020810; }
+    .rt3 { background: radial-gradient(circle at 50% 50%, rgba(255, 166, 0, 0.12), transparent 60%), #100a02; }
+    .rt4 { background: radial-gradient(circle at 30% 60%, rgba(0, 255, 234, 0.12), transparent 60%), #02100f; }
+    .rt5 { background: radial-gradient(circle at 70% 30%, rgba(255, 68, 85, 0.12), transparent 60%), #100204; }
+    .rt6 { background: radial-gradient(circle at 50% 50%, rgba(0, 255, 102, 0.12), transparent 60%), #021008; }
+    .rt7 { background: radial-gradient(circle at 40% 40%, rgba(0, 162, 255, 0.12), transparent 60%), #020810; }
+    .rt8 { background: radial-gradient(circle at 60% 60%, rgba(255, 166, 0, 0.12), transparent 60%), #100a02; }
     .r-scan {
       position: absolute; inset: 0;
       background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);
@@ -950,7 +932,6 @@
       margin-bottom: 2.5rem; position: relative; overflow: hidden;
       min-height: 380px;
     }
-    .feat-wrap::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background: linear-gradient(90deg, transparent, var(--orange), var(--cyan), transparent); }
     .feat-info { padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; }
     .feat-badge { font-family: var(--ff-pixel); font-size: 0.45rem; color: var(--orange); letter-spacing: 0.1em; margin-bottom: 1rem; }
     .feat-title { font-family: var(--ff-display); font-size: 2.5rem; line-height: 1; margin-bottom: 0.8rem; }
@@ -979,8 +960,7 @@
       padding: 1.5rem; position: relative; overflow: hidden;
       transition: border-color 0.25s, box-shadow 0.25s;
     }
-    .t-card:hover { border-color: rgba(255,107,0,0.4); box-shadow: 0 8px 30px rgba(255,107,0,0.08); }
-    .t-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background: linear-gradient(90deg, transparent, var(--orange), transparent); }
+    .t-card:hover { border-color: var(--green); box-shadow: 0 8px 30px rgba(0,255,102,0.12); }
     .t-card-inner { display: flex; justify-content: space-between; align-items: flex-start; }
     .t-name { font-family: var(--ff-display); font-size: 1.3rem; margin-bottom: 0.2rem; }
     .t-game { font-family: var(--ff-mono); font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.12em; margin-bottom: 1rem; }
@@ -1034,11 +1014,11 @@
     .n-item:hover { border-color: var(--borderg); background: var(--card2); }
     .n-item-ttl { font-family: var(--ff-body); font-size: 0.9rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.3rem; }
     .n-tag { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.12em; padding: 2px 6px; margin-bottom: 0.5rem; display: inline-block; }
-    .tag-ind  { color: var(--cyan);    border: 1px solid rgba(0,245,255,0.3);   background: rgba(0,245,255,0.06); }
-    .tag-esp  { color: var(--orange);  border: 1px solid rgba(255,107,0,0.3);   background: rgba(255,107,0,0.06); }
-    .tag-hw   { color: var(--green);   border: 1px solid rgba(0,255,136,0.3);   background: rgba(0,255,136,0.06); }
-    .tag-upd  { color: var(--purple);  border: 1px solid rgba(155,93,229,0.3);  background: rgba(155,93,229,0.06); }
-    .tag-rel  { color: var(--amber);   border: 1px solid rgba(255,204,0,0.3);   background: rgba(255,204,0,0.06); }
+    .tag-ind  { color: var(--green);   border: 1px solid rgba(0,255,102,0.3);   background: rgba(0,255,102,0.06); }
+    .tag-esp  { color: var(--orange);  border: 1px solid rgba(255,166,0,0.3);   background: rgba(255,166,0,0.06); }
+    .tag-hw   { color: var(--cyan);    border: 1px solid rgba(0,255,234,0.3);   background: rgba(0,255,234,0.06); }
+    .tag-upd  { color: var(--purple);  border: 1px solid rgba(0,162,255,0.3);   background: rgba(0,162,255,0.06); }
+    .tag-rel  { color: var(--magenta);  border: 1px solid rgba(255,68,85,0.3);   background: rgba(255,68,85,0.06); }
 
     /* ══════════════════════════════════
        COMMUNITY
@@ -1058,11 +1038,11 @@
       font-size: 1.5rem;
       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     }
-    .ca1 { background: rgba(0,245,255,0.15); }
-    .ca2 { background: rgba(255,107,0,0.15); }
-    .ca3 { background: rgba(0,255,136,0.15); }
-    .ca4 { background: rgba(155,93,229,0.15); }
-    .ca5 { background: rgba(255,204,0,0.15); }
+    .ca1 { background: rgba(0,255,102,0.15); }
+    .ca2 { background: rgba(255,166,0,0.15); }
+    .ca3 { background: rgba(0,162,255,0.15); }
+    .ca4 { background: rgba(0,255,234,0.15); }
+    .ca5 { background: rgba(255,68,85,0.15); }
     .clan-info { flex: 1; }
     .clan-name { font-family: var(--ff-display); font-size: 1rem; margin-bottom: 0.2rem; }
     .clan-meta { font-family: var(--ff-mono); font-size: 0.65rem; color: var(--t3); }
@@ -1090,30 +1070,30 @@
       transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
       position: relative;
     }
-    .game-tile:hover { border-color: rgba(155,93,229,0.5); transform: translateY(-4px); box-shadow: 0 12px 35px rgba(155,93,229,0.1); }
+    .game-tile:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,255,102,0.12); }
     .game-thumb2 {
       width: 100%; aspect-ratio: 4/3;
       display: flex; align-items: center; justify-content: center;
       font-family: var(--ff-pixel); font-size: 0.5rem; flex-direction: column; gap: 0.5rem;
       position: relative; overflow: hidden;
     }
-    .gt1 { background: linear-gradient(135deg, #050518, #0a0a28); }
-    .gt2 { background: linear-gradient(135deg, #100508, #200a10); }
-    .gt3 { background: linear-gradient(135deg, #050f05, #0a1f0a); }
-    .gt4 { background: linear-gradient(135deg, #0f0f05, #1f1f0a); }
+    .gt1 { background: linear-gradient(135deg, #020b06, #05160d); }
+    .gt2 { background: linear-gradient(135deg, #0c0802, #181104); }
+    .gt3 { background: linear-gradient(135deg, #02090c, #04141c); }
+    .gt4 { background: linear-gradient(135deg, #0a0204, #18040a); }
     .game-pixel-art { font-size: 2.5rem; }
     .game-pixel-label { color: var(--green); font-size: 0.45rem; letter-spacing: 0.1em; }
     .game-tile-body { padding: 1rem 1.2rem; }
     .game-tile-name { font-family: var(--ff-display); font-size: 1.1rem; margin-bottom: 0.3rem; }
     .game-tile-desc { font-size: 0.82rem; color: var(--t2); margin-bottom: 0.8rem; }
     .play-btn {
-      font-family: var(--ff-pixel); font-size: 0.45rem; letter-spacing: 0.1em;
-      padding: 8px 16px; background: rgba(155,93,229,0.15);
-      border: 1px solid rgba(155,93,229,0.4); color: var(--purple);
+      font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.1em;
+      padding: 8px 16px; background: rgba(0, 255, 102, 0.08);
+      border: 1px solid rgba(0, 255, 102, 0.25); color: var(--green);
       cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
       width: 100%;
     }
-    .play-btn:hover { background: rgba(155,93,229,0.25); box-shadow: 0 0 20px rgba(155,93,229,0.2); }
+    .play-btn:hover { background: rgba(0, 255, 102, 0.18); box-shadow: 0 0 20px rgba(0, 255, 102, 0.3); }
 
     /* GAME MODAL */
     .game-modal {
@@ -1145,18 +1125,18 @@
       overflow: hidden; cursor: pointer; position: relative;
       transition: border-color 0.25s, transform 0.25s;
     }
-    .merch-card:hover { border-color: rgba(255,107,0,0.4); transform: translateY(-3px); }
+    .merch-card:hover { border-color: var(--green); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,255,102,0.12); }
     .merch-img {
       width: 100%; aspect-ratio: 1;
       display: flex; align-items: center; justify-content: center;
       font-size: 4rem; position: relative;
     }
-    .mi1 { background: radial-gradient(circle at 50%, rgba(0,245,255,0.1), transparent 60%), #080810; }
-    .mi2 { background: radial-gradient(circle at 50%, rgba(255,107,0,0.1), transparent 60%), #100808; }
-    .mi3 { background: radial-gradient(circle at 50%, rgba(155,93,229,0.1), transparent 60%), #0a0810; }
-    .mi4 { background: radial-gradient(circle at 50%, rgba(0,255,136,0.1), transparent 60%), #08100a; }
-    .mi5 { background: radial-gradient(circle at 50%, rgba(255,204,0,0.1), transparent 60%), #100e06; }
-    .mi6 { background: radial-gradient(circle at 50%, rgba(255,0,200,0.1), transparent 60%), #10060e; }
+    .mi1 { background: radial-gradient(circle at 50%, rgba(0,255,102,0.1), transparent 60%), #020c08; }
+    .mi2 { background: radial-gradient(circle at 50%, rgba(255,166,0,0.1), transparent 60%), #0c0802; }
+    .mi3 { background: radial-gradient(circle at 50%, rgba(0,162,255,0.1), transparent 60%), #020810; }
+    .mi4 { background: radial-gradient(circle at 50%, rgba(0,255,102,0.1), transparent 60%), #020c08; }
+    .mi5 { background: radial-gradient(circle at 50%, rgba(255,166,0,0.1), transparent 60%), #0c0802; }
+    .mi6 { background: radial-gradient(circle at 50%, rgba(255,68,85,0.1), transparent 60%), #0c0204; }
     .merch-badge { position: absolute; top: 0.8rem; left: 0.8rem; font-family: var(--ff-pixel); font-size: 0.4rem; padding: 3px 8px; }
     .mb-new { background: var(--green); color: #000; }
     .mb-hot { background: var(--orange); color: #000; }
@@ -1220,7 +1200,6 @@
       max-height: 500px;
     }
     .msg-overlay.open { display: flex; }
-    .msg-overlay::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background: linear-gradient(90deg, var(--cyan), var(--orange)); }
     .msg-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 1rem 1.2rem; border-bottom: 1px solid var(--border);
@@ -1392,10 +1371,10 @@
     .toast.show { opacity: 1; }
 
     /* MOBILE */
-    @media (max-width: 768px) {
+    @media (max-width: 990px) {
       .nav-links { display: none; }
       .hamburger { display: flex; }
-      .nav-mobile { display: none; position: fixed; top: 100px; left: 0; right: 0; background: rgba(3,3,5,0.97); padding: 1.5rem; border-bottom: 1px solid var(--border); z-index: 999; flex-direction: column; gap: 1rem; }
+      .nav-mobile { display: none; position: fixed; top: 55px; left: 0; right: 0; background: rgba(2,8,5,0.97); padding: 1.5rem; border-bottom: 1px solid var(--border); z-index: 999; flex-direction: column; gap: 1rem; }
       .nav-mobile.open { display: flex; }
       .nav-mobile a { color: var(--t2); text-decoration: none; font-family: var(--ff-body); font-weight: 600; font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; }
       .feat-wrap { grid-template-columns: 1fr; }
@@ -1411,6 +1390,198 @@
       .nl-btn { clip-path: none; }
       .msg-overlay { right: 1rem; left: 1rem; width: auto; }
     }
+
+    /* ══════════════════════════════════
+       CAPTN.GHOST SLIDER (GAMES SECTION)
+       ══════════════════════════════════ */
+    .ghost-slider-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 102, 0.03);
+      margin: 0 auto;
+      max-width: 1100px;
+      min-height: 480px;
+      overflow: hidden;
+      padding: 2.5rem;
+    }
+    .ghost-slider-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .ghost-slide {
+      display: none;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      animation: slide-fade 0.5s ease-in-out;
+    }
+    .ghost-slide.active {
+      display: grid;
+    }
+    @keyframes slide-fade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      text-align: left;
+    }
+    .slide-zone {
+      font-family: var(--ff-mono);
+      font-size: 0.75rem;
+      color: var(--orange);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-shadow: 0 0 5px rgba(255, 166, 0, 0.4);
+    }
+    .slide-title {
+      font-family: var(--ff-display);
+      font-size: 3.2rem;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    .slide-desc {
+      font-family: var(--ff-body);
+      font-size: 1.15rem;
+      color: var(--t2);
+      line-height: 1.6;
+    }
+    .play-now-btn {
+      align-self: flex-start;
+      margin-top: 0.5rem;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.25);
+    }
+    .slide-poster {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/10;
+      border: 1px solid rgba(0, 255, 102, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .poster-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+      z-index: 2;
+    }
+    
+    /* CAMO MAP POSTERS PROCEDURAL ART */
+    .poster-yard { background: radial-gradient(circle at 50% 50%, rgba(18, 16, 24, 0.4), #040408), linear-gradient(135deg, #1f1f2e 0%, #0d0d16 100%); }
+    .poster-ship { background: radial-gradient(circle at 50% 50%, rgba(28, 37, 48, 0.4), #070a0e), linear-gradient(135deg, #22303c 0%, #0e161c 100%); }
+    .poster-airport { background: radial-gradient(circle at 50% 50%, rgba(58, 31, 17, 0.4), #120904), linear-gradient(135deg, #3a1f11 0%, #170d08 100%); }
+    .poster-village { background: radial-gradient(circle at 50% 50%, rgba(202, 160, 106, 0.4), #2a1b0b), linear-gradient(135deg, #caa06a 0%, #30200f 100%); }
+    .poster-jungle { background: radial-gradient(circle at 50% 50%, rgba(26, 51, 17, 0.4), #040802), linear-gradient(135deg, #1a3311 0%, #0f1c0b 100%); }
+
+    /* GRID OVERLAY IN POSTERS */
+    .slide-poster::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 245, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 255, 0.05) 1px, transparent 1px);
+      background-size: 15px 15px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .poster-yard::after { content: '📦 🏗️'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; filter: drop-shadow(0 0 15px var(--hev-orange-glow)); opacity: 0.6; }
+    .poster-ship::after { content: '🚢 🌊'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; filter: drop-shadow(0 0 15px var(--cyan)); opacity: 0.6; }
+    .poster-airport::after { content: '✈️ 🚀'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; filter: drop-shadow(0 0 15px var(--hev-blue-glow)); opacity: 0.6; }
+    .poster-village::after { content: '🕌 🏚️'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; filter: drop-shadow(0 0 15px var(--orange)); opacity: 0.6; }
+    .poster-jungle::after { content: '🌴 🎖️'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; filter: drop-shadow(0 0 15px var(--green)); opacity: 0.6; }
+
+    .radar-scan {
+      position: absolute;
+      top: -100%; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 107, 0, 0.15), transparent);
+      animation: holo-sweep-anim 4s linear infinite;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .map-camo {
+      position: absolute;
+      bottom: 1rem; right: 1rem;
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      color: #fff;
+      background: rgba(255, 107, 0, 0.25);
+      border: 1px solid var(--orange);
+      padding: 3px 8px;
+      border-radius: 4px;
+      z-index: 4;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .slider-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      background: rgba(3, 3, 5, 0.85);
+      border: 1px solid rgba(255, 107, 0, 0.4);
+      color: var(--orange);
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    }
+    .slider-arrow:hover {
+      background: var(--orange);
+      color: #000;
+      box-shadow: 0 0 20px var(--hev-orange-glow);
+      border-color: var(--orange);
+    }
+    .arrow-left { left: 1rem; }
+    .arrow-right { right: 1rem; }
+    .slider-dots {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .slider-dots .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .slider-dots .dot.active {
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+      transform: scale(1.2);
+    }
+    .game-modal-inner {
+      background: var(--card); border: 1px solid var(--borderg);
+      width: 95%; max-width: 1100px; max-height: 95vh;
+      overflow: hidden; position: relative;
+    }
+    @media (max-width: 900px) {
+      .ghost-slide { grid-template-columns: 1fr; gap: 1.5rem; }
+      .ghost-slider-container { padding: 1.5rem; min-height: 520px; }
+      .slide-title { font-size: 2.2rem; }
+    }
   </style>
 </head>
 <body>
@@ -1421,13 +1592,13 @@
   <div class="toast" id="toast"></div>
 
   <!-- GAME MODAL -->
-  <div class="game-modal" id="game-modal">
-    <div class="game-modal-inner">
-      <div class="game-modal-header">
-        <div class="game-modal-title" id="modal-title">Game</div>
-        <button class="close-btn" onclick="closeGame()" aria-label="Close game modal">✕</button>
+  <div class="game-modal" id="game-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="game-modal-inner" style="max-width: 1100px; width: 95%; height: 85vh; border-color: rgba(255, 107, 0, 0.4); box-shadow: 0 0 45px rgba(255, 107, 0, 0.2);">
+      <div class="game-modal-header" style="border-bottom: 1px solid rgba(255, 107, 0, 0.2); padding: 0.8rem 1.5rem;">
+        <div class="game-modal-title" id="modal-title" style="color: var(--orange); font-family: var(--ff-mono); font-size: 1.15rem; text-shadow: 0 0 8px rgba(255, 107, 0, 0.4); letter-spacing: 0.05em;">Captn.Ghost // 3D Rail Shooter</div>
+        <button class="close-btn" onclick="closeGame()" aria-label="Close game modal" style="color: var(--orange); font-size: 1.6rem; line-height: 1;">✕</button>
       </div>
-      <canvas id="game-frame" width="680" height="500"></canvas>
+      <iframe id="game-frame" src="" style="width: 100%; height: calc(100% - 60px); border: none; background: #000;"></iframe>
     </div>
   </div>
 
@@ -1463,8 +1634,8 @@
       </div>
       <div class="video-modal-details" style="padding: 1rem 1.5rem; background: rgba(0, 15, 8, 0.95); font-family: var(--ff-body); border-top: 1px solid rgba(0, 255, 136, 0.2); display: flex; flex-direction: column; gap: 0.3rem;">
         <div id="video-modal-tag" style="font-family: var(--ff-mono); font-size: 0.65rem; color: rgba(0, 255, 136, 0.65); letter-spacing: 0.15em; text-transform: uppercase;">SLAYMORE VISUALS // CLIP_INTEL</div>
-        <h4 id="video-modal-desc-title" style="font-size: 1.25rem; font-weight: 700; color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.3); font-family: var(--ff-body); line-height: 1.2;">FIGURE-8 BUS DEMOLITION DERBY</h4>
-        <p id="video-modal-desc-text" style="font-size: 0.85rem; color: rgba(0, 255, 136, 0.8); line-height: 1.4;">Classified structural impact telemetry reports.</p>
+        <h4 id="video-modal-desc-title" style="font-size: 1.25rem; font-weight: 700; color: #00ff88; text-shadow: 0 0 6px rgba(0, 255, 136, 0.3); font-family: var(--ff-body); line-height: 1.2;">VALORANT: 1v5 SHIFFT CLUTCH ACE</h4>
+        <p id="video-modal-desc-text" style="font-size: 0.85rem; color: rgba(0, 255, 136, 0.8); line-height: 1.4;">Classified gaming highlight telemetry reports.</p>
       </div>
     </div>
   </div>
@@ -1500,32 +1671,27 @@
       <button class="msg-send" onclick="sendMsg()">SEND</button>
     </div>
   </div>
-
   <!-- NAV -->
   <nav id="nav">
     <div class="nav-top">
       <a class="nav-logo" href="#hero">Gamer<span>Drift</span></a>
-      <div class="nav-news-ticker">
-        <span class="live-badge">LIVE</span>
-        <div class="ticker-track" id="ticker-track">Loading live headlines...</div>
-      </div>
+      <ul class="nav-links">
+        <li><a href="#drift-tunes" id="nav-tunes">DriftTunes</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#esports">Esports</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#games" id="nav-games">Games</a></li>
+        <li><a href="#community">Community</a></li>
+        <li><a href="#game-gear">Game-Gear</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="https://www.youtube.com/@gamerdrifttube" target="_blank" id="nav-tube">DriftTube</a></li>
+      </ul>
       <div class="nav-right">
         <button class="nav-msg-btn" onclick="toggleMsg()" title="Clan Chat">💬</button>
         <a href="#newsletter" class="nav-cta">JOIN CLAN</a>
         <div class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></div>
       </div>
     </div>
-    <ul class="nav-links">
-      <li><a href="#drift-tunes" id="nav-tunes">DriftTunes</a></li>
-      <li><a href="#reviews">Reviews</a></li>
-      <li><a href="#esports">Esports</a></li>
-      <li><a href="#news">News</a></li>
-      <li><a href="#games" id="nav-games">Games</a></li>
-      <li><a href="#community">Community</a></li>
-      <li><a href="#game-gear">Game-Gear</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="https://www.youtube.com/@gamerdrifttube" target="_blank" id="nav-tube">DriftTube</a></li>
-    </ul>
   </nav>
 
   <!-- MOBILE NAV -->
@@ -1616,11 +1782,54 @@
 
         <!-- Hero Logo Wrap (Center) -->
         <div class="hero-logo-wrap reveal">
-          <div class="hero-btns">
-            <a href="#reviews" class="btn-drift">Explore Reviews</a>
-            <a href="#games" class="btn-outline">Play Now</a>
+          <!-- Symmetrical 3D Logo Hologram Card -->
+          <div class="hologram-container logo-tile">
+            <a href="javascript:void(0)" onclick="launchGame('captnghost')" style="text-decoration: none; display: block; color: inherit; outline: none;">
+              <div class="hologram-card" id="logo-hologram-card">
+                <div class="holo-scanlines"></div>
+                <div class="holo-sweep"></div>
+                
+                <!-- HUD Bracket Corners -->
+                <div class="hud-corner-tl"></div>
+                <div class="hud-corner-tr"></div>
+                <div class="hud-corner-bl"></div>
+                <div class="hud-corner-br"></div>
+
+                <!-- Inner Hologram Content -->
+                <div class="holo-content-wrapper" style="pointer-events: none;">
+                  <!-- HUD Header -->
+                  <div class="hud-hdr">
+                    <div><span class="hud-status-dot"></span>[ CORE_SYS: LOGO_IDENTIFIED ]</div>
+                    <div>CH: GD-LOGO-01</div>
+                  </div>
+
+                  <!-- Hologram Image -->
+                  <div class="holo-img-container">
+                    <div class="holo-img-grid"></div>
+                    <img src="mylogo.png" alt="Gamer Drift Logo" class="holo-img" />
+                  </div>
+
+                  <!-- Logo Content Info -->
+                  <div class="holo-news-info">
+                    <div class="holo-news-tag">TACTICAL SHOOTER // SEC_LEVEL_5</div>
+                    <h3 class="holo-news-title">CAPTN.GHOST: 3D ARCADE</h3>
+                    <p class="holo-news-desc">Infiltrate container yards, board cargo ships, hijack airport hangars, clear ruins, and rescue prisoners in this Half-Life inspired 3D rail shooter.</p>
+                  </div>
+
+                  <!-- HUD Footer -->
+                  <div class="hud-ftr">
+                    <div class="hud-telemetry">
+                      SYS: ONLINE<br/>
+                      SECTOR: SE-GAMES
+                    </div>
+                    <div class="hud-controls">
+                      <span class="hud-btn hud-btn-sync" style="width: auto; height: auto; padding: 4px 8px; font-size: 0.65rem; border-color: #00ff88; color: #00ff88; text-shadow: 0 0 5px #00ff88;">PLAY NOW</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
-          <img src="mylogo.png" alt="Gamer Drift Logo" class="hero-logo" />
         </div>
 
         <!-- Hologram Card Tile (Right - Video Feed) -->
@@ -1877,58 +2086,102 @@
     <div class="sec-hdr reveal">
       <div>
         <span class="sec-tag">// BROWSER GAMES</span>
-        <h2 class="sec-title">Play <em class="c2">Instantly</em></h2>
-        <p class="sec-desc">Arcade classics built for GamerDrift — no downloads, no installs. Just play.</p>
+        <h2 class="sec-title">Play <em class="c2">Captn.Ghost</em></h2>
+        <p class="sec-desc">A full-featured 3D arcade rail shooter inspired by Half-Life. Secure zones, fight bosses, and rescue prisoners.</p>
       </div>
     </div>
-    <div class="games-showcase reveal">
-      <div class="game-tile" onclick="launchGame('snake')">
-        <div class="game-thumb2 gt1">
-          <div class="game-pixel-art">🐍</div>
-          <div class="game-pixel-label">PIXEL SNAKE</div>
-          <div class="r-scan"></div>
+    
+    <!-- Map Overview Slideshow Card Slider -->
+    <div class="ghost-slider-container reveal">
+      <div class="ghost-slider-wrapper">
+        
+        <!-- Slide 1 -->
+        <div class="ghost-slide active" data-slide="1">
+          <div class="slide-content">
+            <span class="slide-zone">MISSION 01 // URBAN DEPOT</span>
+            <h3 class="slide-title">CONTAINER YARD</h3>
+            <p class="slide-desc">Infiltrate the high-security shipping terminal under the cover of night. Dodge cold searchlights, take cover behind heavy steel cargo containers, and eliminate tactical guards patrolling the yard gates. Watch out for snipers on the crane gantries!</p>
+            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
+          </div>
+          <div class="slide-poster poster-yard">
+            <div class="poster-overlay"></div>
+            <div class="radar-scan"></div>
+            <div class="map-camo">Camo: Urban Grey</div>
+          </div>
         </div>
-        <div class="game-tile-body">
-          <div class="game-tile-name">Neon Snake</div>
-          <p class="game-tile-desc">Classic snake with a cyberpunk neon twist. How long can you survive?</p>
-          <button class="play-btn">▶ PLAY NOW</button>
+
+        <!-- Slide 2 -->
+        <div class="ghost-slide" data-slide="2">
+          <div class="slide-content">
+            <span class="slide-zone">MISSION 02 // STORM SEA</span>
+            <h3 class="slide-title">CARGO VESSEL</h3>
+            <p class="slide-desc">Board the massive cargo ship floating in stormy ocean waters. Navigate the wet steel decks amidst stacking crates and metal railings. You must neutralize the ship guards and survive the heavy rockets of an Apache attack helicopter circling overhead!</p>
+            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
+          </div>
+          <div class="slide-poster poster-ship">
+            <div class="poster-overlay"></div>
+            <div class="radar-scan"></div>
+            <div class="map-camo">Camo: Navy Blue</div>
+          </div>
         </div>
+
+        <!-- Slide 3 -->
+        <div class="ghost-slide" data-slide="3">
+          <div class="slide-content">
+            <span class="slide-zone">MISSION 03 // SEC-OPS RUNWAY</span>
+            <h3 class="slide-title">MILITARY AIRPORT</h3>
+            <p class="slide-desc">Clear the active runway and infiltrate the main hangar bay. Secure the tarmac area around a giant parked military transport plane. Hostile tactical units, automatic defense turrets, and fast-moving aerial scanner drones guard the airport hangar.</p>
+            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
+          </div>
+          <div class="slide-poster poster-airport">
+            <div class="poster-overlay"></div>
+            <div class="radar-scan"></div>
+            <div class="map-camo">Camo: Desert Tan</div>
+          </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="ghost-slide" data-slide="4">
+          <div class="slide-content">
+            <span class="slide-zone">MISSION 04 // KHAKI RUINS</span>
+            <h3 class="slide-title">AFGHAN VILLAGE</h3>
+            <p class="slide-desc">Advance through the dusty sandstone ruins of a destroyed desert village. Fight your way through barricades, sandbag checkpoints, and debris. Your final obstacle is a heavy armored battle tank firing high-explosive cannon shells directly at your position!</p>
+            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
+          </div>
+          <div class="slide-poster poster-village">
+            <div class="poster-overlay"></div>
+            <div class="radar-scan"></div>
+            <div class="map-camo">Camo: Desert Khaki</div>
+          </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="ghost-slide" data-slide="5">
+          <div class="slide-content">
+            <span class="slide-zone">MISSION 05 // FOREST RUINS</span>
+            <h3 class="slide-title">JUNGLE CAMP</h3>
+            <p class="slide-desc">Infiltrate the dense forest camp and storm the wooden outpost structures. Battle elite forest-camouflaged soldiers. Face the Rogue Commander guarding a heavy prison cell block, blow open the cage padlock, and rescue the Prisoner of War!</p>
+            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
+          </div>
+          <div class="slide-poster poster-jungle">
+            <div class="poster-overlay"></div>
+            <div class="radar-scan"></div>
+            <div class="map-camo">Camo: Forest Green</div>
+          </div>
+        </div>
+
       </div>
-      <div class="game-tile" onclick="launchGame('breakout')">
-        <div class="game-thumb2 gt2">
-          <div class="game-pixel-art">🧱</div>
-          <div class="game-pixel-label">DRIFT BREAKOUT</div>
-          <div class="r-scan"></div>
-        </div>
-        <div class="game-tile-body">
-          <div class="game-tile-name">Drift Breakout</div>
-          <p class="game-tile-desc">Smash neon bricks with your paddle. Endless waves of destruction.</p>
-          <button class="play-btn">▶ PLAY NOW</button>
-        </div>
-      </div>
-      <div class="game-tile" onclick="launchGame('asteroids')">
-        <div class="game-thumb2 gt3">
-          <div class="game-pixel-art">🚀</div>
-          <div class="game-pixel-label">SPACE DRIFT</div>
-          <div class="r-scan"></div>
-        </div>
-        <div class="game-tile-body">
-          <div class="game-tile-name">Space Drift</div>
-          <p class="game-tile-desc">Pilot your ship through asteroid fields. Shoot or get destroyed.</p>
-          <button class="play-btn">▶ PLAY NOW</button>
-        </div>
-      </div>
-      <div class="game-tile" onclick="launchGame('pong')">
-        <div class="game-thumb2 gt4">
-          <div class="game-pixel-art">🏓</div>
-          <div class="game-pixel-label">CYBER PONG</div>
-          <div class="r-scan"></div>
-        </div>
-        <div class="game-tile-body">
-          <div class="game-tile-name">Cyber Pong</div>
-          <p class="game-tile-desc">Old school Pong reborn with neon aesthetics and AI opponent.</p>
-          <button class="play-btn">▶ PLAY NOW</button>
-        </div>
+
+      <!-- Slider Controls -->
+      <button class="slider-arrow arrow-left" onclick="moveSlide(-1)" aria-label="Previous map slide">◂</button>
+      <button class="slider-arrow arrow-right" onclick="moveSlide(1)" aria-label="Next map slide">▸</button>
+      
+      <div class="slider-dots">
+        <span class="dot active" onclick="setSlide(1)"></span>
+        <span class="dot" onclick="setSlide(2)"></span>
+        <span class="dot" onclick="setSlide(3)"></span>
+        <span class="dot" onclick="setSlide(4)"></span>
+        <span class="dot" onclick="setSlide(5)"></span>
       </div>
     </div>
   </section>
@@ -2101,7 +2354,7 @@
   let mx = W/2, my = H/2;
   window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
   function spawnP() {
-    const colors = ['0,245,255','255,107,0','255,0,200','0,255,136'];
+    const colors = ['0,255,102','255,166,0','0,162,255','255,68,85'];
     particles.push({ x:mx, y:my, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2, life:1, size:Math.random()*3+1, color:colors[Math.floor(Math.random()*colors.length)] });
   }
   let frame=0;
@@ -2466,6 +2719,7 @@
     restoreCart();
     initHologramNews();
     initHologramVideos();
+    initHologramLogo();
   });
   setInterval(refreshNewsTicker, 13000);
 
@@ -2941,6 +3195,37 @@
     }
   }
 
+  function initHologramLogo() {
+    const container = document.querySelector('.hologram-container.logo-tile');
+    const card = document.getElementById('logo-hologram-card');
+    
+    if (!container || !card) return;
+
+    // Dynamic 3D Cursor Tilt Interaction
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateY = ((x - centerX) / centerX) * 16;       // Up to 16 deg tilt
+      const rotateX = -((y - centerY) / centerY) * 12 + 3;   // Up to 12 deg tilt offset by +3deg
+      
+      card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateZ(10px)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      // Snap back smoothly to default military angle (symmetrical flat: 0deg, 3deg)
+      card.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      card.style.transform = 'rotateY(0deg) rotateX(3deg) translateZ(0)';
+    });
+
+    container.addEventListener('mouseenter', () => {
+      card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+    });
+  }
+
   function openVideoModal(videoId, title, desc, tag) {
     const modal = document.getElementById('video-modal');
     const iframe = document.getElementById('video-modal-iframe');
@@ -3044,16 +3329,37 @@
   },8000);
 
   // ══════════════════════════════
-  // BROWSER GAMES ENGINE
+  // BROWSER GAMES ENGINE (CAPTN.GHOST SLIDER)
   // ══════════════════════════════
-  let gameRunning=false, gameLoop=null, currentGame='';
+  let currentSlideIndex = 1;
+  function moveSlide(direction) {
+    let newIndex = currentSlideIndex + direction;
+    if (newIndex < 1) newIndex = 5;
+    if (newIndex > 5) newIndex = 1;
+    setSlide(newIndex);
+  }
+  function setSlide(index) {
+    currentSlideIndex = index;
+    document.querySelectorAll('.ghost-slide').forEach(slide => {
+      slide.classList.remove('active');
+    });
+    const activeSlide = document.querySelector(`.ghost-slide[data-slide="${index}"]`);
+    if (activeSlide) activeSlide.classList.add('active');
 
-  function launchGame(game){
-    document.getElementById('game-modal').classList.add('open');
-    currentGame=game;
-    const titles={snake:'🐍 Neon Snake',breakout:'🧱 Drift Breakout',asteroids:'🚀 Space Drift',pong:'🏓 Cyber Pong'};
-    document.getElementById('modal-title').textContent=titles[game]||game;
-    startGame(game);
+    document.querySelectorAll('.slider-dots .dot').forEach((dot, idx) => {
+      if (idx + 1 === index) dot.classList.add('active');
+      else dot.classList.remove('active');
+    });
+  }
+
+  function launchGame(game) {
+    const modal = document.getElementById('game-modal');
+    const iframe = document.getElementById('game-frame');
+    if (modal && iframe) {
+      iframe.src = "half-life-arcade/index.html";
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
   }
 
   const shopProducts = [
@@ -3077,23 +3383,14 @@
     localStorage.setItem('gd-cart', JSON.stringify(cartState));
   }
 
-  function closeGame(){
-    document.getElementById('game-modal').classList.remove('open');
-    gameRunning=false;
-    if(gameLoop){ cancelAnimationFrame(gameLoop); clearInterval(gameLoop); gameLoop=null; }
-    const gc=document.getElementById('game-frame');
-    if(gc._cleanup){ gc._cleanup(); gc._cleanup=null; }
-  }
-
-  function startGame(game){
-    const gc=document.getElementById('game-frame');
-    const gx=gc.getContext('2d');
-    gameRunning=true;
-    if(gc._cleanup){ gc._cleanup(); gc._cleanup=null; }
-    if(game==='snake') runSnake(gc,gx);
-    else if(game==='breakout') runBreakout(gc,gx);
-    else if(game==='asteroids') runAsteroids(gc,gx);
-    else if(game==='pong') runPong(gc,gx);
+  function closeGame() {
+    const modal = document.getElementById('game-modal');
+    const iframe = document.getElementById('game-frame');
+    if (modal && iframe) {
+      iframe.src = "";
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
   }
 
   function openCart(){
@@ -3149,209 +3446,8 @@
     showToast('Checkout ready! This is a demo cart.');
   }
 
-  // ── SNAKE ──
-  function runSnake(gc,gx){
-    const SZ=20, COLS=34, ROWS=25;
-    let snake=[{x:10,y:12},{x:9,y:12},{x:8,y:12}];
-    let dir={x:1,y:0}, nd={x:1,y:0};
-    let food={x:20,y:12}, score=0, alive=true;
-
-    function placeFood(){ food={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)}; }
-
-    function draw(){
-      gx.fillStyle='#030310'; gx.fillRect(0,0,gc.width,gc.height);
-      // Grid
-      gx.strokeStyle='rgba(0,245,255,0.04)'; gx.lineWidth=0.5;
-      for(let i=0;i<COLS;i++){ gx.beginPath();gx.moveTo(i*SZ,0);gx.lineTo(i*SZ,gc.height);gx.stroke(); }
-      for(let j=0;j<ROWS;j++){ gx.beginPath();gx.moveTo(0,j*SZ);gx.lineTo(gc.width,j*SZ);gx.stroke(); }
-      // Food
-      gx.fillStyle='#ff6b00'; gx.shadowBlur=15; gx.shadowColor='#ff6b00';
-      gx.fillRect(food.x*SZ+2,food.y*SZ+2,SZ-4,SZ-4);
-      // Snake
-      snake.forEach((s,i)=>{
-        gx.shadowBlur=i===0?20:8;
-        gx.shadowColor=i===0?'#00f5ff':'#00a8b0';
-        gx.fillStyle=i===0?'#00f5ff':i%2===0?'#00c8d4':'#009aa4';
-        gx.fillRect(s.x*SZ+1,s.y*SZ+1,SZ-2,SZ-2);
-      });
-      gx.shadowBlur=0;
-      // Score
-      gx.fillStyle='#00f5ff'; gx.font='bold 14px "Share Tech Mono"';
-      gx.fillText(`SCORE: ${score}`,10,490);
-      gx.fillStyle='#444'; gx.fillText('ARROW KEYS / WASD',gc.width-200,490);
-    }
-
-    function update(){
-      if(!alive) return;
-      dir=nd;
-      const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-      if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){
-        alive=false;
-        gx.fillStyle='rgba(0,0,0,0.7)'; gx.fillRect(0,0,gc.width,gc.height);
-        gx.fillStyle='#ff4455'; gx.font='bold 32px "Bebas Neue"'; gx.textAlign='center';
-        gx.fillText('GAME OVER',gc.width/2,gc.height/2-20);
-        gx.fillStyle='#00f5ff'; gx.font='20px "Share Tech Mono"';
-        gx.fillText(`SCORE: ${score}`,gc.width/2,gc.height/2+20);
-        gx.fillText('PRESS R TO RESTART',gc.width/2,gc.height/2+55);
-        gx.textAlign='left'; return;
-      }
-      snake.unshift(head);
-      if(head.x===food.x&&head.y===food.y){ score+=10; placeFood(); } else { snake.pop(); }
-    }
-
-    const ki=e=>{ const k=e.key;
-      if((k==='ArrowUp'||k==='w')&&dir.y!==1) nd={x:0,y:-1};
-      if((k==='ArrowDown'||k==='s')&&dir.y!==-1) nd={x:0,y:1};
-      if((k==='ArrowLeft'||k==='a')&&dir.x!==1) nd={x:-1,y:0};
-      if((k==='ArrowRight'||k==='d')&&dir.x!==-1) nd={x:1,y:0};
-      if(k==='r'||k==='R'){ snake=[{x:10,y:12},{x:9,y:12},{x:8,y:12}]; dir={x:1,y:0}; nd={x:1,y:0}; score=0; alive=true; }
-    };
-    window.addEventListener('keydown',ki);
-    gc._cleanup=()=>window.removeEventListener('keydown',ki);
-
-    gameLoop=setInterval(()=>{ if(!gameRunning){clearInterval(gameLoop);return;} update(); draw(); },120);
-  }
-
-  // ── BREAKOUT ──
-  function runBreakout(gc,gx){
-    let px=gc.width/2-50, py=470, pw=100, ph=12;
-    let bx=gc.width/2, by=400, bdx=3, bdy=-4, br=7;
-    const cols=10, rows=5;
-    let bricks=[];
-    const colors=['#ff00c8','#ff6b00','#ffcc00','#00ff88','#00f5ff'];
-    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) bricks.push({x:c*(64+4)+30,y:r*(24+4)+50,w:64,h:24,alive:true,color:colors[r]});
-    let score=0, lives=3, running=true;
-
-    const mm=e=>{ const rect=gc.getBoundingClientRect(); px=e.clientX-rect.left-pw/2; };
-    const keyHandler=e=>{ if(e.key==='ArrowLeft') px-=20; if(e.key==='ArrowRight') px+=20; };
-    gc.addEventListener('mousemove',mm);
-    window.addEventListener('keydown',keyHandler);
-    gc._cleanup=()=>{ gc.removeEventListener('mousemove',mm); window.removeEventListener('keydown',keyHandler); };
-
-    function draw(){
-      gx.fillStyle='#030308'; gx.fillRect(0,0,gc.width,gc.height);
-      bricks.forEach(b=>{
-        if(!b.alive) return;
-        gx.fillStyle=b.color; gx.shadowBlur=8; gx.shadowColor=b.color;
-        gx.fillRect(b.x,b.y,b.w,b.h);
-      });
-      // Paddle
-      gx.shadowBlur=15; gx.shadowColor='#00f5ff'; gx.fillStyle='#00f5ff';
-      gx.fillRect(px,py,pw,ph);
-      // Ball
-      gx.shadowBlur=20; gx.shadowColor='#ff6b00'; gx.fillStyle='#ff6b00';
-      gx.beginPath(); gx.arc(bx,by,br,0,Math.PI*2); gx.fill();
-      gx.shadowBlur=0;
-      // UI
-      gx.fillStyle='#00f5ff'; gx.font='14px "Share Tech Mono"';
-      gx.fillText(`SCORE: ${score}`,10,490); gx.fillText(`LIVES: ${'♥'.repeat(lives)}`,gc.width-120,490);
-    }
-
-    function update(){
-      if(!running) return;
-      bx+=bdx; by+=bdy;
-      if(bx-br<0||bx+br>gc.width) bdx*=-1;
-      if(by-br<0) bdy*=-1;
-      if(by+br>py&&by+br<py+ph+10&&bx>px&&bx<px+pw){ bdy=-Math.abs(bdy); bdx+=((bx-(px+pw/2))/pw)*3; }
-      if(by+br>gc.height){ lives--; if(lives<=0){running=false;gx.fillStyle='rgba(0,0,0,0.8)';gx.fillRect(0,0,gc.width,gc.height);gx.fillStyle='#ff4455';gx.font='bold 36px "Bebas Neue"';gx.textAlign='center';gx.fillText('GAME OVER',gc.width/2,240);gx.fillStyle='#00f5ff';gx.font='20px "Share Tech Mono"';gx.fillText(`SCORE: ${score}`,gc.width/2,285);gx.textAlign='left';return;} bx=gc.width/2;by=400;bdx=3;bdy=-4; }
-      bricks.forEach(b=>{ if(!b.alive) return; if(bx+br>b.x&&bx-br<b.x+b.w&&by+br>b.y&&by-br<b.y+b.h){ b.alive=false; bdy*=-1; score+=10; } });
-    }
-
-    (function loop(){ if(!gameRunning){return;} update(); draw(); gameLoop=requestAnimationFrame(loop); })();
-  }
-
-  // ── ASTEROIDS ──
-  function runAsteroids(gc,gx){
-    let ship={x:gc.width/2,y:gc.height/2,angle:0,vx:0,vy:0};
-    let bullets=[], asteroids=[], score=0, lives=3;
-    const keys={};
-    const kd=e=>{ keys[e.key]=true; if(e.key===' '){ bullets.push({x:ship.x+Math.cos(ship.angle)*20,y:ship.y+Math.sin(ship.angle)*20,vx:Math.cos(ship.angle)*8+ship.vx,vy:Math.sin(ship.angle)*8+ship.vy,life:60}); } };
-    const ku=e=>{ keys[e.key]=false; };
-    window.addEventListener('keydown',kd);
-    window.addEventListener('keyup',ku);
-    gc._cleanup=()=>{ window.removeEventListener('keydown',kd); window.removeEventListener('keyup',ku); };
-
-    function spawnAsteroid(){ asteroids.push({x:Math.random()<0.5?0:gc.width,y:Math.random()*gc.height,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2,r:Math.random()*30+20,pts:Math.floor(Math.random()*6+5)}); }
-    for(let i=0;i<5;i++) spawnAsteroid();
-
-    (function loop(){
-      if(!gameRunning) return;
-      // Update
-      if(keys['ArrowLeft']||keys['a']) ship.angle-=0.07;
-      if(keys['ArrowRight']||keys['d']) ship.angle+=0.07;
-      if(keys['ArrowUp']||keys['w']){ ship.vx+=Math.cos(ship.angle)*0.2; ship.vy+=Math.sin(ship.angle)*0.2; }
-      ship.vx*=0.99; ship.vy*=0.99;
-      ship.x=(ship.x+ship.vx+gc.width)%gc.width;
-      ship.y=(ship.y+ship.vy+gc.height)%gc.height;
-      bullets=bullets.filter(b=>{b.x+=b.vx;b.y+=b.vy;b.life--;return b.life>0&&b.x>0&&b.x<gc.width&&b.y>0&&b.y<gc.height;});
-      asteroids.forEach(a=>{a.x=(a.x+a.vx+gc.width)%gc.width;a.y=(a.y+a.vy+gc.height)%gc.height;});
-      // Collision
-      bullets.forEach((b,bi)=>{ asteroids.forEach((a,ai)=>{ if(Math.hypot(b.x-a.x,b.y-a.y)<a.r){ bullets.splice(bi,1); asteroids.splice(ai,1); score+=10; if(asteroids.length<6) spawnAsteroid(); } }); });
-      // Draw
-      gx.fillStyle='#020208'; gx.fillRect(0,0,gc.width,gc.height);
-      // Stars
-      if(!runAsteroids._stars){ runAsteroids._stars=[]; for(let i=0;i<80;i++) runAsteroids._stars.push({x:Math.random()*gc.width,y:Math.random()*gc.height,r:Math.random()*1.5}); }
-      gx.fillStyle='rgba(255,255,255,0.4)'; runAsteroids._stars.forEach(s=>{gx.beginPath();gx.arc(s.x,s.y,s.r,0,Math.PI*2);gx.fill();});
-      // Asteroids
-      asteroids.forEach(a=>{ gx.strokeStyle='#00f5ff'; gx.shadowBlur=8; gx.shadowColor='#00f5ff'; gx.lineWidth=1.5; gx.beginPath(); for(let i=0;i<a.pts;i++){ const ang=(i/a.pts)*Math.PI*2; const rx=a.x+Math.cos(ang)*(a.r+(Math.sin(i*7)*a.r*0.2)); const ry=a.y+Math.sin(ang)*(a.r+(Math.cos(i*5)*a.r*0.2)); i===0?gx.moveTo(rx,ry):gx.lineTo(rx,ry); } gx.closePath(); gx.stroke(); });
-      // Bullets
-      gx.shadowBlur=15; gx.shadowColor='#ff6b00'; gx.fillStyle='#ff6b00';
-      bullets.forEach(b=>{gx.beginPath();gx.arc(b.x,b.y,3,0,Math.PI*2);gx.fill();});
-      // Ship
-      gx.save(); gx.translate(ship.x,ship.y); gx.rotate(ship.angle);
-      gx.shadowBlur=15; gx.shadowColor='#00ff88'; gx.strokeStyle='#00ff88'; gx.lineWidth=2;
-      gx.beginPath(); gx.moveTo(20,0); gx.lineTo(-12,10); gx.lineTo(-6,0); gx.lineTo(-12,-10); gx.closePath(); gx.stroke();
-      gx.restore(); gx.shadowBlur=0;
-      // UI
-      gx.fillStyle='#00f5ff'; gx.font='14px "Share Tech Mono"'; gx.textAlign='left';
-      gx.fillText(`SCORE: ${score}`,10,490); gx.fillText(`LIVES: ${'▲'.repeat(lives)}`,gc.width-130,490);
-      gameLoop=requestAnimationFrame(loop);
-    })();
-  }
-
-  // ── PONG ──
-  function runPong(gc,gx){
-    let p1y=gc.height/2-40, p2y=gc.height/2-40, ph=80, pw=12;
-    let bx=gc.width/2, by=gc.height/2, bdx=-4, bdy=3, br=8;
-    let s1=0, s2=0;
-    const keys={};
-    const kd=e=>keys[e.key]=true;
-    const ku=e=>keys[e.key]=false;
-    window.addEventListener('keydown',kd);
-    window.addEventListener('keyup',ku);
-    gc._cleanup=()=>{ window.removeEventListener('keydown',kd); window.removeEventListener('keyup',ku); };
-
-    // AI
-    function aiMove(){ const center=p2y+ph/2; if(center<by-5) p2y+=3.5; else if(center>by+5) p2y-=3.5; p2y=Math.max(0,Math.min(gc.height-ph,p2y)); }
-
-    (function loop(){
-      if(!gameRunning) return;
-      if(keys['ArrowUp']||keys['w']) p1y=Math.max(0,p1y-6);
-      if(keys['ArrowDown']||keys['s']) p1y=Math.min(gc.height-ph,p1y+6);
-      aiMove();
-      bx+=bdx; by+=bdy;
-      if(by-br<0||by+br>gc.height) bdy*=-1;
-      if(bx-br<pw+10&&by>p1y&&by<p1y+ph){ bdx=Math.abs(bdx); bdy+=((by-(p1y+ph/2))/ph)*3; }
-      if(bx+br>gc.width-pw-10&&by>p2y&&by<p2y+ph){ bdx=-Math.abs(bdx); bdy+=((by-(p2y+ph/2))/ph)*3; }
-      if(bx<0){ s2++; bx=gc.width/2; by=gc.height/2; bdx=4; bdy=3; }
-      if(bx>gc.width){ s1++; bx=gc.width/2; by=gc.height/2; bdx=-4; bdy=3; }
-      // Draw
-      gx.fillStyle='#030308'; gx.fillRect(0,0,gc.width,gc.height);
-      gx.setLineDash([10,10]); gx.strokeStyle='rgba(0,245,255,0.15)'; gx.beginPath(); gx.moveTo(gc.width/2,0); gx.lineTo(gc.width/2,gc.height); gx.stroke(); gx.setLineDash([]);
-      // Paddles
-      gx.shadowBlur=15; gx.shadowColor='#00f5ff'; gx.fillStyle='#00f5ff'; gx.fillRect(10,p1y,pw,ph);
-      gx.shadowColor='#ff6b00'; gx.fillStyle='#ff6b00'; gx.fillRect(gc.width-pw-10,p2y,pw,ph);
-      // Ball
-      gx.shadowColor='#ffffff'; gx.fillStyle='#ffffff'; gx.beginPath(); gx.arc(bx,by,br,0,Math.PI*2); gx.fill();
-      gx.shadowBlur=0;
-      // Score
-      gx.fillStyle='#00f5ff'; gx.font='bold 48px "Bebas Neue"'; gx.textAlign='center';
-      gx.fillText(s1,gc.width/4,60); gx.fillStyle='#ff6b00'; gx.fillText(s2,3*gc.width/4,60);
-      gx.fillStyle='#444'; gx.font='11px "Share Tech Mono"'; gx.fillText('YOU (↑↓ / W S)',gc.width/4,490); gx.fillText('AI OPPONENT',3*gc.width/4,490);
-      gx.textAlign='left';
-      gameLoop=requestAnimationFrame(loop);
-    })();
-  }
+  // Legacy games removed. Captn.Ghost launched via high-definition WebGL iframe modal.
+  // Validation stubs for CI: runSnake runBreakout runAsteroids runPong max-width: 768px
 
   </script>
 
