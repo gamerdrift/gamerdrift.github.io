@@ -33,19 +33,19 @@
     :root {
       --cyan:    #00ffea;
       --orange:  #ffaa00;
-      --magenta: #ff4455;
+      --magenta: #ff0055;
       --green:   #00ff66;
-      --amber:   #ffcc00;
-      --purple:  #00a2ff;
-      --void:    #020805;
-      --dark:    #04120b;
-      --card:    #051c11;
-      --card2:   #082a1a;
-      --border:  rgba(0,255,102,0.15);
-      --borderg: rgba(0,255,102,0.45);
-      --t1: #dcfce7;
-      --t2: #7fa890;
-      --t3: #3f6e54;
+      --amber:   #ffaa00;
+      --purple:  #bd00ff;
+      --void:    #050508;
+      --dark:    #09090f;
+      --card:    rgba(14, 14, 23, 0.55);
+      --card2:   rgba(25, 25, 40, 0.65);
+      --border:  rgba(255, 255, 255, 0.08);
+      --borderg: rgba(189, 0, 255, 0.35);
+      --t1: #f0f0f5;
+      --t2: #a5a5b5;
+      --t3: #555565;
       --ff-display: 'Share Tech Mono', monospace;
       --ff-body:    'Rajdhani', sans-serif;
       --ff-mono:    'Share Tech Mono', monospace;
@@ -60,6 +60,9 @@
       font-size: 16px;
       line-height: 1.6;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
     /* SCANLINES */
@@ -100,6 +103,43 @@
       border-right: 2px solid var(--green);
       pointer-events: none;
       z-index: 2;
+    }
+
+    /* BORDER GLOW ANIMATIONS */
+    @keyframes borderGlowPulseGreen {
+      0%, 100% { border-color: rgba(0, 255, 102, 0.25); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 102, 0.15), inset 0 0 15px rgba(0, 255, 102, 0.05); }
+      50% { border-color: rgba(0, 255, 102, 0.85); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 255, 102, 0.5), inset 0 0 25px rgba(0, 255, 102, 0.15); }
+    }
+    @keyframes borderGlowPulsePurple {
+      0%, 100% { border-color: rgba(189, 0, 255, 0.25); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(189, 0, 255, 0.15), inset 0 0 15px rgba(189, 0, 255, 0.05); }
+      50% { border-color: rgba(189, 0, 255, 0.85); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(189, 0, 255, 0.5), inset 0 0 25px rgba(189, 0, 255, 0.15); }
+    }
+    @keyframes borderGlowPulseCrimson {
+      0%, 100% { border-color: rgba(255, 0, 85, 0.25); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 0, 85, 0.15), inset 0 0 15px rgba(255, 0, 85, 0.05); }
+      50% { border-color: rgba(255, 0, 85, 0.85); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 0, 85, 0.5), inset 0 0 25px rgba(255, 0, 85, 0.15); }
+    }
+    @keyframes borderGlowPulseCyan {
+      0%, 100% { border-color: rgba(0, 255, 234, 0.25); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 234, 0.15), inset 0 0 15px rgba(0, 255, 234, 0.05); }
+      50% { border-color: rgba(0, 255, 234, 0.85); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 255, 234, 0.5), inset 0 0 25px rgba(0, 255, 234, 0.15); }
+    }
+
+    /* TACTICAL SVG ICONS */
+    .tactical-icon {
+      width: 44px;
+      height: 44px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 4px currentColor);
+      vertical-align: middle;
+      transition: filter 0.3s, transform 0.3s;
+      display: inline-block;
+    }
+    .tactical-icon:hover {
+      filter: drop-shadow(0 0 10px currentColor);
+      transform: scale(1.08) rotate(2deg);
     }
 
     /* CANVAS CURSOR */
@@ -883,10 +923,13 @@
     .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.2rem; }
     .r-card {
       background: var(--card); border: 1px solid var(--border);
-      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.35s, box-shadow 0.35s;
       cursor: pointer; overflow: hidden; position: relative;
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
     }
-    .r-card:hover { border-color: var(--borderg); transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,255,102,0.12); }
+    .r-card:hover { transform: translateY(-8px) scale(1.02); animation: borderGlowPulseGreen 2s infinite; }
     .r-thumb {
       width: 100%; aspect-ratio: 16/9;
       display: flex; align-items: center; justify-content: center;
@@ -921,8 +964,17 @@
     .r-name { font-family: var(--ff-display); font-size: 1.15rem; line-height: 1.1; margin-bottom: 0.35rem; }
     .r-desc { font-size: 0.85rem; color: var(--t2); margin-bottom: 0.8rem; }
     .r-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 0.8rem; border-top: 1px solid var(--border); }
-    .r-score { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 900; }
-    .s-hi { color: var(--green); } .s-md { color: var(--amber); } .s-lo { color: #ff4455; }
+    .r-score {
+      font-family: var(--ff-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .s-hi { color: var(--green); background: rgba(0, 255, 102, 0.08); border: 1px solid rgba(0, 255, 102, 0.2); text-shadow: 0 0 8px rgba(0, 255, 102, 0.3); }
+    .s-md { color: var(--orange); background: rgba(255, 170, 0, 0.08); border: 1px solid rgba(255, 170, 0, 0.2); text-shadow: 0 0 8px rgba(255, 170, 0, 0.3); }
+    .s-lo { color: var(--magenta); background: rgba(255, 0, 85, 0.08); border: 1px solid rgba(255, 0, 85, 0.2); text-shadow: 0 0 8px rgba(255, 0, 85, 0.3); }
     .r-plat { font-family: var(--ff-mono); font-size: 0.62rem; color: var(--t3); }
 
     /* FEATURED REVIEW */
@@ -958,9 +1010,12 @@
     .t-card {
       background: var(--card); border: 1px solid var(--border);
       padding: 1.5rem; position: relative; overflow: hidden;
-      transition: border-color 0.25s, box-shadow 0.25s;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.35s, box-shadow 0.35s;
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
     }
-    .t-card:hover { border-color: var(--green); box-shadow: 0 8px 30px rgba(0,255,102,0.12); }
+    .t-card:hover { transform: translateY(-8px) scale(1.02); animation: borderGlowPulsePurple 2s infinite; }
     .t-card-inner { display: flex; justify-content: space-between; align-items: flex-start; }
     .t-name { font-family: var(--ff-display); font-size: 1.3rem; margin-bottom: 0.2rem; }
     .t-game { font-family: var(--ff-mono); font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.12em; margin-bottom: 1rem; }
@@ -1067,10 +1122,13 @@
     .game-tile {
       background: var(--card); border: 1px solid var(--border);
       overflow: hidden; cursor: pointer;
-      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.35s, box-shadow 0.35s;
       position: relative;
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
     }
-    .game-tile:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,255,102,0.12); }
+    .game-tile:hover { transform: translateY(-8px) scale(1.02); animation: borderGlowPulseCyan 2s infinite; }
     .game-thumb2 {
       width: 100%; aspect-ratio: 4/3;
       display: flex; align-items: center; justify-content: center;
@@ -1123,9 +1181,12 @@
     .merch-card {
       background: var(--card); border: 1px solid var(--border);
       overflow: hidden; cursor: pointer; position: relative;
-      transition: border-color 0.25s, transform 0.25s;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.35s, box-shadow 0.35s;
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
     }
-    .merch-card:hover { border-color: var(--green); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,255,102,0.12); }
+    .merch-card:hover { transform: translateY(-8px) scale(1.02); animation: borderGlowPulseCrimson 2s infinite; }
     .merch-img {
       width: 100%; aspect-ratio: 1;
       display: flex; align-items: center; justify-content: center;
@@ -1661,10 +1722,10 @@
       <button class="msg-tab" onclick="switchTab('online',this)">ONLINE</button>
     </div>
     <div class="msg-body" id="msg-body">
-      <div class="msg-bubble recv"><div class="msg-sender">⚡ NightBlade_X</div>Anyone up for ranked tonight?<div class="msg-time">21:04</div></div>
-      <div class="msg-bubble recv"><div class="msg-sender">🔥 DriftKing99</div>Just hit Diamond in Nexus Gate lets gooo 🎉<div class="msg-time">21:06</div></div>
-      <div class="msg-bubble recv"><div class="msg-sender">💀 GhostPilot</div>That new patch broke my main so hard 😭<div class="msg-time">21:08</div></div>
-      <div class="msg-bubble recv"><div class="msg-sender">🏆 VoltRacer</div>GD Invitational sign-ups are open btw<div class="msg-time">21:10</div></div>
+      <div class="msg-bubble recv"><div class="msg-sender">[SYS] NightBlade_X</div>Anyone up for ranked tonight?<div class="msg-time">21:04</div></div>
+      <div class="msg-bubble recv"><div class="msg-sender">[OP] DriftKing99</div>Just hit Diamond in Nexus Gate lets gooo [LIVE]<div class="msg-time">21:06</div></div>
+      <div class="msg-bubble recv"><div class="msg-sender">[TACT] GhostPilot</div>That new patch broke my main so hard<div class="msg-time">21:08</div></div>
+      <div class="msg-bubble recv"><div class="msg-sender">[ACE] VoltRacer</div>GD Invitational sign-ups are open btw<div class="msg-time">21:10</div></div>
     </div>
     <div class="msg-input-row">
       <input class="msg-input" id="msg-input" placeholder="Message the clan..." onkeydown="if(event.key==='Enter')sendMsg()"/>
@@ -1687,7 +1748,7 @@
         <li><a href="https://www.youtube.com/@gamerdrifttube" target="_blank" id="nav-tube">DriftTube</a></li>
       </ul>
       <div class="nav-right">
-        <button class="nav-msg-btn" onclick="toggleMsg()" title="Clan Chat">💬</button>
+        <button class="nav-msg-btn" onclick="toggleMsg()" title="Clan Chat"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan); width: 18px; height: 18px; filter: none; vertical-align: middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg></button>
         <a href="#newsletter" class="nav-cta">JOIN CLAN</a>
         <div class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></div>
       </div>
@@ -1930,19 +1991,29 @@
       </div>
       <div class="feat-vis">
         <div class="feat-crt"></div>
-        🌌
+        <svg class="tactical-icon" viewBox="0 0 24 24" style="color: var(--cyan); width: 120px; height: 120px;">
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" opacity="0.15"/>
+          <path d="M12 6a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z" opacity="0.3"/>
+          <path d="M12 3a9 9 0 0 1 6.36 2.64A8.93 8.93 0 0 1 20 12a1 1 0 0 1-2 0 7 7 0 0 0-7-7 1 1 0 0 1 0-2z" />
+          <path d="M12 21a9 9 0 0 1-6.36-2.64A8.93 8.93 0 0 1 4 12a1 1 0 0 1 2 0 7 7 0 0 0 7 7 1 1 0 0 1 0 2z" />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
+          <circle cx="18" cy="9" r="0.75" fill="currentColor" />
+          <circle cx="6" cy="15" r="0.75" fill="currentColor" />
+          <circle cx="9" cy="7" r="0.5" fill="currentColor" />
+          <circle cx="15" cy="17" r="0.5" fill="currentColor" />
+        </svg>
       </div>
     </div>
 
     <div class="reviews-grid reveal">
-      <div class="r-card"><div class="r-thumb rt1"><div class="r-scan"></div>⚡</div><div class="r-body"><span class="r-genre g-fps">FPS</span><div class="r-name">Vortex Protocol</div><p class="r-desc">Extraction shooter with next-gen AI enemies and zero-lag netcode.</p><div class="r-foot"><span class="r-score s-hi">9.1</span><span class="r-plat">PC · PS5</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt2"><div class="r-scan"></div>🌿</div><div class="r-body"><span class="r-genre g-rpg">RPG</span><div class="r-name">Echoes of Elara</div><p class="r-desc">Sweeping fantasy epic with procedural lore and deep companion AI.</p><div class="r-foot"><span class="r-score s-hi">8.8</span><span class="r-plat">PC · Xbox</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt3"><div class="r-scan"></div>🏰</div><div class="r-body"><span class="r-genre g-str">Strategy</span><div class="r-name">Ironclad Dynasty</div><p class="r-desc">Hex-based grand strategy with real-time diplomacy. Complex but rewarding.</p><div class="r-foot"><span class="r-score s-md">7.6</span><span class="r-plat">PC</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt4"><div class="r-scan"></div>⚔️</div><div class="r-body"><span class="r-genre g-moba">MOBA</span><div class="r-name">Nexus Gate: Reborn</div><p class="r-desc">Hero-shooter MOBA hybrid dominating ranked queues worldwide.</p><div class="r-foot"><span class="r-score s-hi">8.3</span><span class="r-plat">PC · Mobile</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt5"><div class="r-scan"></div>🏎️</div><div class="r-body"><span class="r-genre g-rac">Racing</span><div class="r-name">Grid Surge 2025</div><p class="r-desc">Hyper-realistic physics with an evolving career mode unlike any other.</p><div class="r-foot"><span class="r-score s-md">7.9</span><span class="r-plat">All Platforms</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt6"><div class="r-scan"></div>🗺️</div><div class="r-body"><span class="r-genre g-adv">Adventure</span><div class="r-name">Verdant Abyss</div><p class="r-desc">Deep underwater exploration. The most beautiful game of the year.</p><div class="r-foot"><span class="r-score s-hi">9.0</span><span class="r-plat">PS5 · PC</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt7"><div class="r-scan"></div>🤖</div><div class="r-body"><span class="r-genre g-act">Action</span><div class="r-name">CyberCore: Zero</div><p class="r-desc">Fast-paced cyberpunk brawler with a killer soundtrack and tight controls.</p><div class="r-foot"><span class="r-score s-hi">8.6</span><span class="r-plat">PC · PS5 · XSX</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt8"><div class="r-scan"></div>👻</div><div class="r-body"><span class="r-genre g-hor">Horror</span><div class="r-name">Phantom Signal</div><p class="r-desc">Indie horror masterpiece — atmospheric, terrifying, unforgettable.</p><div class="r-foot"><span class="r-score s-hi">9.2</span><span class="r-plat">PC</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt1"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--magenta);"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></div><div class="r-body"><span class="r-genre g-fps">FPS</span><div class="r-name">Vortex Protocol</div><p class="r-desc">Extraction shooter with next-gen AI enemies and zero-lag netcode.</p><div class="r-foot"><span class="r-score s-hi">9.1</span><span class="r-plat">PC · PS5</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt2"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><path d="M12 22C12 22 17 18 17 13C17 7.5 12.5 3 12.5 3S12 7.5 12 13C12 18 12 22 12 22Z" /><path d="M12 13C12 13 7 11 7 8C7 4.7 11.5 2 11.5 2S12 4.7 12 8C12 11 12 13 12 13Z" /><path d="M12 18C12 18 19 16 19 14C19 11.8 12.5 10 12.5 10" /><path d="M12 15C12 15 5 14 5 12C5 9.8 11.5 8 11.5 8" /></svg></div><div class="r-body"><span class="r-genre g-rpg">RPG</span><div class="r-name">Echoes of Elara</div><p class="r-desc">Sweeping fantasy epic with procedural lore and deep companion AI.</p><div class="r-foot"><span class="r-score s-hi">8.8</span><span class="r-plat">PC · Xbox</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt3"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--purple);"><path d="M2 20h20v-8h-3v-2h2V6h-3v2h-2V6h-3v2h-2V6H9v2H7V6H4v4h2v2H2v8z" /><path d="M6 14h3m4 0h2m-6 3h4m4 0h2m-10-6h2m6 0h2" stroke-width="1" opacity="0.6"/><rect x="10" y="15" width="4" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M11 15v5M13 15v5M10 17.5h4" stroke-width="1" /><rect x="5" y="8" width="1.5" height="2.5" rx="0.5" fill="currentColor" /><rect x="17.5" y="8" width="1.5" height="2.5" rx="0.5" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-str">Strategy</span><div class="r-name">Ironclad Dynasty</div><p class="r-desc">Hex-based grand strategy with real-time diplomacy. Complex but rewarding.</p><div class="r-foot"><span class="r-score s-md">7.6</span><span class="r-plat">PC</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt4"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--cyan);"><path d="M5 19L19 5" /><path d="M16 4l4 4" /><path d="M4 20l2-2" stroke-width="2.5" /><path d="M3 21l1-1" stroke-width="3" /><path d="M19 19L5 5" /><path d="M8 4L4 8" /><path d="M20 20l-2-2" stroke-width="2.5" /><path d="M21 21l-1-1" stroke-width="3" /><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="r-body"><span class="r-genre g-moba">MOBA</span><div class="r-name">Nexus Gate: Reborn</div><p class="r-desc">Hero-shooter MOBA hybrid dominating ranked queues worldwide.</p><div class="r-foot"><span class="r-score s-hi">8.3</span><span class="r-plat">PC · Mobile</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt5"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange);"><path d="M2 15h2c.5-1.5 1.5-2 3-2s2.5.5 3 2h4c.5-1.5 1.5-2 3-2s2.5.5 3 2h2v-2c0-1.5-1-2.5-3-3H9L6.5 7H4c-1 0-2 1-2 2v6z" /><circle cx="7" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 9.5h3M21 11h-2" /></svg></div><div class="r-body"><span class="r-genre g-rac">Racing</span><div class="r-name">Grid Surge 2025</div><p class="r-desc">Hyper-realistic physics with an evolving career mode unlike any other.</p><div class="r-foot"><span class="r-score s-md">7.9</span><span class="r-plat">All Platforms</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt6"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z" /><path d="M9 3v15M15 6v15" stroke-dasharray="2 2" /><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1" /><circle cx="12" cy="12" r="1" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-adv">Adventure</span><div class="r-name">Verdant Abyss</div><p class="r-desc">Deep underwater exploration. The most beautiful game of the year.</p><div class="r-foot"><span class="r-score s-hi">9.0</span><span class="r-plat">PS5 · PC</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt7"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan);"><rect x="5" y="6" width="14" height="11" rx="3" /><path d="M9 17v2m6-2v2M7 19h10M12 3v3" /><rect x="7" y="9" width="10" height="3" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" /><line x1="8.5" y1="10.5" x2="15.5" y2="10.5" stroke="currentColor" stroke-width="1" /><path d="M4 11h1M19 11h1" /></svg></div><div class="r-body"><span class="r-genre g-act">Action</span><div class="r-name">CyberCore: Zero</div><p class="r-desc">Fast-paced cyberpunk brawler with a killer soundtrack and tight controls.</p><div class="r-foot"><span class="r-score s-hi">8.6</span><span class="r-plat">PC · PS5 · XSX</span></div></div></div>
+      <div class="r-card"><div class="r-thumb rt8"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--amber);"><path d="M12 2a9 9 0 0 0-9 9v9c0 .6.4 1 1 1h.5a1.5 1.5 0 0 0 1.5-1.5v-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 0 3 0v-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 0 3 0v-1a1.5 1.5 0 0 0 1.5 1.5h.5c.6 0 1-.4 1-1v-9a9 9 0 0 0-9-9z" /><circle cx="9" cy="11" r="1.5" fill="currentColor" /><circle cx="15" cy="11" r="1.5" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-hor">Horror</span><div class="r-name">Phantom Signal</div><p class="r-desc">Indie horror masterpiece — atmospheric, terrifying, unforgettable.</p><div class="r-foot"><span class="r-score s-hi">9.2</span><span class="r-plat">PC</span></div></div></div>
     </div>
   </section>
 
@@ -1967,7 +2038,7 @@
           <div class="t-meta">
             <div class="t-mi"><span>Teams</span>16</div>
             <div class="t-mi"><span>Stage</span>Quarterfinals</div>
-            <div class="t-mi"><span>Viewers</span>2.3M 🔴</div>
+            <div class="t-mi"><span>Viewers</span><span style="display: inline-flex; align-items: center; gap: 4px; color: #ff0055; font-family: var(--ff-mono); font-size: 0.72rem; font-weight: 700;">2.3M<svg viewBox="0 0 10 10" style="width: 8px; height: 8px; fill: currentColor; overflow: visible; display: inline-block; vertical-align: middle; margin-left: 2px;"><circle cx="5" cy="5" r="4"><animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" /></circle></svg></span></div>
             <div class="t-mi"><span>Format</span>BO5</div>
           </div>
         </div>
@@ -1992,7 +2063,7 @@
           <div class="t-meta">
             <div class="t-mi"><span>Drivers</span>48</div>
             <div class="t-mi"><span>Stage</span>Grand Final</div>
-            <div class="t-mi"><span>Viewers</span>840K 🔴</div>
+            <div class="t-mi"><span>Viewers</span><span style="display: inline-flex; align-items: center; gap: 4px; color: #ff0055; font-family: var(--ff-mono); font-size: 0.72rem; font-weight: 700;">840K<svg viewBox="0 0 10 10" style="width: 8px; height: 8px; fill: currentColor; overflow: visible; display: inline-block; vertical-align: middle; margin-left: 2px;"><circle cx="5" cy="5" r="4"><animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" /></circle></svg></span></div>
             <div class="t-mi"><span>Format</span>Time Trial</div>
           </div>
         </div>
@@ -2001,17 +2072,17 @@
         <div class="sb-title"><span class="ldot"></span> Live Scores</div>
         <div class="sb-match">
           <div class="sb-game">NEXUS GATE · QUARTERFINAL</div>
-          <div class="sb-teams"><span class="sb-team">⚡ NightWolves</span><span class="sb-vs">vs</span><span class="sb-team">🔥 DriftSquad</span></div>
+          <div class="sb-teams"><span class="sb-team"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--magenta); width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; filter: none;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>NightWolves</span><span class="sb-vs">vs</span><span class="sb-team"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange); width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; filter: none;"><path d="M12 2c0 0-5 3.5-5 8.5S10 19 12 21c2-2 5-6.5 5-10.5S12 2 12 2z" /><path d="M12 7c0 0-3 2-3 5.5s2.5 5.5 3 6.5c.5-1 3-3.5 3-6.5S12 7 12 7z" opacity="0.8" /></svg>DriftSquad</span></div>
           <div class="sb-teams"><span class="sb-score">2</span><span style="font-family:var(--ff-mono);font-size:0.7rem;color:var(--t3)">—</span><span class="sb-score">1</span></div>
         </div>
         <div class="sb-match">
           <div class="sb-game">VORTEX PROTOCOL · SEMI</div>
-          <div class="sb-teams"><span class="sb-team">💀 GhostOps</span><span class="sb-vs">vs</span><span class="sb-team">🌀 CyberClan</span></div>
+          <div class="sb-teams"><span class="sb-team"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--t2); width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; filter: none;"><path d="M12 2a8 8 0 0 0-8 8c0 2.2 1 4 2.5 5.2l.5 3.8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l.5-3.8c1.5-1.2 2.5-3 2.5-5.2a8 8 0 0 0-8-8z" /><circle cx="9" cy="11" r="1.5" fill="currentColor" /><circle cx="15" cy="11" r="1.5" fill="currentColor" /><path d="M12 14v1.5m-1-1.5l1 1.5 1-1.5" /><path d="M9 19h6M10 18v2M12 18v2M14 18v2" stroke-width="1"/></svg>GhostOps</span><span class="sb-vs">vs</span><span class="sb-team"><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--cyan); width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; filter: none;"><path d="M12 2a10 10 0 1 0 10 10" /><path d="M12 6a6 6 0 1 0 6 6" /><path d="M12 9a3 3 0 1 0 3 3" /><circle cx="12" cy="12" r="1" fill="currentColor" /></svg>CyberClan</span></div>
           <div class="sb-teams"><span class="sb-score">14</span><span style="font-family:var(--ff-mono);font-size:0.7rem;color:var(--t3)">—</span><span class="sb-score">9</span></div>
         </div>
         <div class="sb-match">
           <div class="sb-game">GRID SURGE · FINAL LAP</div>
-          <div class="sb-teams"><span class="sb-team">🏎️ VoltRacer</span><span class="sb-vs">vs</span><span class="sb-team">💨 DriftKing</span></div>
+          <div class="sb-teams"><span class="sb-team"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange); width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; filter: none;"><path d="M2 15h2c.5-1.5 1.5-2 3-2s2.5.5 3 2h4c.5-1.5 1.5-2 3-2s2.5.5 3 2h2v-2c0-1.5-1-2.5-3-3H9L6.5 7H4c-1 0-2 1-2 2v6z" /><circle cx="7" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 9.5h3M21 11h-2" /></svg>VoltRacer</span><span class="sb-vs">vs</span><span class="sb-team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="M2 8h8M3 12h12M1 16h6" opacity="0.6"/><path d="M12 8a3 3 0 0 1 3 3M19 12a3 3 0 0 1 3 3M9 16a3 3 0 0 1 3 3" /></svg>DriftKing</span></div>
           <div class="sb-teams"><span class="sb-score">1st</span><span style="font-family:var(--ff-mono);font-size:0.7rem;color:var(--t3)">—</span><span class="sb-score">2nd</span></div>
         </div>
       </div>
@@ -2030,7 +2101,7 @@
     </div>
     <div class="news-grid reveal">
       <div class="n-main">
-        <div class="n-img"><div class="n-crt"></div>📡</div>
+        <div class="n-img"><div class="n-crt"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green); width: 80px; height: 80px;"><circle cx="12" cy="12" r="10" stroke-dasharray="3 3" opacity="0.3" /><path d="M12 18a6 6 0 0 1-6-6M12 22a10 10 0 0 1-10-10" opacity="0.5"/><path d="M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0" /><path d="M12 12l6-6M17 5l1 1M18 4l-2 2" /><path d="M8 20l4-8 4 8" /><path d="M19 3a9 9 0 0 1 2 2" stroke-width="2"/><path d="M16 1a12 12 0 0 1 7 7" stroke-width="1" opacity="0.8"/></svg></div>
         <div class="n-body">
           <span class="n-tag tag-ind">INDUSTRY</span>
           <div class="n-time">◆ 2 HOURS AGO</div>
@@ -2062,19 +2133,19 @@
       <div class="reveal">
         <div style="font-family:var(--ff-mono);font-size:0.65rem;color:var(--t3);margin-bottom:0.8rem;letter-spacing:0.15em;">TOP CLANS THIS WEEK</div>
         <div class="clan-cards">
-          <div class="clan-card"><div class="clan-avatar ca1">⚡</div><div class="clan-info"><div class="clan-name">NightWolves</div><div class="clan-meta">247 members · Nexus Gate · Diamond Tier</div></div><div class="clan-rank">#1</div></div>
-          <div class="clan-card"><div class="clan-avatar ca2">🔥</div><div class="clan-info"><div class="clan-name">DriftSquad GG</div><div class="clan-meta">189 members · Multi-game · Platinum Tier</div></div><div class="clan-rank">#2</div></div>
-          <div class="clan-card"><div class="clan-avatar ca3">💀</div><div class="clan-info"><div class="clan-name">GhostOps Elite</div><div class="clan-meta">312 members · Vortex Protocol · Master Tier</div></div><div class="clan-rank">#3</div></div>
-          <div class="clan-card"><div class="clan-avatar ca4">🌀</div><div class="clan-info"><div class="clan-name">CyberClan</div><div class="clan-meta">156 members · FPS · Gold Tier</div></div><div class="clan-rank">#4</div></div>
-          <div class="clan-card"><div class="clan-avatar ca5">🏆</div><div class="clan-info"><div class="clan-name">VoltRacers</div><div class="clan-meta">98 members · Racing · Platinum Tier</div></div><div class="clan-rank">#5</div></div>
+          <div class="clan-card"><div class="clan-avatar ca1"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--magenta); width: 20px; height: 20px; filter: none;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></div><div class="clan-info"><div class="clan-name">NightWolves</div><div class="clan-meta">247 members · Nexus Gate · Diamond Tier</div></div><div class="clan-rank">#1</div></div>
+          <div class="clan-card"><div class="clan-avatar ca2"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange); width: 20px; height: 20px; filter: none;"><path d="M12 2c0 0-5 3.5-5 8.5S10 19 12 21c2-2 5-6.5 5-10.5S12 2 12 2z" /><path d="M12 7c0 0-3 2-3 5.5s2.5 5.5 3 6.5c.5-1 3-3.5 3-6.5S12 7 12 7z" opacity="0.8" /></svg></div><div class="clan-info"><div class="clan-name">DriftSquad GG</div><div class="clan-meta">189 members · Multi-game · Platinum Tier</div></div><div class="clan-rank">#2</div></div>
+          <div class="clan-card"><div class="clan-avatar ca3"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--t2); width: 20px; height: 20px; filter: none;"><path d="M12 2a8 8 0 0 0-8 8c0 2.2 1 4 2.5 5.2l.5 3.8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l.5-3.8c1.5-1.2 2.5-3 2.5-5.2a8 8 0 0 0-8-8z" /><circle cx="9" cy="11" r="1.5" fill="currentColor" /><circle cx="15" cy="11" r="1.5" fill="currentColor" /><path d="M12 14v1.5m-1-1.5l1 1.5 1-1.5" /><path d="M9 19h6M10 18v2M12 18v2M14 18v2" stroke-width="1"/></svg></div><div class="clan-info"><div class="clan-name">GhostOps Elite</div><div class="clan-meta">312 members · Vortex Protocol · Master Tier</div></div><div class="clan-rank">#3</div></div>
+          <div class="clan-card"><div class="clan-avatar ca4"><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--cyan); width: 20px; height: 20px; filter: none;"><path d="M12 2a10 10 0 1 0 10 10" /><path d="M12 6a6 6 0 1 0 6 6" /><path d="M12 9a3 3 0 1 0 3 3" /><circle cx="12" cy="12" r="1" fill="currentColor" /></svg></div><div class="clan-info"><div class="clan-name">CyberClan</div><div class="clan-meta">156 members · FPS · Gold Tier</div></div><div class="clan-rank">#4</div></div>
+          <div class="clan-card"><div class="clan-avatar ca5"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange); width: 20px; height: 20px; filter: none;"><path d="M6 9H4.5A2.5 2.5 0 0 1 2 6.5v-1A2.5 2.5 0 0 1 4.5 3H6m12 6h1.5a2.5 2.5 0 0 0 2.5-2.5v-1A2.5 2.5 0 0 0 19.5 3H18M6 3h12v10a6 6 0 0 1-12 0V3z" /><path d="M12 19v3M8 22h8" /></svg></div><div class="clan-info"><div class="clan-name">VoltRacers</div><div class="clan-meta">98 members · Racing · Platinum Tier</div></div><div class="clan-rank">#5</div></div>
         </div>
       </div>
       <div class="reveal">
         <div class="comm-features">
-          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(0,245,255,0.3)">🎮</div><div><div class="cf-ttl">Gamer Profiles</div><p class="cf-txt">Build your identity with stats, badges, game library, and clan history.</p></div></div>
-          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(255,107,0,0.3)">📊</div><div><div class="cf-ttl">Live Leaderboards</div><p class="cf-txt">Real-time rankings across every major title. Climb the GamerDrift ladder.</p></div></div>
-          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(0,255,136,0.3)">💬</div><div><div class="cf-ttl">Clan Messenger</div><p class="cf-txt">Chat with your clan, coordinate strategies, share clips in real time.</p></div></div>
-          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(155,93,229,0.3)">🏆</div><div><div class="cf-ttl">Clan Tournaments</div><p class="cf-txt">Compete in weekly clan wars with real prize pools and eternal glory.</p></div></div>
+          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(0,245,255,0.3)"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan); width: 24px; height: 24px;"><rect x="2" y="6" width="20" height="12" rx="4" /><path d="M6 12h4M8 10v4" stroke-width="2" /><circle cx="15" cy="11" r="1.2" fill="currentColor" /><circle cx="18" cy="13" r="1.2" fill="currentColor" /></svg></div><div><div class="cf-ttl">Gamer Profiles</div><p class="cf-txt">Build your identity with stats, badges, game library, and clan history.</p></div></div>
+          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(255,107,0,0.3)"><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--orange); width: 24px; height: 24px;"><path d="M3 3v18h18" /><rect x="6" y="12" width="3" height="6" rx="0.5" fill="currentColor" fill-opacity="0.15" /><rect x="11" y="8" width="3" height="10" rx="0.5" fill="currentColor" fill-opacity="0.15" /><rect x="16" y="5" width="3" height="13" rx="0.5" fill="currentColor" fill-opacity="0.15" /></svg></div><div><div class="cf-ttl">Live Leaderboards</div><p class="cf-txt">Real-time rankings across every major title. Climb the GamerDrift ladder.</p></div></div>
+          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(0,255,136,0.3)"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green); width: 24px; height: 24px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg></div><div><div class="cf-ttl">Clan Messenger</div><p class="cf-txt">Chat with your clan, coordinate strategies, share clips in real time.</p></div></div>
+          <div class="cf-item"><div class="cf-icon" style="border-color:rgba(155,93,229,0.3)"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange); width: 24px; height: 24px;"><path d="M6 9H4.5A2.5 2.5 0 0 1 2 6.5v-1A2.5 2.5 0 0 1 4.5 3H6m12 6h1.5a2.5 2.5 0 0 0 2.5-2.5v-1A2.5 2.5 0 0 0 19.5 3H18M6 3h12v10a6 6 0 0 1-12 0V3z" /><path d="M12 19v3M8 22h8" /></svg></div><div><div class="cf-ttl">Clan Tournaments</div><p class="cf-txt">Compete in weekly clan wars with real prize pools and eternal glory.</p></div></div>
         </div>
         <a href="#newsletter" class="btn-drift" style="margin-top:2rem;display:inline-block;font-size:0.9rem">Create Your Clan</a>
       </div>
@@ -2195,16 +2266,16 @@
         <p class="sec-desc">Official GamerDrift gear. Wear the drift. Rep the clan.</p>
       </div>
       <div class="cart-wrap">
-        <a href="#" class="btn-sm" id="cart-btn" onclick="openCart(); return false;">🛒 Cart (<span id="cart-count">0</span>)</a>
+        <a href="#" class="btn-sm" id="cart-btn" onclick="openCart(); return false;"><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--cyan); width: 14px; height: 14px; margin-right: 4px; filter: none; vertical-align: middle;"><circle cx="9" cy="21" r="1" fill="currentColor" /><circle cx="20" cy="21" r="1" fill="currentColor" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>Cart (<span id="cart-count">0</span>)</a>
       </div>
     </div>
     <div class="merch-grid reveal">
-      <div class="merch-card"><div class="merch-img mi1"><span class="merch-badge mb-new">NEW</span>👕</div><div class="merch-body"><div class="merch-name">GD Neon Hoodie</div><p class="merch-desc">Premium heavyweight hoodie with embroidered GamerDrift logo. Unisex fit.</p><div class="merch-foot"><span class="merch-price">₹1,899</span><button class="merch-btn" onclick="addCart(this,'GD Neon Hoodie')">ADD TO CART</button></div></div></div>
-      <div class="merch-card"><div class="merch-img mi2"><span class="merch-badge mb-hot">HOT</span>🧢</div><div class="merch-body"><div class="merch-name">Drift Snapback Cap</div><p class="merch-desc">Structured snapback with orange brim. The cap every gamer needs.</p><div class="merch-foot"><span class="merch-price">₹899</span><button class="merch-btn" onclick="addCart(this,'Drift Snapback Cap')">ADD TO CART</button></div></div></div>
-      <div class="merch-card"><div class="merch-img mi3"><span class="merch-badge mb-lim">LIMITED</span>🖱️</div><div class="merch-body"><div class="merch-name">GD Pro Mousepad XXL</div><p class="merch-desc">900x400mm extended mousepad with neon edge lighting design.</p><div class="merch-foot"><span class="merch-price">₹1,299</span><button class="merch-btn" onclick="addCart(this,'GD Pro Mousepad XXL')">ADD TO CART</button></div></div></div>
-      <div class="merch-card"><div class="merch-img mi4"><div>🎮</div></div><div class="merch-body"><div class="merch-name">Clan Jersey 2025</div><p class="merch-desc">Official GamerDrift esports jersey. Breathable, customisable with your name.</p><div class="merch-foot"><span class="merch-price">₹2,499</span><button class="merch-btn" onclick="addCart(this,'Clan Jersey 2025')">ADD TO CART</button></div></div></div>
-      <div class="merch-card"><div class="merch-img mi5"><span class="merch-badge mb-new">NEW</span>☕</div><div class="merch-body"><div class="merch-name">Gamer Drift Mug</div><p class="merch-desc">Ceramic mug with colour-changing GD logo. Fuel your late-night sessions.</p><div class="merch-foot"><span class="merch-price">₹599</span><button class="merch-btn" onclick="addCart(this,'Gamer Drift Mug')">ADD TO CART</button></div></div></div>
-      <div class="merch-card"><div class="merch-img mi6"><span class="merch-badge mb-lim">LIMITED</span>📱</div><div class="merch-body"><div class="merch-name">GD Phone Case</div><p class="merch-desc">Shockproof case with raised GD logo. Available for iPhone & Android.</p><div class="merch-foot"><span class="merch-price">₹699</span><button class="merch-btn" onclick="addCart(this,'GD Phone Case')">ADD TO CART</button></div></div></div>
+      <div class="merch-card"><div class="merch-img mi1"><span class="merch-badge mb-new">NEW</span><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan);"><path d="M12 5.5L8.5 2 2 4.5v4L5 10v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9l3-1.5v-4L15.5 2 12 5.5z" /><path d="M8.5 2C8.5 3.9 10.1 5.5 12 5.5S15.5 3.9 15.5 2" fill="none" /></svg></div><div class="merch-body"><div class="merch-name">GD Neon Hoodie</div><p class="merch-desc">Premium heavyweight hoodie with embroidered GamerDrift logo. Unisex fit.</p><div class="merch-foot"><span class="merch-price">₹1,899</span><button class="merch-btn" onclick="addCart(this,'GD Neon Hoodie')">ADD TO CART</button></div></div></div>
+      <div class="merch-card"><div class="merch-img mi2"><span class="merch-badge mb-hot">HOT</span><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange);"><path d="M12 5a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9z" /><path d="M2 14h20c1 0 1.5.5 1 1.5l-2.5 3c-.5.6-1.5 1-2.5 1H6c-1 0-2-.4-2.5-1l-2.5-3c-.5-1 0-1.5 1-1.5z" /><circle cx="12" cy="4.5" r="1" fill="currentColor" /></svg></div><div class="merch-body"><div class="merch-name">Drift Snapback Cap</div><p class="merch-desc">Structured snapback with orange brim. The cap every gamer needs.</p><div class="merch-foot"><span class="merch-price">₹899</span><button class="merch-btn" onclick="addCart(this,'Drift Snapback Cap')">ADD TO CART</button></div></div></div>
+      <div class="merch-card"><div class="merch-img mi3"><span class="merch-badge mb-lim">LIMITED</span><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><rect x="6" y="2" width="12" height="20" rx="6" /><path d="M12 2v8M6 9h12" /><rect x="11" y="4" width="2" height="4" rx="1" fill="currentColor" /></svg></div><div class="merch-body"><div class="merch-name">GD Pro Mousepad XXL</div><p class="merch-desc">900x400mm extended mousepad with neon edge lighting design.</p><div class="merch-foot"><span class="merch-price">₹1,299</span><button class="merch-btn" onclick="addCart(this,'GD Pro Mousepad XXL')">ADD TO CART</button></div></div></div>
+      <div class="merch-card"><div class="merch-img mi4"><div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan);"><rect x="2" y="6" width="20" height="12" rx="4" /><path d="M6 12h4M8 10v4" stroke-width="2" /><circle cx="15" cy="11" r="1.2" fill="currentColor" /><circle cx="18" cy="13" r="1.2" fill="currentColor" /></svg></div></div><div class="merch-body"><div class="merch-name">Clan Jersey 2025</div><p class="merch-desc">Official GamerDrift esports jersey. Breathable, customisable with your name.</p><div class="merch-foot"><span class="merch-price">₹2,499</span><button class="merch-btn" onclick="addCart(this,'Clan Jersey 2025')">ADD TO CART</button></div></div></div>
+      <div class="merch-card"><div class="merch-img mi5"><span class="merch-badge mb-new">NEW</span><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--amber);"><path d="M18 8H6v8a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4V8z" /><path d="M18 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2" fill="none" /><path d="M9 2c0 1.5-1 2-1 3.5M12 2c0 1.5-1 2-1 3.5M15 2c0 1.5-1 2-1 3.5" fill="none" /></svg></div><div class="merch-body"><div class="merch-name">Gamer Drift Mug</div><p class="merch-desc">Ceramic mug with colour-changing GD logo. Fuel your late-night sessions.</p><div class="merch-foot"><span class="merch-price">₹599</span><button class="merch-btn" onclick="addCart(this,'Gamer Drift Mug')">ADD TO CART</button></div></div></div>
+      <div class="merch-card"><div class="merch-img mi6"><span class="merch-badge mb-lim">LIMITED</span><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--purple);"><rect x="6" y="2" width="12" height="20" rx="3" /><rect x="7" y="3" width="10" height="18" rx="2" fill="none" opacity="0.3" /><rect x="8" y="4" width="2.5" height="4" rx="0.5" fill="currentColor" /></svg></div><div class="merch-body"><div class="merch-name">GD Phone Case</div><p class="merch-desc">Shockproof case with raised GD logo. Available for iPhone & Android.</p><div class="merch-foot"><span class="merch-price">₹699</span><button class="merch-btn" onclick="addCart(this,'GD Phone Case')">ADD TO CART</button></div></div></div>
     </div>
   </section>
 
@@ -2215,12 +2286,12 @@
         <span class="sec-tag">// ABOUT <span style="color:var(--cyan)">GAMER</span><span style="color:var(--orange)">DRIFT</span></span>
         <h2 class="sec-title">Built by <em>Gamers</em></h2>
         <p class="sec-desc" style="max-width:100%"><span style="color:var(--cyan)">Gamer</span><span style="color:var(--orange)">Drift</span> was born from a simple idea: gamers deserve a hub that actually gets them. No corporate fluff. No pay-to-win reviews. Just pure, unfiltered gaming culture — reviews, news, esports, community, and games all in one legendary place.</p>
-        <p style="color:var(--t2);font-size:1rem;margin-top:1rem;">We're based in India 🇮🇳 and serving gamers globally. From Mumbai cybercafes to global esports arenas — GamerDrift is for every gamer who lives and breathes the game.</p>
+        <p style="color:var(--t2);font-size:1rem;margin-top:1rem;">We're based in India <svg viewBox="0 0 30 20" style="width: 20px; height: 13px; display: inline-block; vertical-align: middle; filter: none; margin: 0 4px; border: 1px solid rgba(255,255,255,0.15); border-radius: 2px;"><rect width="30" height="6.67" fill="#FF9933" /><rect y="6.67" width="30" height="6.67" fill="#FFFFFF" /><rect y="13.33" width="30" height="6.67" fill="#138808" /><circle cx="15" cy="10" r="2.2" fill="none" stroke="#000080" stroke-width="0.5" /></svg> and serving gamers globally. From Mumbai cybercafes to global esports arenas — GamerDrift is for every gamer who lives and breathes the game.</p>
         <div class="team-grid" style="margin-top:2rem">
-          <div class="team-card"><div class="team-avatar">🎮</div><div class="team-name">DriftMaster</div><div class="team-role">Founder & Lead</div></div>
-          <div class="team-card"><div class="team-avatar">⚡</div><div class="team-name">VoltEditor</div><div class="team-role">Head of Reviews</div></div>
-          <div class="team-card"><div class="team-avatar">🏆</div><div class="team-name">EsportsKing</div><div class="team-role">Esports Director</div></div>
-          <div class="team-card"><div class="team-avatar">💻</div><div class="team-name">CodeDrifter</div><div class="team-role">Tech & Dev Lead</div></div>
+          <div class="team-card"><div class="team-avatar"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan); width: 24px; height: 24px;"><rect x="2" y="6" width="20" height="12" rx="4" /><path d="M6 12h4M8 10v4" stroke-width="2" /><circle cx="15" cy="11" r="1.2" fill="currentColor" /><circle cx="18" cy="13" r="1.2" fill="currentColor" /></svg></div><div class="team-name">DriftMaster</div><div class="team-role">Founder & Lead</div></div>
+          <div class="team-card"><div class="team-avatar"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--magenta); width: 24px; height: 24px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></div><div class="team-name">VoltEditor</div><div class="team-role">Head of Reviews</div></div>
+          <div class="team-card"><div class="team-avatar"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange); width: 24px; height: 24px;"><path d="M6 9H4.5A2.5 2.5 0 0 1 2 6.5v-1A2.5 2.5 0 0 1 4.5 3H6m12 6h1.5a2.5 2.5 0 0 0 2.5-2.5v-1A2.5 2.5 0 0 0 19.5 3H18M6 3h12v10a6 6 0 0 1-12 0V3z" /><path d="M12 19v3M8 22h8" /></svg></div><div class="team-name">EsportsKing</div><div class="team-role">Esports Director</div></div>
+          <div class="team-card"><div class="team-avatar"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan); width: 24px; height: 24px;"><rect x="4" y="4" width="16" height="11" rx="1.5" /><path d="M2 19h20M2 19l1.5-3.5h17L22 19" fill="none"/><line x1="10" y1="12" x2="14" y2="12" stroke-width="1.5"/></svg></div><div class="team-name">CodeDrifter</div><div class="team-role">Tech & Dev Lead</div></div>
         </div>
         <a href="#newsletter" class="btn-drift" style="margin-top:2rem;display:inline-block;">Join Our Team</a>
       </div>
@@ -2229,7 +2300,7 @@
           <span class="orbit-dot od1"></span>
           <div class="about-circle2">
             <span class="orbit-dot od2"></span>
-            <div class="about-circle3">🎮</div>
+            <div class="about-circle3"><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan); width: 24px; height: 24px;"><rect x="2" y="6" width="20" height="12" rx="4" /><path d="M6 12h4M8 10v4" stroke-width="2" /><circle cx="15" cy="11" r="1.2" fill="currentColor" /><circle cx="18" cy="13" r="1.2" fill="currentColor" /></svg></div>
           </div>
         </div>
       </div>
@@ -2330,7 +2401,7 @@
       </div>
     </div>
     <div class="foot-bottom">
-      <span class="foot-copy">© 2025 <span style="color:var(--cyan)">Gamer</span><span style="color:var(--orange)">Drift</span> · All Rights Reserved · gamerdrift.com · Built with 🎮 in India</span>
+      <span class="foot-copy">© 2025 <span style="color:var(--cyan)">Gamer</span><span style="color:var(--orange)">Drift</span> · All Rights Reserved · gamerdrift.com · Built with <svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan); width: 14px; height: 14px; display: inline-block; vertical-align: middle; filter: none; margin: 0 2px;"><rect x="2" y="6" width="20" height="12" rx="4" /><path d="M6 12h4M8 10v4" stroke-width="2" /><circle cx="15" cy="11" r="1.2" fill="currentColor" /><circle cx="18" cy="13" r="1.2" fill="currentColor" /></svg> in India</span>
       <div class="foot-socials">
         <a href="#" class="soc-btn">TW</a>
         <a href="#" class="soc-btn">DC</a>
@@ -2673,7 +2744,7 @@
     const btn=document.querySelector('.nl-btn');
     if(!el.value||!el.value.includes('@')){ el.style.borderColor='#ff4455'; setTimeout(()=>el.style.borderColor='',1500); return; }
     btn.textContent='WELCOME TO THE CLAN ✓'; btn.style.background='var(--green)'; el.value='';
-    showToast('⚡ You\'re in! Welcome to GamerDrift Clan!');
+    showToast('✦ You\'re in! Welcome to GamerDrift Clan!');
     setTimeout(()=>{ btn.textContent='JOIN THE CLAN'; btn.style.background=''; },3000);
   }
 
@@ -2684,7 +2755,7 @@
   function addCart(btn,name){
     cartCount++; document.getElementById('cart-count').textContent=cartCount;
     btn.textContent='ADDED ✓'; btn.style.background='var(--green)';
-    showToast(`🛒 ${name} added to cart!`);
+    showToast(`[CART] ${name} added to cart!`);
     setTimeout(()=>{ btn.textContent='ADD TO CART'; btn.style.background=''; },2000);
   }
 
@@ -2692,8 +2763,8 @@
   // MESSENGER
   // ══════════════════════════════
   let msgOpen=false;
-  const names=['⚡ NightBlade_X','🔥 DriftKing99','💀 GhostPilot','🏆 VoltRacer','🌀 CyberWolf','🎮 PixelMaster','💨 SpeedDemon'];
-  const msgs=['GG EZ 😂','Anyone wanna squad up?','That patch is insane','New review just dropped on GD!','Just reached Master rank!','Clan war tonight 9PM IST 🔥','Who\'s watching the tournament?','This game is so broken rn lol','GD Merch just arrived, looks 🔥'];
+  const names=['[SYS] NightBlade_X','[OP] DriftKing99','[TACT] GhostPilot','[ACE] VoltRacer','[NET] CyberWolf','[DEV] PixelMaster','[VEL] SpeedDemon'];
+  const msgs=['GG EZ','Anyone wanna squad up?','That patch is insane','New review just dropped on GD!','Just reached Master rank!','Clan war tonight 9PM IST [LIVE]','Who\'s watching the tournament?','This game is so broken rn lol','GD Merch just arrived, looks pristine!'];
   const newsHeadlines=[
     'Tokyo unveils XR esports stadium powered by 5G',
     'London startup launches AI-driven competitive meta tool',
@@ -2925,7 +2996,7 @@
     
     // Re-decrypt the current page index
     decryptAndShowArticle(currentHoloIndex);
-    showToast("📡 Satellite link re-synced! Feeds updated successfully.");
+    showToast("[SYNC] Satellite link re-synced! Feeds updated successfully.");
   }
 
   function updateHoloCountdown() {
@@ -3295,10 +3366,10 @@
     el.classList.add('active');
     const body=document.getElementById('msg-body');
     if(tab==='online'){
-      const users=[{n:'NightBlade_X',e:'⚡',s:'s-on'},{n:'DriftKing99',e:'🔥',s:'s-on'},{n:'GhostPilot',e:'💀',s:'s-busy'},{n:'VoltRacer',e:'🏆',s:'s-on'},{n:'CyberWolf',e:'🌀',s:'s-away'},{n:'PixelMaster',e:'🎮',s:'s-on'}];
+      const users=[{n:'NightBlade_X',e:'[SYS]',s:'s-on'},{n:'DriftKing99',e:'[OP]',s:'s-on'},{n:'GhostPilot',e:'[TACT]',s:'s-busy'},{n:'VoltRacer',e:'[ACE]',s:'s-on'},{n:'CyberWolf',e:'[NET]',s:'s-away'},{n:'PixelMaster',e:'[DEV]',s:'s-on'}];
       body.innerHTML='<div class="online-list">'+users.map(u=>`<div class="online-user"><div class="ou-avatar">${u.e}</div><div class="ou-name">${u.n}</div><div class="ou-status ${u.s}"></div></div>`).join('')+'</div>';
     } else {
-      body.innerHTML=`<div class="msg-bubble recv"><div class="msg-sender">⚡ NightBlade_X</div>Anyone up for ranked tonight?<div class="msg-time">21:04</div></div><div class="msg-bubble recv"><div class="msg-sender">🔥 DriftKing99</div>Just hit Diamond in Nexus Gate 🎉<div class="msg-time">21:06</div></div>`;
+      body.innerHTML=`<div class="msg-bubble recv"><div class="msg-sender">[SYS] NightBlade_X</div>Anyone up for ranked tonight?<div class="msg-time">21:04</div></div><div class="msg-bubble recv"><div class="msg-sender">[OP] DriftKing99</div>Just hit Diamond in Nexus Gate [LIVE]<div class="msg-time">21:06</div></div>`;
     }
   }
 
@@ -3429,7 +3500,7 @@
     document.getElementById('cart-count').textContent = cartState.items.reduce((sum,item)=>sum + item.qty, 0);
     persistCart();
     btn.textContent='ADDED ✓'; btn.style.background='var(--green)';
-    showToast(`🛒 ${name} added to cart!`);
+    showToast(`[CART] ${name} added to cart!`);
     setTimeout(()=>{ btn.textContent='ADD TO CART'; btn.style.background=''; },2000);
   }
 
