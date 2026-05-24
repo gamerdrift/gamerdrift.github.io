@@ -1643,9 +1643,473 @@
       .ghost-slider-container { padding: 1.5rem; min-height: 520px; }
       .slide-title { font-size: 2.2rem; }
     }
+
+    /* ══════════════════════════════════
+       GAMES PORTAL & THEATER STYLES
+       ══════════════════════════════════ */
+    .games-portal-wrapper {
+      transition: all 0.3s;
+    }
+    .games-sidebar {
+      width: 60px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 0.5rem;
+      transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(25px);
+      z-index: 100;
+    }
+    .games-sidebar:hover,
+    .games-sidebar.expanded {
+      width: 200px;
+      align-items: stretch;
+      padding: 1.5rem 1rem;
+    }
+    .games-sidebar-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.65rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--t2);
+      transition: all 0.25s;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .sidebar-item:hover {
+      background: rgba(0, 255, 136, 0.08);
+      color: var(--green);
+      border-color: rgba(0, 255, 136, 0.2);
+    }
+    .sidebar-item.active {
+      background: rgba(0, 255, 136, 0.2);
+      color: #000;
+      font-weight: 700;
+      border-color: rgba(0, 255, 136, 0.5);
+      text-shadow: none;
+    }
+    .sidebar-item.active .sidebar-icon {
+      color: #000;
+    }
+    .sidebar-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+      transition: color 0.25s;
+    }
+    .sidebar-text {
+      font-family: var(--ff-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .games-sidebar:hover .sidebar-text,
+    .games-sidebar.expanded .sidebar-text {
+      opacity: 1;
+    }
+    .sidebar-toggle {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 255, 234, 0.08);
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: var(--ff-mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      outline: none;
+    }
+    .sidebar-toggle:hover {
+      background: rgba(0, 255, 234, 0.18);
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 255, 234, 0.4);
+    }
+    .games-sidebar:hover .sidebar-toggle,
+    .games-sidebar.expanded .sidebar-toggle {
+      transform: translateX(-50%) rotate(180deg);
+    }
+    
+    .games-main-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .games-search-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      backdrop-filter: blur(25px);
+    }
+    .games-search-bar {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--t1);
+      font-family: var(--ff-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      width: 60%;
+    }
+    .games-search-bar::placeholder {
+      color: var(--t3);
+    }
+    
+    /* Featured Game Banner */
+    .featured-game-banner {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      background: var(--card);
+      border: 1px solid rgba(0, 255, 234, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 220px;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 255, 234, 0.03);
+    }
+    .featured-banner-info {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 0.65rem;
+      text-align: left;
+    }
+    .banner-badge {
+      font-family: var(--ff-pixel);
+      font-size: 0.45rem;
+      color: var(--orange);
+      letter-spacing: 0.1em;
+    }
+    .banner-title {
+      font-family: var(--ff-display);
+      font-size: 2rem;
+      line-height: 1.1;
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0, 255, 234, 0.3);
+    }
+    .banner-desc {
+      font-family: var(--ff-body);
+      font-size: 0.85rem;
+      color: var(--t2);
+      line-height: 1.4;
+    }
+    .banner-rating {
+      font-family: var(--ff-mono);
+      font-size: 0.72rem;
+      color: var(--green);
+      background: rgba(0, 255, 102, 0.08);
+      border: 1px solid rgba(0, 255, 102, 0.2);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .featured-banner-visual {
+      background: radial-gradient(circle at 50% 50%, rgba(0, 255, 234, 0.15), transparent 70%), #050a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .banner-scanlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px);
+      pointer-events: none;
+    }
+    
+    /* Games Grid & Cards */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.2rem;
+    }
+    .game-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.35s, box-shadow 0.35s;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+      position: relative;
+    }
+    .game-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(0, 255, 234, 0.65);
+      box-shadow: 0 12px 35px rgba(0, 255, 234, 0.25), inset 0 0 15px rgba(0, 255, 234, 0.05);
+    }
+    .game-card-img-container {
+      width: 100%;
+      aspect-ratio: 16/11;
+      overflow: hidden;
+      position: relative;
+      background: #020205;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .game-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.65;
+      transition: scale 0.5s, opacity 0.5s;
+    }
+    .game-card:hover .game-card-img {
+      scale: 1.08;
+      opacity: 0.9;
+    }
+    .game-card-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.08rem;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+    .badge-fps { color: var(--magenta); background: rgba(255,0,85,0.15); border: 1px solid rgba(255,0,85,0.3); }
+    .badge-rpg { color: var(--green); background: rgba(0,255,102,0.15); border: 1px solid rgba(0,255,102,0.3); }
+    .badge-driving { color: var(--orange); background: rgba(255,170,0,0.15); border: 1px solid rgba(255,170,0,0.3); }
+    .badge-puzzle { color: var(--purple); background: rgba(189,0,255,0.15); border: 1px solid rgba(189,0,255,0.3); }
+    
+    .game-card-rating {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      font-weight: bold;
+      color: var(--green);
+      background: rgba(0,8,4,0.85);
+      border: 1px solid rgba(0,255,102,0.25);
+      padding: 1px 5px;
+      border-radius: 4px;
+      z-index: 2;
+      text-shadow: 0 0 5px rgba(0,255,102,0.4);
+    }
+    .game-card-body {
+      padding: 0.85rem 1rem;
+      text-align: left;
+    }
+    .game-card-title {
+      font-family: var(--ff-display);
+      font-size: 1rem;
+      color: var(--t1);
+      margin-bottom: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .game-card-subtitle {
+      font-family: var(--ff-body);
+      font-size: 0.72rem;
+      color: var(--t3);
+    }
+
+    /* Game Theater Mode Layout */
+    .game-theater-section {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 1.5rem;
+      text-align: left;
+      margin-top: 1rem;
+      position: relative;
+      z-index: 10;
+    }
+    .theater-main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .theater-screen-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border: 1px solid rgba(0, 255, 234, 0.25);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+    .theater-screen-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
+    .theater-controls-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      backdrop-filter: blur(25px);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .theater-meta-title {
+      font-family: var(--ff-display);
+      font-size: 1.4rem;
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0,255,234,0.3);
+    }
+    .theater-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .theater-details-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1.5fr 1fr;
+      gap: 1rem;
+    }
+    .theater-details-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      backdrop-filter: blur(25px);
+    }
+    .details-card-header {
+      font-family: var(--ff-mono);
+      font-size: 0.62rem;
+      color: var(--t3);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.4rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 0.3rem;
+    }
+    .details-card-txt {
+      font-family: var(--ff-body);
+      font-size: 0.8rem;
+      color: var(--t2);
+      line-height: 1.4;
+    }
+    
+    .theater-sidebar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      backdrop-filter: blur(25px);
+      height: fit-content;
+    }
+    .theater-sidebar-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Dim Lights & Theater Overlays */
+    body.lights-dimmed #nav {
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    body.lights-dimmed footer {
+      opacity: 0.05;
+    }
+    body.lights-dimmed .section:not(#games) {
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    body.lights-dimmed #games .sec-hdr {
+      opacity: 0.05;
+    }
+    body.lights-dimmed .games-sidebar,
+    body.lights-dimmed .games-search-panel,
+    body.lights-dimmed .featured-game-banner,
+    body.lights-dimmed .games-grid {
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    body.lights-dimmed #game-theater-section {
+      z-index: 9999;
+    }
+    #lights-off-dimmer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 2, 5, 0.92);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transition: opacity 0.3s ease;
+    }
+    body.lights-dimmed #lights-off-dimmer {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Fullscreen and Theater scale adjustments */
+    .game-theater-section.expanded-view {
+      grid-template-columns: 1fr;
+    }
+    .game-theater-section.expanded-view .theater-sidebar {
+      display: none;
+    }
+    
+    @media (max-width: 900px) {
+      .game-theater-section {
+        grid-template-columns: 1fr;
+      }
+      .theater-sidebar {
+        display: none;
+      }
+      .theater-details-grid {
+        grid-template-columns: 1fr;
+      }
+      .featured-game-banner {
+        grid-template-columns: 1fr;
+      }
+      .featured-banner-visual {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
+  <div id="lights-off-dimmer" onclick="toggleLights()"></div>
   <div class="grid-bg"></div>
   <canvas id="fx-canvas"></canvas>
 
@@ -2157,102 +2621,129 @@
     <div class="sec-hdr reveal">
       <div>
         <span class="sec-tag">// BROWSER GAMES</span>
-        <h2 class="sec-title">Play <em class="c2">Captn.Ghost</em></h2>
-        <p class="sec-desc">A full-featured 3D arcade rail shooter inspired by Half-Life. Secure zones, fight bosses, and rescue prisoners.</p>
+        <h2 class="sec-title">GamerDrift <em class="c2">Arcade</em></h2>
+        <p class="sec-desc">Experience our premium selection of fully playable HTML5 arcade and cyberpunk canvas games. Filter by category, search, or play in theater mode.</p>
       </div>
     </div>
-    
-    <!-- Map Overview Slideshow Card Slider -->
-    <div class="ghost-slider-container reveal">
-      <div class="ghost-slider-wrapper">
-        
-        <!-- Slide 1 -->
-        <div class="ghost-slide active" data-slide="1">
-          <div class="slide-content">
-            <span class="slide-zone">MISSION 01 // URBAN DEPOT</span>
-            <h3 class="slide-title">CONTAINER YARD</h3>
-            <p class="slide-desc">Infiltrate the high-security shipping terminal under the cover of night. Dodge cold searchlights, take cover behind heavy steel cargo containers, and eliminate tactical guards patrolling the yard gates. Watch out for snipers on the crane gantries!</p>
-            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
-          </div>
-          <div class="slide-poster poster-yard">
-            <div class="poster-overlay"></div>
-            <div class="radar-scan"></div>
-            <div class="map-camo">Camo: Urban Grey</div>
-          </div>
-        </div>
 
-        <!-- Slide 2 -->
-        <div class="ghost-slide" data-slide="2">
-          <div class="slide-content">
-            <span class="slide-zone">MISSION 02 // STORM SEA</span>
-            <h3 class="slide-title">CARGO VESSEL</h3>
-            <p class="slide-desc">Board the massive cargo ship floating in stormy ocean waters. Navigate the wet steel decks amidst stacking crates and metal railings. You must neutralize the ship guards and survive the heavy rockets of an Apache attack helicopter circling overhead!</p>
-            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
-          </div>
-          <div class="slide-poster poster-ship">
-            <div class="poster-overlay"></div>
-            <div class="radar-scan"></div>
-            <div class="map-camo">Camo: Navy Blue</div>
-          </div>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="ghost-slide" data-slide="3">
-          <div class="slide-content">
-            <span class="slide-zone">MISSION 03 // SEC-OPS RUNWAY</span>
-            <h3 class="slide-title">MILITARY AIRPORT</h3>
-            <p class="slide-desc">Clear the active runway and infiltrate the main hangar bay. Secure the tarmac area around a giant parked military transport plane. Hostile tactical units, automatic defense turrets, and fast-moving aerial scanner drones guard the airport hangar.</p>
-            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
-          </div>
-          <div class="slide-poster poster-airport">
-            <div class="poster-overlay"></div>
-            <div class="radar-scan"></div>
-            <div class="map-camo">Camo: Desert Tan</div>
-          </div>
-        </div>
-
-        <!-- Slide 4 -->
-        <div class="ghost-slide" data-slide="4">
-          <div class="slide-content">
-            <span class="slide-zone">MISSION 04 // KHAKI RUINS</span>
-            <h3 class="slide-title">AFGHAN VILLAGE</h3>
-            <p class="slide-desc">Advance through the dusty sandstone ruins of a destroyed desert village. Fight your way through barricades, sandbag checkpoints, and debris. Your final obstacle is a heavy armored battle tank firing high-explosive cannon shells directly at your position!</p>
-            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
-          </div>
-          <div class="slide-poster poster-village">
-            <div class="poster-overlay"></div>
-            <div class="radar-scan"></div>
-            <div class="map-camo">Camo: Desert Khaki</div>
-          </div>
-        </div>
-
-        <!-- Slide 5 -->
-        <div class="ghost-slide" data-slide="5">
-          <div class="slide-content">
-            <span class="slide-zone">MISSION 05 // FOREST RUINS</span>
-            <h3 class="slide-title">JUNGLE CAMP</h3>
-            <p class="slide-desc">Infiltrate the dense forest camp and storm the wooden outpost structures. Battle elite forest-camouflaged soldiers. Face the Rogue Commander guarding a heavy prison cell block, blow open the cage padlock, and rescue the Prisoner of War!</p>
-            <button class="btn-drift play-now-btn" onclick="launchGame('captnghost')">▶ PLAY NOW</button>
-          </div>
-          <div class="slide-poster poster-jungle">
-            <div class="poster-overlay"></div>
-            <div class="radar-scan"></div>
-            <div class="map-camo">Camo: Forest Green</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Slider Controls -->
-      <button class="slider-arrow arrow-left" onclick="moveSlide(-1)" aria-label="Previous map slide">◂</button>
-      <button class="slider-arrow arrow-right" onclick="moveSlide(1)" aria-label="Next map slide">▸</button>
+    <div class="games-portal-wrapper reveal" style="display: flex; gap: 1.5rem; position: relative;">
       
-      <div class="slider-dots">
-        <span class="dot active" onclick="setSlide(1)"></span>
-        <span class="dot" onclick="setSlide(2)"></span>
-        <span class="dot" onclick="setSlide(3)"></span>
-        <span class="dot" onclick="setSlide(4)"></span>
-        <span class="dot" onclick="setSlide(5)"></span>
+      <!-- Collapsible Sidebar -->
+      <aside class="games-sidebar" id="games-sidebar">
+        <ul class="games-sidebar-list">
+          <li class="sidebar-item active" data-category="all" onclick="filterGamesByCategory('all', this)">
+            <div class="sidebar-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <span class="sidebar-text">All Games</span>
+          </li>
+          <li class="sidebar-item" data-category="shooting" onclick="filterGamesByCategory('shooting', this)">
+            <div class="sidebar-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8l4 4-4 4M8 12h8"/></svg>
+            </div>
+            <span class="sidebar-text">Shooting</span>
+          </li>
+          <li class="sidebar-item" data-category="driving" onclick="filterGamesByCategory('driving', this)">
+            <div class="sidebar-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/><circle cx="12" cy="12" r="2"/><path d="M12 12L2 12"/><path d="M12 12L12 22"/><path d="M12 12l7.07-7.07"/></svg>
+            </div>
+            <span class="sidebar-text">Driving</span>
+          </li>
+          <li class="sidebar-item" data-category="clicker" onclick="filterGamesByCategory('clicker', this)">
+            <div class="sidebar-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="sidebar-text">Clicker</span>
+          </li>
+          <li class="sidebar-item" data-category="puzzle" onclick="filterGamesByCategory('puzzle', this)">
+            <div class="sidebar-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+            </div>
+            <span class="sidebar-text">Puzzle</span>
+          </li>
+        </ul>
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar">➔</button>
+      </aside>
+
+      <!-- Main Portal Content -->
+      <div class="games-main-panel" style="flex: 1; display: flex; flex-direction: column; gap: 1.5rem; width: calc(100% - 80px);">
+        
+        <!-- Search & Filters -->
+        <div class="games-search-panel">
+          <input type="text" class="games-search-bar" id="games-search" placeholder="SEARCH CLASSIFIED RECREATION ARTIFACTS..." oninput="searchGames()">
+          <span class="games-status-indicator" style="font-family: var(--ff-mono); font-size: 0.7rem; color: var(--green);">SYSTEMS ACTIVE [5/5]</span>
+        </div>
+
+        <!-- Featured Game Banner -->
+        <div class="featured-game-banner" id="featured-banner">
+          <div class="featured-banner-info">
+            <span class="banner-badge">// FEATURED RETRO WebGL TITLES</span>
+            <h3 class="banner-title" id="featured-title">Captn.Ghost</h3>
+            <p class="banner-desc" id="featured-desc">A premium 3D rail shooter built on canvas. Secure zones, fight bosses, and rescue hostages in this tactical recreation software.</p>
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: 0.5rem;">
+              <span class="banner-rating" id="featured-rating">★ 9.4/10</span>
+              <button class="btn-drift" id="featured-play-btn" onclick="playGame('captnghost')">▶ LAUNCH SIMULATION</button>
+            </div>
+          </div>
+          <div class="featured-banner-visual">
+            <div class="banner-scanlines"></div>
+            <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="filter: drop-shadow(0 0 15px rgba(0, 255, 234, 0.5));">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 8v8"/>
+              <path d="M8 12h8"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="games-grid" id="games-grid">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Widescreen Game Theater Section (hidden by default until a game is launched) -->
+        <div class="game-theater-section" id="game-theater-section" style="display: none;">
+          <div class="theater-main-content">
+            <!-- Theater Playback Container -->
+            <div class="theater-screen-wrapper" id="theater-screen-wrapper">
+              <iframe id="theater-frame" src="" allowfullscreen></iframe>
+            </div>
+            <!-- Action Panel -->
+            <div class="theater-controls-panel">
+              <div class="theater-meta-title" id="theater-active-title">No Simulation Loaded</div>
+              <div class="theater-actions">
+                <button class="btn-sm" id="theater-like-btn" onclick="rateGame(true)" style="background: rgba(0, 255, 136, 0.08); border-color: var(--green); color: var(--green);">👍 <span id="theater-likes">0</span></button>
+                <button class="btn-sm" id="theater-dislike-btn" onclick="rateGame(false)" style="background: rgba(255, 0, 85, 0.08); border-color: var(--magenta); color: var(--magenta);">👎 <span id="theater-dislikes">0</span></button>
+                <button class="btn-sm" onclick="toggleLights()" style="border-color: var(--cyan); color: var(--cyan);">💡 Dim Lights</button>
+                <button class="btn-sm" onclick="toggleTheaterMode()" style="border-color: var(--orange); color: var(--orange);">🎭 Theater Mode</button>
+                <button class="btn-sm" onclick="toggleFullscreenGame()" style="background: var(--cyan); color: #000; font-weight: 700; border-color: var(--cyan);">⛶ Fullscreen</button>
+              </div>
+            </div>
+            <!-- Telemetry and Details Grid -->
+            <div class="theater-details-grid">
+              <div class="theater-details-card">
+                <div class="details-card-header">MISSION DEBRIEF // BRIEFING</div>
+                <div class="details-card-txt" id="theater-active-desc">-</div>
+              </div>
+              <div class="theater-details-card">
+                <div class="details-card-header">TACTICAL telemetry // COMPATIBILITY</div>
+                <div class="details-card-txt" id="theater-active-telemetry">PING: 0ms<br>FRAME RATE: 60 FPS<br>ACCELERATOR: WEBGL 2.0</div>
+              </div>
+              <div class="theater-details-card">
+                <div class="details-card-header">KEYBOARD INTERFACES // BINDINGS</div>
+                <div class="details-card-txt" id="theater-active-controls">WASD / Arrow Keys: Move<br>SPACEBAR: Primary Action</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Theater Side Panel (Recommendations) -->
+          <aside class="theater-sidebar">
+            <div class="details-card-header" style="margin-bottom: 0.8rem;">SIMULATION ARCHIVES</div>
+            <div class="theater-sidebar-grid" id="theater-recommendations">
+              <!-- Rendered via JS -->
+            </div>
+          </aside>
+        </div>
+
       </div>
     </div>
   </section>
@@ -2791,6 +3282,7 @@
     initHologramNews();
     initHologramVideos();
     initHologramLogo();
+    initGamesPortal();
   });
   setInterval(refreshNewsTicker, 13000);
 
@@ -3400,37 +3892,336 @@
   },8000);
 
   // ══════════════════════════════
-  // BROWSER GAMES ENGINE (CAPTN.GHOST SLIDER)
+  // CRAZYGAMES-STYLE BROWSER GAMES ENGINE
   // ══════════════════════════════
-  let currentSlideIndex = 1;
-  function moveSlide(direction) {
-    let newIndex = currentSlideIndex + direction;
-    if (newIndex < 1) newIndex = 5;
-    if (newIndex > 5) newIndex = 1;
-    setSlide(newIndex);
-  }
-  function setSlide(index) {
-    currentSlideIndex = index;
-    document.querySelectorAll('.ghost-slide').forEach(slide => {
-      slide.classList.remove('active');
-    });
-    const activeSlide = document.querySelector(`.ghost-slide[data-slide="${index}"]`);
-    if (activeSlide) activeSlide.classList.add('active');
-
-    document.querySelectorAll('.slider-dots .dot').forEach((dot, idx) => {
-      if (idx + 1 === index) dot.classList.add('active');
-      else dot.classList.remove('active');
-    });
-  }
-
-  function launchGame(game) {
-    const modal = document.getElementById('game-modal');
-    const iframe = document.getElementById('game-frame');
-    if (modal && iframe) {
-      iframe.src = "half-life-arcade/index.html";
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden', 'false');
+  const gamesLibrary = [
+    {
+      id: "captnghost",
+      title: "Captn.Ghost",
+      subtitle: "3D Retro Rail Shooter",
+      category: "shooting",
+      description: "Secure terminal zones, neutralize hostiles, and rescue hostages in this premium 3D rail shooter inspired by Half-Life.",
+      rating: "9.4",
+      url: "half-life-arcade/index.html",
+      badge: "WebGL",
+      badgeClass: "badge-fps",
+      likes: 1242,
+      dislikes: 42,
+      telemetry: "PING: 12ms<br>FRAME RATE: 60 FPS<br>API: WebGL 2.0 // Direct3D 12<br>CPU LOAD: 8% // RAM: 180MB",
+      controls: "MOUSE: Aim & Shoot<br>SPACEBAR: Reload<br>R: Reload Shield<br>ESC: Pause Simulation",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(255,0,85,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,0,85,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--magenta)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--magenta));"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="4"/><path d="M12 8v8M8 12h8"/></svg></div>`
+    },
+    {
+      id: "neondrift",
+      title: "Neon Drift Rider",
+      subtitle: "Outrun-Style Road Racer",
+      category: "driving",
+      description: "Cruise down retro-neon highway grids. Dodge obstacles, collect power cores, and ride the velocity grid lines forever.",
+      rating: "9.2",
+      url: "games/neon-drift-rider.html",
+      badge: "Driving",
+      badgeClass: "badge-driving",
+      likes: 856,
+      dislikes: 19,
+      telemetry: "PING: 5ms<br>FRAME RATE: 60 FPS<br>ENGINE: HTML5 Canvas 2D<br>V-SYNC: Active // GPU Accelerated",
+      controls: "A / D / Left / Right: Steer Car<br>W / Up: Accelerate Speed<br>S / Down: Decelerate / Brake<br>ESC: Exit Grid",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,234,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,234,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--cyan));"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="3"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><circle cx="7" cy="16" r="1.5"/><circle cx="17" cy="16" r="1.5"/></svg></div>`
+    },
+    {
+      id: "cyberhacker",
+      title: "Cyber Hacker",
+      subtitle: "Secure Core Decryptor",
+      category: "clicker",
+      description: "Infiltrate neural mainframes. Upgrade decrypt nodes, bypass firewalls, and execute automatic exploit injections.",
+      rating: "8.9",
+      url: "games/cyber-hacker.html",
+      badge: "Clicker",
+      badgeClass: "badge-rpg",
+      likes: 642,
+      dislikes: 31,
+      telemetry: "PING: 1ms<br>FRAME RATE: 60 FPS<br>NODE LOAD: 14% // SYS TEMP: 41C<br>THREADS: 8x Auto-Injected",
+      controls: "MOUSE CLICK: Extract Code Bit<br>BUY UPGRADES: Click on HUD elements<br>KEY 1-4: Fast Node Activator",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,102,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,102,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--green));"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/></svg></div>`
+    },
+    {
+      id: "vortexprotocol",
+      title: "Vortex Protocol",
+      subtitle: "Vertical Laser Shooter",
+      category: "shooting",
+      description: "Pilot an experimental fighter craft. Dodge meteor strikes, destroy hostile fighter squadrons, and collect powerups.",
+      rating: "9.5",
+      url: "games/vortex-protocol.html",
+      badge: "Shooter",
+      badgeClass: "badge-fps",
+      likes: 1102,
+      dislikes: 24,
+      telemetry: "PING: 8ms<br>FRAME RATE: 60 FPS<br>SHIELD CORES: 3x // LASERS: Quad-link<br>PARTICLE ENGINE: Canvas Pixels",
+      controls: "MOUSE MOVE: Navigate Vessel<br>LEFT CLICK: Discharge Lasers<br>TOUCH DRIVE: Drag on Screen",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(255,170,0,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,170,0,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--orange));"><polygon points="12 2 22 22 12 17 2 22"/></svg></div>`
+    },
+    {
+      id: "gridsync",
+      title: "Grid Sync",
+      subtitle: "Energy Pathway Puzzle",
+      category: "puzzle",
+      description: "Align power conduits to establish flow lines. Sync code packets from host server terminals to core mainframes.",
+      rating: "9.1",
+      url: "games/grid-sync.html",
+      badge: "Puzzle",
+      badgeClass: "badge-puzzle",
+      likes: 589,
+      dislikes: 18,
+      telemetry: "PING: 3ms<br>FRAME RATE: 60 FPS<br>GRID RESOLUTION: 4x4 / 5x5 / 6x6<br>LOGIC PIPELINE: Dynamic Solver",
+      controls: "MOUSE CLICK / TOUCH: Rotate Pipe Core<br>MATCH CONDUITS: Complete connections<br>R KEY: Reinitialize Grid Layout",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(189,0,255,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(189,0,255,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--purple));"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div>`
     }
+  ];
+
+  let activeGameId = null;
+  let gamesCategoryFilter = "all";
+  let gamesSearchQuery = "";
+  const userRatings = {}; // Stores { gameId: 'like' | 'dislike' }
+
+  function initGamesPortal() {
+    renderGamesGrid();
+    
+    // Auto-initialize sidebar width adjustments on mobile
+    const sidebar = document.getElementById('games-sidebar');
+    if (sidebar) {
+      sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+      sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+    }
+  }
+
+  function renderGamesGrid() {
+    const grid = document.getElementById('games-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    
+    const filtered = gamesLibrary.filter(game => {
+      const matchesCategory = (gamesCategoryFilter === "all" || game.category === gamesCategoryFilter);
+      const matchesSearch = (game.title.toLowerCase().includes(gamesSearchQuery) || 
+                             game.subtitle.toLowerCase().includes(gamesSearchQuery) ||
+                             game.description.toLowerCase().includes(gamesSearchQuery));
+      return matchesCategory && matchesSearch;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div style="grid-column: 1/-1; padding: 3rem; text-align: center; font-family: var(--ff-mono); color: var(--t3); border: 1px dashed var(--border); border-radius: 12px;">NO CLASSIFIED RECREATION FILES MATCHING FILTER PARAMETERS.</div>`;
+      return;
+    }
+
+    filtered.forEach(game => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.onclick = () => playGame(game.id);
+      card.innerHTML = `
+        <div class="game-card-img-container">
+          ${game.visualSvg}
+          <div class="game-card-badge ${game.badgeClass}">${game.badge}</div>
+          <div class="game-card-rating">★ ${game.rating}</div>
+        </div>
+        <div class="game-card-body">
+          <div class="game-card-title">${game.title}</div>
+          <div class="game-card-subtitle">${game.subtitle}</div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function filterGamesByCategory(category, el) {
+    gamesCategoryFilter = category;
+    
+    // Update active tab styles
+    document.querySelectorAll('#games-sidebar .sidebar-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    if (el) el.classList.add('active');
+    
+    renderGamesGrid();
+  }
+
+  function searchGames() {
+    const searchBar = document.getElementById('games-search');
+    if (searchBar) {
+      gamesSearchQuery = searchBar.value.toLowerCase().trim();
+      renderGamesGrid();
+    }
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('games-sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('expanded');
+    }
+  }
+
+  function playGame(gameId) {
+    const game = gamesLibrary.find(g => g.id === gameId);
+    if (!game) return;
+
+    activeGameId = gameId;
+
+    // Show theater container
+    const theaterSection = document.getElementById('game-theater-section');
+    const theaterFrame = document.getElementById('theater-frame');
+    
+    if (theaterSection && theaterFrame) {
+      theaterFrame.src = game.url;
+      theaterSection.style.display = 'grid';
+
+      // Populate meta details
+      document.getElementById('theater-active-title').textContent = game.title.toUpperCase();
+      document.getElementById('theater-active-desc').textContent = game.description;
+      document.getElementById('theater-active-telemetry').innerHTML = game.telemetry;
+      document.getElementById('theater-active-controls').innerHTML = game.controls;
+
+      // Update ratings display
+      updateRatingsUI();
+
+      // Load side recommendations (all other games)
+      renderRecommendations();
+
+      // Scroll to theater section
+      theaterSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast(`[ARCADE] Booting ${game.title} simulation...`);
+    }
+  }
+
+  function renderRecommendations() {
+    const recContainer = document.getElementById('theater-recommendations');
+    if (!recContainer) return;
+
+    recContainer.innerHTML = '';
+    const otherGames = gamesLibrary.filter(g => g.id !== activeGameId);
+
+    otherGames.forEach(game => {
+      const recCard = document.createElement('div');
+      recCard.className = 'game-card';
+      recCard.style.boxShadow = 'none';
+      recCard.onclick = () => playGame(game.id);
+      recCard.innerHTML = `
+        <div class="game-card-img-container" style="aspect-ratio: 16/9;">
+          ${game.visualSvg}
+          <div class="game-card-badge ${game.badgeClass}" style="font-size:0.5rem; padding: 1px 4px;">${game.badge}</div>
+        </div>
+        <div class="game-card-body" style="padding: 0.5rem 0.75rem;">
+          <div class="game-card-title" style="font-size: 0.85rem; margin-bottom: 0;">${game.title}</div>
+        </div>
+      `;
+      recContainer.appendChild(recCard);
+    });
+  }
+
+  function toggleLights() {
+    document.body.classList.toggle('lights-dimmed');
+    const isDimmed = document.body.classList.contains('lights-dimmed');
+    showToast(isDimmed ? "[HUD] Ambient lights deactivated." : "[HUD] Ambient lights restored.");
+  }
+
+  function toggleTheaterMode() {
+    const theaterSection = document.getElementById('game-theater-section');
+    if (theaterSection) {
+      theaterSection.classList.toggle('expanded-view');
+      const isExpanded = theaterSection.classList.contains('expanded-view');
+      showToast(isExpanded ? "[HUD] Theater mode active (Widescreen)." : "[HUD] Theater mode disabled.");
+    }
+  }
+
+  function toggleFullscreenGame() {
+    const frame = document.getElementById('theater-frame');
+    if (!frame) return;
+
+    if (frame.requestFullscreen) {
+      frame.requestFullscreen();
+    } else if (frame.webkitRequestFullscreen) { /* Safari */
+      frame.webkitRequestFullscreen();
+    } else if (frame.msRequestFullscreen) { /* IE11 */
+      frame.msRequestFullscreen();
+    }
+    showToast("[HUD] Fullscreen request sent to host terminal.");
+  }
+
+  function rateGame(isLike) {
+    if (!activeGameId) return;
+
+    const game = gamesLibrary.find(g => g.id === activeGameId);
+    if (!game) return;
+
+    const currentRating = userRatings[activeGameId];
+
+    if (isLike) {
+      if (currentRating === 'like') {
+        // Undo like
+        game.likes--;
+        delete userRatings[activeGameId];
+        showToast(`[RATING] Rating removed.`);
+      } else {
+        if (currentRating === 'dislike') {
+          game.dislikes--;
+        }
+        game.likes++;
+        userRatings[activeGameId] = 'like';
+        showToast(`[RATING] You liked ${game.title}!`);
+      }
+    } else {
+      if (currentRating === 'dislike') {
+        // Undo dislike
+        game.dislikes--;
+        delete userRatings[activeGameId];
+        showToast(`[RATING] Rating removed.`);
+      } else {
+        if (currentRating === 'like') {
+          game.likes--;
+        }
+        game.dislikes++;
+        userRatings[activeGameId] = 'dislike';
+        showToast(`[RATING] You disliked ${game.title}.`);
+      }
+    }
+
+    updateRatingsUI();
+  }
+
+  function updateRatingsUI() {
+    const game = gamesLibrary.find(g => g.id === activeGameId);
+    if (!game) return;
+
+    const likesEl = document.getElementById('theater-likes');
+    const dislikesEl = document.getElementById('theater-dislikes');
+    const likeBtn = document.getElementById('theater-like-btn');
+    const dislikeBtn = document.getElementById('theater-dislike-btn');
+
+    if (likesEl && dislikesEl && likeBtn && dislikeBtn) {
+      likesEl.textContent = game.likes;
+      dislikesEl.textContent = game.dislikes;
+
+      // Active rating visual highlighting
+      const currentRating = userRatings[activeGameId];
+      if (currentRating === 'like') {
+        likeBtn.style.background = 'var(--green)';
+        likeBtn.style.color = '#000';
+        dislikeBtn.style.background = 'rgba(255, 0, 85, 0.08)';
+        dislikeBtn.style.color = 'var(--magenta)';
+      } else if (currentRating === 'dislike') {
+        likeBtn.style.background = 'rgba(0, 255, 136, 0.08)';
+        likeBtn.style.color = 'var(--green)';
+        dislikeBtn.style.background = 'var(--magenta)';
+        dislikeBtn.style.color = '#000';
+      } else {
+        likeBtn.style.background = 'rgba(0, 255, 136, 0.08)';
+        likeBtn.style.color = 'var(--green)';
+        dislikeBtn.style.background = 'rgba(255, 0, 85, 0.08)';
+        dislikeBtn.style.color = 'var(--magenta)';
+      }
+    }
+  }
+
+  // Compatibility wrappers and initialization triggers
+  function launchGame(gameId) {
+    playGame(gameId || 'captnghost');
   }
 
   const shopProducts = [

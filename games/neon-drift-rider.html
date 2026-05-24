@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Neon Drift Rider</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #020205;
+      color: #00ff88;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #game-container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 2px solid #00ff88;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+    canvas {
+      display: block;
+      background: #050510;
+    }
+    #overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(2, 2, 8, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .btn {
+      background: #00ff88;
+      color: #000;
+      border: none;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.9);
+      transform: scale(1.05);
+    }
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      font-size: 0.8rem;
+      text-shadow: 0 0 5px #00ff88;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="hud">
+      <div>SCORE: <span id="score-val">0000</span></div>
+      <div>SPEED: <span id="speed-val">0</span> KM/H</div>
+      <div>SHIELD: <span id="shield-val">100%</span></div>
+    </div>
+    <div id="overlay">
+      <h2 style="margin: 0; font-size: 1.8rem; text-shadow: 0 0 10px #00ff88; text-transform: uppercase;">NEON DRIFT RIDER</h2>
+      <p style="color: #88aab5; font-size: 0.75rem; text-align: center; margin: 10px 20px 0; line-height: 1.4;">
+        Steer with A/D or LEFT/RIGHT arrows.<br/>Dodge the red barrier modules.
+      </p>
+      <button class="btn" id="start-btn">ENGAGE SYSTEMS</button>
+    </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('start-btn');
+    const scoreVal = document.getElementById('score-val');
+    const speedVal = document.getElementById('speed-val');
+    const shieldVal = document.getElementById('shield-val');
+
+    let gameActive = false;
+    let score = 0;
+    let speed = 0;
+    let maxSpeed = 150;
+    let shield = 100;
+    let playerX = 0; // -1 to 1
+    let roadCurve = 0;
+    let currentCurve = 0;
+    let roadSegments = [];
+    let obstacles = [];
+    let particles = [];
+    let keys = {};
+
+    // Initialize road segments
+    for (let i = 0; i < 100; i++) {
+      roadSegments.push({
+        y: i,
+        curve: 0,
+        scale: 1 / (100 - i)
+      });
+    }
+
+    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keyup', e => keys[e.code] = false);
+
+    startBtn.addEventListener('click', () => {
+      gameActive = true;
+      score = 0;
+      speed = 60;
+      shield = 100;
+      playerX = 0;
+      obstacles = [];
+      particles = [];
+      overlay.style.display = 'none';
+      loop();
+    });
+
+    function spawnObstacle() {
+      if (obstacles.length < 5 && Math.random() < 0.05) {
+        obstacles.push({
+          z: 100, // Distance away
+          x: (Math.random() * 1.6) - 0.8, // Position across road
+          width: 0.25,
+          color: '#ff0055'
+        });
+      }
+    }
+
+    function createExplosion(x, y, color) {
+      for (let i = 0; i < 15; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          life: 30,
+          color: color
+        });
+      }
+    }
+
+    function update() {
+      // Input
+      if (keys['ArrowLeft'] || keys['KeyA']) playerX -= 0.04;
+      if (keys['ArrowRight'] || keys['KeyD']) playerX += 0.04;
+      playerX = Math.max(-1.1, Math.min(1.1, playerX));
+
+      // Speed up slowly
+      if (speed < maxSpeed) speed += 0.1;
+
+      // Road curving physics
+      if (Math.random() < 0.02) {
+        roadCurve = (Math.random() * 4) - 2;
+      }
+      currentCurve += (roadCurve - currentCurve) * 0.05;
+
+      // Obstacles logic
+      spawnObstacle();
+      obstacles.forEach((obs, idx) => {
+        obs.z -= speed * 0.008; // Move closer
+        if (obs.z <= 0) {
+          // Check collision
+          const relativeX = obs.x - playerX;
+          if (obs.z > -1.5 && Math.abs(relativeX) < obs.width + 0.15) {
+            shield -= 25;
+            shield = Math.max(0, shield);
+            createExplosion(300 + (relativeX * 180), 340, '#ff0055');
+            speed = 20; // slow down
+            if (shield <= 0) {
+              endGame();
+            }
+          }
+          obstacles.splice(idx, 1);
+          score += 10;
+        }
+      });
+
+      // Update particles
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+
+      // Update HUD
+      scoreVal.innerText = String(Math.floor(score)).padStart(4, '0');
+      speedVal.innerText = Math.floor(speed);
+      shieldVal.innerText = shield + '%';
+      if (shield < 40) shieldVal.style.color = '#ff0055';
+      else shieldVal.style.color = '#00ff88';
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw cyber horizon / sky
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, 160);
+      skyGrad.addColorStop(0, '#050518');
+      skyGrad.addColorStop(1, '#0e0b25');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, 160);
+
+      // Star grid
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < 20; i++) {
+        let starX = (Math.sin(i * 123) * 0.5 + 0.5) * canvas.width;
+        let starY = (Math.cos(i * 456) * 0.5 + 0.5) * 120;
+        ctx.fillRect(starX, starY, 1.5, 1.5);
+      }
+
+      // Draw grid mountain lines
+      ctx.strokeStyle = '#6842ff';
+      ctx.beginPath();
+      ctx.moveTo(0, 160);
+      ctx.lineTo(120, 140);
+      ctx.lineTo(240, 155);
+      ctx.lineTo(300, 130);
+      ctx.lineTo(380, 150);
+      ctx.lineTo(480, 135);
+      ctx.lineTo(600, 160);
+      ctx.stroke();
+
+      // Horizon line
+      ctx.strokeStyle = '#00ffeb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 160);
+      ctx.lineTo(canvas.width, 160);
+      ctx.stroke();
+
+      // Draw Road & Obstacles in perspective
+      const maxZ = 100;
+      const horizonY = 160;
+      const centerY = canvas.height;
+      const roadW = 280;
+
+      // Draw road grid background (landscape perspective)
+      ctx.fillStyle = '#050410';
+      ctx.fillRect(0, 160, canvas.width, canvas.height - 160);
+
+      // Draw perspective side-lines for grid ground
+      ctx.strokeStyle = 'rgba(104, 66, 255, 0.2)';
+      ctx.lineWidth = 1;
+      for (let x = -3; x <= 3; x++) {
+        ctx.beginPath();
+        ctx.moveTo(300 + (x * 120), horizonY);
+        ctx.lineTo(300 + (x * 400), centerY);
+        ctx.stroke();
+      }
+
+      // Horizontal ground lines
+      const lineCount = 10;
+      const timeOffset = (Date.now() * 0.003 * speed) % 1;
+      for (let i = 0; i < lineCount; i++) {
+        const normZ = (i + timeOffset) / lineCount;
+        // Exponential scale to compress lines near horizon
+        const y = horizonY + Math.pow(normZ, 2) * (canvas.height - horizonY);
+        ctx.strokeStyle = `rgba(104, 66, 255, ${0.1 + (normZ * 0.4)})`;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Draw Road
+      let lastX = 300;
+      let lastY = canvas.height;
+      let lastW = roadW;
+      
+      const segmentCount = 45;
+      const roadOffset = (Date.now() * 0.01 * speed) % 2;
+
+      for (let i = segmentCount; i > 0; i--) {
+        const z = i - roadOffset;
+        if (z <= 0) continue;
+
+        const factor = 20 / z; // perspective scale
+        const y = horizonY + (factor * 20); // screen y
+        const w = roadW * factor * 0.6; // screen width
+        
+        // Add curve influence based on distance
+        const curveOffset = Math.sin(i * 0.15) * currentCurve * (segmentCount - i) * 0.6;
+        const x = 300 + curveOffset;
+
+        if (y < canvas.height && y > horizonY) {
+          // Draw road margins (neon green stripes)
+          ctx.fillStyle = (i % 2 === 0) ? '#00ffeb' : '#6842ff';
+          ctx.beginPath();
+          ctx.moveTo(x - w - 8, y);
+          ctx.lineTo(x - w, y);
+          ctx.lineTo(x + w, y);
+          ctx.lineTo(x + w + 8, y);
+          ctx.fill();
+
+          // Dark asphalt
+          ctx.fillStyle = '#0a0a20';
+          ctx.beginPath();
+          ctx.moveTo(x - w, y);
+          ctx.lineTo(x + w, y);
+          ctx.lineTo(lastX + lastW, lastY);
+          ctx.lineTo(lastX - lastW, lastY);
+          ctx.closePath();
+          ctx.fill();
+
+          // Center dashed line
+          if (i % 4 === 0) {
+            ctx.fillStyle = '#f0c62a';
+            ctx.fillRect(x - 2, y, 4, 8);
+          }
+        }
+
+        lastX = x;
+        lastY = y;
+        lastW = w;
+      }
+
+      // Draw Obstacles in perspective
+      obstacles.forEach(obs => {
+        if (obs.z <= 0 || obs.z > maxZ) return;
+        const factor = 20 / obs.z;
+        const y = horizonY + (factor * 20);
+        const w = roadW * factor * 0.6;
+        
+        // Apply road curve offset at this specific depth z
+        const curveOffset = Math.sin(obs.z * 0.15) * currentCurve * (segmentCount - obs.z) * 0.6;
+        const screenX = 300 + curveOffset + (obs.x * w);
+        const obsSize = obs.width * w;
+
+        if (y > horizonY && y < canvas.height) {
+          ctx.fillStyle = obs.color;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = obs.color;
+          
+          // Draw 3D-looking neon block
+          ctx.beginPath();
+          ctx.rect(screenX - obsSize, y - obsSize * 2, obsSize * 2, obsSize * 2);
+          ctx.fill();
+          ctx.stroke();
+          
+          ctx.shadowBlur = 0;
+        }
+      });
+
+      // Draw Player Car
+      const carX = 300 + (playerX * roadW * 0.5);
+      const carY = 350;
+
+      ctx.save();
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#00ff88';
+
+      // Draw stylized player spaceship/car
+      ctx.fillStyle = '#00ff88';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      // Arrowhead/jet shape
+      ctx.moveTo(carX, carY - 18); // top
+      ctx.lineTo(carX - 25, carY + 12); // left bottom wing
+      ctx.lineTo(carX - 10, carY + 5);
+      ctx.lineTo(carX + 10, carY + 5);
+      ctx.lineTo(carX + 25, carY + 12); // right bottom wing
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Thruster flame
+      const thrusterColor = (Date.now() % 100 < 50) ? '#ffaa00' : '#ff0055';
+      ctx.fillStyle = thrusterColor;
+      ctx.beginPath();
+      ctx.moveTo(carX - 6, carY + 7);
+      ctx.lineTo(carX, carY + 18 + (Math.random() * 5));
+      ctx.lineTo(carX + 6, carY + 7);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+
+      // Draw particles
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+      });
+    }
+
+    function endGame() {
+      gameActive = false;
+      overlay.style.display = 'flex';
+      overlay.querySelector('h2').innerText = 'CRASH DETECTED';
+      overlay.querySelector('p').innerHTML = `Final telemetry logged.<br/>SCORE: <span style="color:#f0c62a; font-weight:bold;">${Math.floor(score)}</span>`;
+      startBtn.innerText = 'RE-ENGAGE SYSTEMS';
+    }
+
+    function loop() {
+      if (!gameActive) return;
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+  </script>
+</body>
+</html>
