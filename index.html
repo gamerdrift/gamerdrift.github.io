@@ -2165,6 +2165,67 @@
     </div>
   </div>
 
+  <!-- REVIEW DOSSIER MODAL -->
+  <div class="game-modal" id="review-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+    <div class="game-modal-inner" style="max-width: 900px; border-color: rgba(0, 245, 255, 0.4); box-shadow: 0 0 45px rgba(0, 245, 255, 0.25); background: rgba(3, 4, 8, 0.98); width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="game-modal-header" style="border-bottom: 1px solid rgba(0, 245, 255, 0.25); padding: 0.8rem 1.5rem; flex-shrink: 0;">
+        <div class="game-modal-title" id="review-modal-title" style="color: var(--cyan); font-family: var(--ff-mono); font-size: 1.1rem; text-shadow: 0 0 8px rgba(0, 245, 255, 0.4); letter-spacing: 0.05em;">[ TACTICAL DEBRIEF // SYSTEM EVALUATION DOSSIER ]</div>
+        <button class="close-btn" onclick="closeReviewModal()" aria-label="Close review dossier" style="color: var(--cyan); font-size: 1.6rem; line-height: 1;">✕</button>
+      </div>
+      
+      <div style="padding: 1.5rem; overflow-y: auto; flex-grow: 1; text-align: left; font-family: var(--ff-body);">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div>
+            <div id="review-meta-tag" style="font-family: var(--ff-mono); font-size: 0.65rem; color: var(--t3); letter-spacing: 0.15em; text-transform: uppercase;">GENRE // PLATFORMS</div>
+            <h3 id="review-game-title" style="font-family: var(--ff-display); font-size: 2rem; color: #fff; line-height: 1.1; margin: 0.3rem 0;">GAME TITLE</h3>
+            <p id="review-game-verdict" style="font-size: 0.95rem; color: var(--t2); font-style: italic; line-height: 1.4; border-left: 2px solid var(--cyan); padding-left: 0.75rem; margin-top: 0.5rem;"></p>
+          </div>
+          <div style="background: rgba(0, 245, 255, 0.04); border: 1px solid rgba(0, 245, 255, 0.15); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div style="font-family: var(--ff-mono); font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.1em; margin-bottom: 0.2rem;">CRITIC EVALUATION SCORE</div>
+            <div id="review-game-score" style="font-family: var(--ff-mono); font-size: 3rem; font-weight: 800; color: var(--green); text-shadow: 0 0 15px rgba(0, 255, 102, 0.4); line-height: 1;">9.4</div>
+            <div style="font-family: var(--ff-mono); font-size: 0.55rem; color: var(--t3); margin-top: 0.4rem;">VERIFIED GAMERDRIFT DECREE</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem;">
+          <!-- Left Column: Review Text -->
+          <div>
+            <div style="font-family: var(--ff-mono); font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.12em; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.2rem;">ANALYSIS FEEDBACK</div>
+            <div id="review-game-content" style="font-size: 0.85rem; color: var(--t2); line-height: 1.5; display: flex; flex-direction: column; gap: 0.8rem;"></div>
+          </div>
+          
+          <!-- Right Column: Stats & Pros/Cons -->
+          <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <!-- Specs -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0.85rem 1rem;">
+              <div style="font-family: var(--ff-mono); font-size: 0.6rem; color: var(--orange); letter-spacing: 0.1em; margin-bottom: 0.4rem; border-bottom: 1px solid rgba(255,107,0,0.15); padding-bottom: 0.2rem;">SYSTEM COMPATIBILITY INFO</div>
+              <div id="review-game-specs" style="font-family: var(--ff-mono); font-size: 0.65rem; color: var(--t2); line-height: 1.4;">
+                DEVELOPER: Vanguard Studios<br>
+                ENGINE: Unreal Engine 5.2<br>
+                TELEMETRY: PING 0ms // NO ERRORS
+              </div>
+            </div>
+            
+            <!-- Pros & Cons -->
+            <div>
+              <div style="font-family: var(--ff-mono); font-size: 0.6rem; color: var(--green); letter-spacing: 0.1em; margin-bottom: 0.4rem;">POS-SIGNALS [+]</div>
+              <ul id="review-game-pros" style="font-size: 0.72rem; color: var(--t2); list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 0.3rem; margin: 0 0 1rem 0;"></ul>
+              
+              <div style="font-family: var(--ff-mono); font-size: 0.6rem; color: var(--magenta); letter-spacing: 0.1em; margin-bottom: 0.4rem;">NEG-ANOMALIES [-]</div>
+              <ul id="review-game-cons" style="font-size: 0.72rem; color: var(--t2); list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 0.3rem; margin: 0;"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer with play trigger if playable game -->
+      <div id="review-modal-footer" style="border-top: 1px solid rgba(255,255,255,0.05); padding: 1rem 1.5rem; background: rgba(2,2,4,0.95); display: flex; justify-content: flex-end; align-items: center; gap: 1rem; flex-shrink: 0; border-radius: 0 0 12px 12px;">
+        <span id="review-play-text" style="font-family: var(--ff-mono); font-size: 0.7rem; color: var(--t3);">SUPPORT ARTIFACT LOCATED IN CORE NETWORK</span>
+        <button id="review-play-btn" class="btn-drift" style="font-size: 0.75rem; padding: 6px 16px;">LAUNCH SIMULATOR</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MESSENGER FLOAT -->
   <button class="msg-float-btn" onclick="toggleMsg()" title="Open Clan Chat">
     💬
@@ -2451,7 +2512,7 @@
         <h3 class="feat-title">Stellar Rift:<br/>Neon Uprising</h3>
         <p class="feat-desc">A breathtaking open-world cyberpunk RPG redefining the genre — unparalleled world-building, fluid combat, a story that actually hits.</p>
         <div class="feat-score">9.4 / 10</div>
-        <a href="#" class="btn-drift" style="font-size:0.85rem; padding:10px 24px;">Read Full Review</a>
+        <a href="javascript:void(0)" class="btn-drift" onclick="openReviewModal('stellarrift')" style="font-size:0.85rem; padding:10px 24px; text-decoration:none;">Read Full Review</a>
       </div>
       <div class="feat-vis">
         <div class="feat-crt"></div>
@@ -2470,14 +2531,14 @@
     </div>
 
     <div class="reviews-grid reveal">
-      <div class="r-card"><div class="r-thumb rt1"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--magenta);"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></div><div class="r-body"><span class="r-genre g-fps">FPS</span><div class="r-name">Vortex Protocol</div><p class="r-desc">Extraction shooter with next-gen AI enemies and zero-lag netcode.</p><div class="r-foot"><span class="r-score s-hi">9.1</span><span class="r-plat">PC · PS5</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt2"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><path d="M12 22C12 22 17 18 17 13C17 7.5 12.5 3 12.5 3S12 7.5 12 13C12 18 12 22 12 22Z" /><path d="M12 13C12 13 7 11 7 8C7 4.7 11.5 2 11.5 2S12 4.7 12 8C12 11 12 13 12 13Z" /><path d="M12 18C12 18 19 16 19 14C19 11.8 12.5 10 12.5 10" /><path d="M12 15C12 15 5 14 5 12C5 9.8 11.5 8 11.5 8" /></svg></div><div class="r-body"><span class="r-genre g-rpg">RPG</span><div class="r-name">Echoes of Elara</div><p class="r-desc">Sweeping fantasy epic with procedural lore and deep companion AI.</p><div class="r-foot"><span class="r-score s-hi">8.8</span><span class="r-plat">PC · Xbox</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt3"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--purple);"><path d="M2 20h20v-8h-3v-2h2V6h-3v2h-2V6h-3v2h-2V6H9v2H7V6H4v4h2v2H2v8z" /><path d="M6 14h3m4 0h2m-6 3h4m4 0h2m-10-6h2m6 0h2" stroke-width="1" opacity="0.6"/><rect x="10" y="15" width="4" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M11 15v5M13 15v5M10 17.5h4" stroke-width="1" /><rect x="5" y="8" width="1.5" height="2.5" rx="0.5" fill="currentColor" /><rect x="17.5" y="8" width="1.5" height="2.5" rx="0.5" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-str">Strategy</span><div class="r-name">Ironclad Dynasty</div><p class="r-desc">Hex-based grand strategy with real-time diplomacy. Complex but rewarding.</p><div class="r-foot"><span class="r-score s-md">7.6</span><span class="r-plat">PC</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt4"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--cyan);"><path d="M5 19L19 5" /><path d="M16 4l4 4" /><path d="M4 20l2-2" stroke-width="2.5" /><path d="M3 21l1-1" stroke-width="3" /><path d="M19 19L5 5" /><path d="M8 4L4 8" /><path d="M20 20l-2-2" stroke-width="2.5" /><path d="M21 21l-1-1" stroke-width="3" /><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="r-body"><span class="r-genre g-moba">MOBA</span><div class="r-name">Nexus Gate: Reborn</div><p class="r-desc">Hero-shooter MOBA hybrid dominating ranked queues worldwide.</p><div class="r-foot"><span class="r-score s-hi">8.3</span><span class="r-plat">PC · Mobile</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt5"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange);"><path d="M2 15h2c.5-1.5 1.5-2 3-2s2.5.5 3 2h4c.5-1.5 1.5-2 3-2s2.5.5 3 2h2v-2c0-1.5-1-2.5-3-3H9L6.5 7H4c-1 0-2 1-2 2v6z" /><circle cx="7" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 9.5h3M21 11h-2" /></svg></div><div class="r-body"><span class="r-genre g-rac">Racing</span><div class="r-name">Grid Surge 2025</div><p class="r-desc">Hyper-realistic physics with an evolving career mode unlike any other.</p><div class="r-foot"><span class="r-score s-md">7.9</span><span class="r-plat">All Platforms</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt6"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z" /><path d="M9 3v15M15 6v15" stroke-dasharray="2 2" /><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1" /><circle cx="12" cy="12" r="1" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-adv">Adventure</span><div class="r-name">Verdant Abyss</div><p class="r-desc">Deep underwater exploration. The most beautiful game of the year.</p><div class="r-foot"><span class="r-score s-hi">9.0</span><span class="r-plat">PS5 · PC</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt7"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan);"><rect x="5" y="6" width="14" height="11" rx="3" /><path d="M9 17v2m6-2v2M7 19h10M12 3v3" /><rect x="7" y="9" width="10" height="3" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" /><line x1="8.5" y1="10.5" x2="15.5" y2="10.5" stroke="currentColor" stroke-width="1" /><path d="M4 11h1M19 11h1" /></svg></div><div class="r-body"><span class="r-genre g-act">Action</span><div class="r-name">CyberCore: Zero</div><p class="r-desc">Fast-paced cyberpunk brawler with a killer soundtrack and tight controls.</p><div class="r-foot"><span class="r-score s-hi">8.6</span><span class="r-plat">PC · PS5 · XSX</span></div></div></div>
-      <div class="r-card"><div class="r-thumb rt8"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--amber);"><path d="M12 2a9 9 0 0 0-9 9v9c0 .6.4 1 1 1h.5a1.5 1.5 0 0 0 1.5-1.5v-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 0 3 0v-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 0 3 0v-1a1.5 1.5 0 0 0 1.5 1.5h.5c.6 0 1-.4 1-1v-9a9 9 0 0 0-9-9z" /><circle cx="9" cy="11" r="1.5" fill="currentColor" /><circle cx="15" cy="11" r="1.5" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-hor">Horror</span><div class="r-name">Phantom Signal</div><p class="r-desc">Indie horror masterpiece — atmospheric, terrifying, unforgettable.</p><div class="r-foot"><span class="r-score s-hi">9.2</span><span class="r-plat">PC</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('vortexprotocol')"><div class="r-thumb rt1"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--magenta);"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></div><div class="r-body"><span class="r-genre g-fps">FPS</span><div class="r-name">Vortex Protocol</div><p class="r-desc">Extraction shooter with next-gen AI enemies and zero-lag netcode.</p><div class="r-foot"><span class="r-score s-hi">9.1</span><span class="r-plat">PC · PS5</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('echoesofelara')"><div class="r-thumb rt2"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><path d="M12 22C12 22 17 18 17 13C17 7.5 12.5 3 12.5 3S12 7.5 12 13C12 18 12 22 12 22Z" /><path d="M12 13C12 13 7 11 7 8C7 4.7 11.5 2 11.5 2S12 4.7 12 8C12 11 12 13 12 13Z" /><path d="M12 18C12 18 19 16 19 14C19 11.8 12.5 10 12.5 10" /><path d="M12 15C12 15 5 14 5 12C5 9.8 11.5 8 11.5 8" /></svg></div><div class="r-body"><span class="r-genre g-rpg">RPG</span><div class="r-name">Echoes of Elara</div><p class="r-desc">Sweeping fantasy epic with procedural lore and deep companion AI.</p><div class="r-foot"><span class="r-score s-hi">8.8</span><span class="r-plat">PC · Xbox</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('ironcladdynasty')"><div class="r-thumb rt3"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--purple);"><path d="M2 20h20v-8h-3v-2h2V6h-3v2h-2V6h-3v2h-2V6H9v2H7V6H4v4h2v2H2v8z" /><path d="M6 14h3m4 0h2m-6 3h4m4 0h2m-10-6h2m6 0h2" stroke-width="1" opacity="0.6"/><rect x="10" y="15" width="4" height="5" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M11 15v5M13 15v5M10 17.5h4" stroke-width="1" /><rect x="5" y="8" width="1.5" height="2.5" rx="0.5" fill="currentColor" /><rect x="17.5" y="8" width="1.5" height="2.5" rx="0.5" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-str">Strategy</span><div class="r-name">Ironclad Dynasty</div><p class="r-desc">Hex-based grand strategy with real-time diplomacy. Complex but rewarding.</p><div class="r-foot"><span class="r-score s-md">7.6</span><span class="r-plat">PC</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('nexusgatereborn')"><div class="r-thumb rt4"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--cyan);"><path d="M5 19L19 5" /><path d="M16 4l4 4" /><path d="M4 20l2-2" stroke-width="2.5" /><path d="M3 21l1-1" stroke-width="3" /><path d="M19 19L5 5" /><path d="M8 4L4 8" /><path d="M20 20l-2-2" stroke-width="2.5" /><path d="M21 21l-1-1" stroke-width="3" /><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="r-body"><span class="r-genre g-moba">MOBA</span><div class="r-name">Nexus Gate: Reborn</div><p class="r-desc">Hero-shooter MOBA hybrid dominating ranked queues worldwide.</p><div class="r-foot"><span class="r-score s-hi">8.3</span><span class="r-plat">PC · Mobile</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('gridsurge2025')"><div class="r-thumb rt5"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--orange);"><path d="M2 15h2c.5-1.5 1.5-2 3-2s2.5.5 3 2h4c.5-1.5 1.5-2 3-2s2.5.5 3 2h2v-2c0-1.5-1-2.5-3-3H9L6.5 7H4c-1 0-2 1-2 2v6z" /><circle cx="7" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="15" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 9.5h3M21 11h-2" /></svg></div><div class="r-body"><span class="r-genre g-rac">Racing</span><div class="r-name">Grid Surge 2025</div><p class="r-desc">Hyper-realistic physics with an evolving career mode unlike any other.</p><div class="r-foot"><span class="r-score s-md">7.9</span><span class="r-plat">All Platforms</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('verdantabyss')"><div class="r-thumb rt6"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--green);"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z" /><path d="M9 3v15M15 6v15" stroke-dasharray="2 2" /><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1" /><circle cx="12" cy="12" r="1" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-adv">Adventure</span><div class="r-name">Verdant Abyss</div><p class="r-desc">Deep underwater exploration. The most beautiful game of the year.</p><div class="r-foot"><span class="r-score s-hi">9.0</span><span class="r-plat">PS5 · PC</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('cybercorezero')"><div class="r-thumb rt7"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--cyan);"><rect x="5" y="6" width="14" height="11" rx="3" /><path d="M9 17v2m6-2v2M7 19h10M12 3v3" /><rect x="7" y="9" width="10" height="3" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" /><line x1="8.5" y1="10.5" x2="15.5" y2="10.5" stroke="currentColor" stroke-width="1" /><path d="M4 11h1M19 11h1" /></svg></div><div class="r-body"><span class="r-genre g-act">Action</span><div class="r-name">CyberCore: Zero</div><p class="r-desc">Fast-paced cyberpunk brawler with a killer soundtrack and tight controls.</p><div class="r-foot"><span class="r-score s-hi">8.6</span><span class="r-plat">PC · PS5 · XSX</span></div></div></div>
+      <div class="r-card" onclick="openReviewModal('phantomsignal')"><div class="r-thumb rt8"><div class="r-scan"></div><svg class="tactical-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.15" style="color: var(--amber);"><path d="M12 2a9 9 0 0 0-9 9v9c0 .6.4 1 1 1h.5a1.5 1.5 0 0 0 1.5-1.5v-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 0 3 0v-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 0 3 0v-1a1.5 1.5 0 0 0 1.5 1.5h.5c.6 0 1-.4 1-1v-9a9 9 0 0 0-9-9z" /><circle cx="9" cy="11" r="1.5" fill="currentColor" /><circle cx="15" cy="11" r="1.5" fill="currentColor" /></svg></div><div class="r-body"><span class="r-genre g-hor">Horror</span><div class="r-name">Phantom Signal</div><p class="r-desc">Indie horror masterpiece — atmospheric, terrifying, unforgettable.</p><div class="r-foot"><span class="r-score s-hi">9.2</span><span class="r-plat">PC</span></div></div></div>
     </div>
   </section>
 
@@ -3843,6 +3904,7 @@
       closeGame();
       closeCart();
       closeVideoModal();
+      closeReviewModal();
       if (msgOpen) toggleMsg();
     }
   });
@@ -3890,6 +3952,246 @@
     body.innerHTML+=`<div class="msg-bubble recv"><div class="msg-sender">${rn}</div>${rm}<div class="msg-time">${t}</div></div>`;
     body.scrollTop=body.scrollHeight;
   },8000);
+
+  // ══════════════════════════════
+  // REVIEWS ENGINE
+  // ══════════════════════════════
+  const reviewsLibrary = {
+    stellarrift: {
+      title: "Stellar Rift: Neon Uprising",
+      genre: "Cyberpunk RPG",
+      plat: "PC · PS5 · XSX",
+      score: "9.4",
+      verdict: "Stellar Rift: Neon Uprising is a triumph of cyberpunk storytelling and atmospheric world-building. A must-play masterpiece.",
+      developer: "Vanguard Studios",
+      engine: "Unreal Engine 5.2",
+      telemetry: "STABILITY: 98% // RTX: ACTIVE // DLSS: 3.0 // SHADERS: COMPILED",
+      pros: ["Breathtaking path-traced night city atmosphere", "Deep narrative branching paths", "Visceral neural combat mechanics"],
+      cons: ["Occasional minor quest script glitches", "High hardware requirements for max settings"],
+      content: [
+        "Stellar Rift: Neon Uprising transports players to the rain-slicked, neon-drenched metropolis of Neo-Veridia. You play as a rogue neural deckrunner navigating a web of corporate espionage, street warfare, and synthetic consciousness.",
+        "From the moment you step onto the high-rise walkways of Sector 9, the visual scale is staggering. Unreal Engine 5's Lumen and Nanite systems are pushed to their absolute limits, casting ray-traced reflections on wet asphalt and generating incredibly detailed dense crowds.",
+        "The combat is a fluid hybrid of fast-paced gunplay, slow-motion cybernetic abilities, and real-time environment hacking. Upgradable bio-chips allow you to custom-tailor your playstyle, whether you want to ghost through sectors unseen or override enemy defenses. Despite launch-day performance concerns on mid-range hardware, optimization patches have ironed out frame pacing, solidifying this as the definitive next-gen cyberpunk RPG."
+      ]
+    },
+    vortexprotocol: {
+      title: "Vortex Protocol",
+      genre: "FPS / Extraction Shooter",
+      plat: "PC · PS5",
+      score: "9.1",
+      verdict: "An adrenaline-fueled, high-stakes extraction shooter with flawless network replication and terrifying tactical AI.",
+      developer: "GamerDrift Interactive",
+      engine: "Custom Vulkan Engine",
+      telemetry: "NET TICK: 128Hz // PING: 12ms // ANTI-CHEAT: KERNEL_ACTIVE",
+      pros: ["Zero-lag netcode and rapid matching queues", "Highly smart tactical AI squads", "Intense risk-vs-reward economy loop"],
+      cons: ["Steep learning curve for solo operators", "No offline practice mode"],
+      content: [
+        "Vortex Protocol is a tactical extraction shooter built for competitive purists. Dropped into the abandoned research anomalies of Sector 4, your team must capture energy cores and secure an extraction vector before environmental hazards or enemy squads terminate your signal.",
+        "The game's standout achievement is its network performance. Leveraging custom Vulkan-based rendering and a high-frequency 128-tick server architecture, bullet collision feels incredibly crisp, eliminating the frustrating deaths common to other shooters in the genre.",
+        "The tactical AI squads coordinate flanking routes, suppress positions, and retreat when outnumbered, demanding cautious team communication. The weapon modification system allows you to build modular weapons that feel unique. If you're looking for a punishing, high-stakes shooter that rewards skill, Vortex Protocol is second to none."
+      ],
+      playableId: "vortexprotocol"
+    },
+    echoesofelara: {
+      title: "Echoes of Elara",
+      genre: "Procedural RPG",
+      plat: "PC · Xbox Series X",
+      score: "8.8",
+      verdict: "An ambitious high-fantasy epic combining deep procedural narrative databases with beautiful tactical combat.",
+      developer: "Aetherial Games",
+      engine: "Unity Pro HDRP",
+      telemetry: "LORE NODES: 42,000+ // COMPRESSED DATA: OK // SEED: RANDOM",
+      pros: ["Procedural-generated lore feels organic and deep", "Dynamic companion dialogue adjusting to actions", "Challenging turn-based combat system"],
+      cons: ["Procedural dungeons can occasionally feel repetitive", "Inventory sorting menu could be optimized"],
+      content: [
+        "Echoes of Elara attempts a massive feat: generating a fully realized high-fantasy world with unique histories, factions, and character relationships for every new playthrough. And for the most part, it succeeds marvelously.",
+        "The heart of the game is its dynamic story matrix. Instead of static quests, your actions ripple through local villages and global kingdoms, changing how companions respond and altering faction alignments.",
+        "Combat takes place on a tactical hex grid, requiring careful positioning, elements-matching spells, and cover utilisation. The watercolor art direction is stunning, backed by a fully orchestral score that shifts dynamically based on combat tension. It is a landmark achievement in procedural story design."
+      ]
+    },
+    ironcladdynasty: {
+      title: "Ironclad Dynasty",
+      genre: "Grand Strategy",
+      plat: "PC",
+      score: "7.6",
+      verdict: "A deep, complex historical strategy game that will appeal to hardcore genre fans, though held back by UI complexity.",
+      developer: "Stellaris Forge",
+      engine: "Paradox Clausewitz Engine",
+      telemetry: "LOGIC LOOPS: 85k/sec // THREADS: MULTI_ACTIVE // RAM: 4.2GB",
+      pros: ["Unparalleled depth in diplomatic negotiations", "Accurate historical macroeconomics simulation", "Excellent mod support from community"],
+      cons: ["Extremely steep and intimidating tutorial flow", "User interface feels cluttered on lower resolutions"],
+      content: [
+        "Ironclad Dynasty places you at the helm of an empire during the steam-powered industrial revolution. Managing trade routes, technological breakthroughs, army deployments, and complex treaties requires a calm mind and meticulous planning.",
+        "The macroeconomics simulator coordinates resource flows, inflation indices, and worker demands with incredible accuracy. However, the sheer density of data menus and tooltips can overwhelm newcomers, and the tutorial fails to explain secondary mechanics.",
+        "If you can pierce through the dense user interface, there is a masterfully crafted grand strategy game underneath. The political simulator features faction interests and civil unrest variables that demand constant oversight."
+      ]
+    },
+    nexusgatereborn: {
+      title: "Nexus Gate: Reborn",
+      genre: "MOBA / Hero Shooter",
+      plat: "PC · Mobile",
+      score: "8.3",
+      verdict: "A refreshing hero-shooter MOBA hybrid that delivers fast matches, balanced hero pools, and cross-play stability.",
+      developer: "Neolink Studios",
+      engine: "Unreal Engine 5.1",
+      telemetry: "MATCH RATE: 1.2M/day // SERVER LOAD: NOMINAL // CROSSPLAY: ACTIVE",
+      pros: ["Fast-paced 15-minute combat matches", "Excellently balanced starting roster of 24 heroes", "Fluid cross-play between mobile and PC"],
+      cons: ["Ranked queue matchmaking system needs fine-tuning", "Cosmetic store prices are slightly inflated"],
+      content: [
+        "Nexus Gate: Reborn attempts to blend the strategic depth of traditional lanes and items in MOBAs with the fast reflex action of hero shooters. The result is a highly addictive, fast-paced battle arena.",
+        "Matches are limited to 15 minutes, pushing teams into early skirmishes and constant action. The cross-play optimization is flawless, allowing mobile gamers to compete on equal terms with PC players through intelligent auto-assists and tactile button layouts.",
+        "While matching systems occasionally pair diamond veterans with bronze newcomers, the game's competitive integrity remains strong. Frequent balancing patches and new character drops show that the development team is committed to long-term community support."
+      ]
+    },
+    gridsurge2025: {
+      title: "Grid Surge 2025",
+      genre: "Arcade Racing",
+      plat: "PC · PS5 · Xbox · Switch",
+      score: "7.9",
+      verdict: "A solid, visually explosive racing title that excels in multiplayer drift runs, though solo career mode feels bare.",
+      developer: "Speedway Syndicate",
+      engine: "PhysX Grid Engine",
+      telemetry: "SPEED: 260+ MPH // REFLECTION: SHADOWS_ON // INPUT: 0.8ms",
+      pros: ["Incredibly satisfying drifting feel", "Beautiful volumetric lighting and weather effects", "Robust split-screen and online lobbies"],
+      cons: ["Career mode feels linear and uninspired", "Micro-transactions for car decals"],
+      content: [
+        "Grid Surge 2025 focuses on high-speed arcade drifting and competitive track times. Driving through rain-swept city tracks, the physics model strikes a great balance between realistic weight distribution and satisfying arcade drift slip.",
+        "The graphics engine excels at wet road reflections and neon volumetric lighting. Multiplayer lobbies run smoothly with low input latency. The main negative is the single-player career path, which repeats events across similar tracks. If you want a quick, visually thrilling race simulator to play online with friends, Grid Surge 2025 is a great addition."
+      ]
+    },
+    verdantabyss: {
+      title: "Verdant Abyss",
+      genre: "Atmospheric Adventure",
+      plat: "PS5 · PC",
+      score: "9.0",
+      verdict: "An absolute visual and sonic masterpiece that sets a new high bar for underwater exploration and world building.",
+      developer: "Deep Blue Studio",
+      engine: "Custom Fluid Render",
+      telemetry: "DEPTH: 12k Meters // LIGHT: VOLUMETRIC // SOUND: 3D_AUDIO",
+      pros: ["Captivating, eerie underwater environments", "Stunning volumetric lighting and water physics", "Haunting, dynamic orchestral score"],
+      cons: ["Pacing starts slow during early chapters", "Map layout can be confusing without coordinates"],
+      content: [
+        "Verdant Abyss takes you thousands of meters beneath an alien ocean to map bioluminescent ecosystems and explore sunken architectural ruins. The sense of isolation and wonder is unmatched.",
+        "The developers wrote a custom graphics pipeline for underwater light refraction and particulate dust simulations. Sunlight beams pierce through the deep water, highlighting huge alien creatures drifting in the dark.",
+        "With headphones, the 3D audio design creates a claustrophobic, immersive soundscape where every creak of your dive suit or sonar ping echoes realistically. It is a slow, methodical journey that rewards patience and curiosity."
+      ]
+    },
+    cybercorezero: {
+      title: "CyberCore: Zero",
+      genre: "Beat 'Em Up / Action",
+      plat: "PC · PS5 · XSX",
+      score: "8.6",
+      verdict: "A fast-paced, neon brawler featuring satisfying combo chains, intense boss battles, and a brilliant soundtrack.",
+      developer: "Hex-Cut Action",
+      engine: "Unreal Engine 5.3",
+      telemetry: "COMBO: x99 // RENDERING: 120Hz // ACCELERATION: DIRECT_COMPUTE",
+      pros: ["Extremely fluid combat animations", "Incredible synthwave and rock soundtrack", "High replayability with difficulty tiers"],
+      cons: ["Bosses can feel bullet-spongy on standard modes", "Camera positioning occasionally clips in narrow hallways"],
+      content: [
+        "CyberCore: Zero is a modern brawler that pays tribute to 90s arcade action while introducing high-tech combat mechanics. You fight through waves of corporate cybernetic enforcers using combos, dash deflections, and special kinetic overrides.",
+        "The animation frames are fast and hand-keyed, making every hit feel impactful. The soundtrack is a highlight, pulsing in sync with your combo multiplier.",
+        "While camera controls can struggle in tight elevator shafts, the tight combat mechanics and diverse enemy types keep the action fresh. It is an excellent pick for players looking for direct, skill-based action."
+      ]
+    },
+    phantomsignal: {
+      title: "Phantom Signal",
+      genre: "Survival Horror",
+      plat: "PC",
+      score: "9.2",
+      verdict: "A terrifying indie horror masterpiece that leverages retro VHS filters and sound design to create pure dread.",
+      developer: "Spectral Software",
+      engine: "Retro VHS 3D Renderer",
+      telemetry: "SIGNAL: WEAK // AUDIO DEVIATION: HIGH // SENSOR: ACTIVE",
+      pros: ["Genius use of retro VHS aesthetics", "Masterful psychological tension building", "Clever environmental sound design puzzles"],
+      cons: ["Extremely short play time (approx. 3 hours)", "Voice acting quality is inconsistent"],
+      content: [
+        "Phantom Signal is a masterclass in low-fidelity survival horror. You play as a lone telecommunications operator at a remote radar monitoring station in Alaska. When the sensors detect an anomalous, repeating signal from the arctic waste, things begin to decay.",
+        "The game utilizes a vintage PS1-era low-poly visual style combined with an adjustable VHS tape filter, creating a murky, claustrophobic atmosphere.",
+        "The horror is psychological, focusing on isolation, static radio white noise, and shadows. The puzzle design is organic, requiring you to physically tune oscilloscope waves and check radar sectors. Though short, the experience leaves a deep impression."
+      ]
+    }
+  };
+
+  function openReviewModal(key) {
+    const review = reviewsLibrary[key];
+    if (!review) return;
+
+    document.getElementById('review-game-title').textContent = review.title.toUpperCase();
+    document.getElementById('review-meta-tag').textContent = `${review.genre} // PLATFORMS: ${review.plat}`;
+    document.getElementById('review-game-verdict').textContent = `"${review.verdict}"`;
+    document.getElementById('review-game-score').textContent = review.score;
+    
+    const scoreVal = parseFloat(review.score);
+    const scoreEl = document.getElementById('review-game-score');
+    if (scoreEl) {
+      if (scoreVal >= 8.5) {
+        scoreEl.style.color = 'var(--green)';
+        scoreEl.style.textShadow = '0 0 15px rgba(0, 255, 102, 0.4)';
+      } else if (scoreVal >= 7.5) {
+        scoreEl.style.color = 'var(--orange)';
+        scoreEl.style.textShadow = '0 0 15px rgba(255, 170, 0, 0.4)';
+      } else {
+        scoreEl.style.color = 'var(--magenta)';
+        scoreEl.style.textShadow = '0 0 15px rgba(255, 0, 85, 0.4)';
+      }
+    }
+
+    document.getElementById('review-game-specs').innerHTML = `
+      DEVELOPER: ${review.developer}<br>
+      ENGINE: ${review.engine}<br>
+      TELEMETRY: ${review.telemetry}
+    `;
+
+    const contentContainer = document.getElementById('review-game-content');
+    if (contentContainer) {
+      contentContainer.innerHTML = review.content.map(p => `<p>${p}</p>`).join('');
+    }
+
+    const prosContainer = document.getElementById('review-game-pros');
+    if (prosContainer) {
+      prosContainer.innerHTML = review.pros.map(pro => `<li style="margin-bottom: 0.2rem;"><span style="color: var(--green); margin-right: 4px;">✔</span> ${pro}</li>`).join('');
+    }
+
+    const consContainer = document.getElementById('review-game-cons');
+    if (consContainer) {
+      consContainer.innerHTML = review.cons.map(con => `<li style="margin-bottom: 0.2rem;"><span style="color: var(--magenta); margin-right: 4px;">✘</span> ${con}</li>`).join('');
+    }
+
+    const footerText = document.getElementById('review-play-text');
+    const playBtn = document.getElementById('review-play-btn');
+    if (footerText && playBtn) {
+      if (review.playableId) {
+        footerText.textContent = "PLAYABLE SIMULATION DETECTED IN ARCHIVES";
+        footerText.style.color = 'var(--green)';
+        playBtn.style.display = 'block';
+        playBtn.textContent = "▶ LAUNCH PLAYABLE";
+        playBtn.onclick = () => {
+          closeReviewModal();
+          playGame(review.playableId);
+        };
+      } else {
+        footerText.textContent = "NO DIRECT SIMULATION VECTOR AVAILABLE FOR THIS TITLE";
+        footerText.style.color = 'var(--t3)';
+        playBtn.style.display = 'none';
+      }
+    }
+
+    const modal = document.getElementById('review-modal');
+    if (modal) {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+    
+    showToast(`[INTEL] Decrypting database dossier: ${review.title}...`);
+  }
+
+  function closeReviewModal() {
+    const modal = document.getElementById('review-modal');
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  }
 
   // ══════════════════════════════
   // CRAZYGAMES-STYLE BROWSER GAMES ENGINE
