@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Phantom Signal - Transmission Tuner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #040605;
+      color: #33ff33;
+      font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #game-container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 2px solid #33ff33;
+      box-shadow: 0 0 20px rgba(51, 255, 51, 0.25);
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      background: #010201;
+    }
+    #left-panel {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(51, 255, 51, 0.25);
+      padding: 10px;
+      box-sizing: border-box;
+      justify-content: space-between;
+    }
+    #right-panel {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      background: rgba(0, 5, 1, 0.5);
+    }
+    canvas {
+      border: 1px solid rgba(51, 255, 51, 0.2);
+      background: #020302;
+    }
+    .hud-title {
+      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-shadow: 0 0 8px #33ff33;
+      border-bottom: 1px solid rgba(51, 255, 51, 0.25);
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+    }
+    #overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(2, 4, 2, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    .btn {
+      background: rgba(51, 255, 51, 0.1);
+      color: #33ff33;
+      border: 1px solid #33ff33;
+      padding: 10px 24px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 0 10px rgba(51, 255, 51, 0.2);
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: rgba(51, 255, 51, 0.25);
+      box-shadow: 0 0 18px rgba(51, 255, 51, 0.6);
+      transform: scale(1.03);
+    }
+    .slider-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 0.75rem;
+    }
+    .slider-wrap label {
+      display: flex;
+      justify-content: space-between;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: rgba(51, 255, 51, 0.15);
+      height: 6px;
+      border: 1px solid rgba(51, 255, 51, 0.3);
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #33ff33;
+      cursor: pointer;
+      box-shadow: 0 0 8px #33ff33;
+    }
+    #log {
+      flex: 1;
+      border: 1px solid rgba(51, 255, 51, 0.15);
+      margin: 8px 0;
+      padding: 6px;
+      overflow-y: auto;
+      font-size: 0.68rem;
+      color: #88ff88;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+    .warning {
+      color: #ff3333;
+      text-shadow: 0 0 5px #ff3333;
+      animation: blink 1.2s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    #crt-scanlines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(51, 255, 51, 0.04) 2px, rgba(51, 255, 51, 0.04) 4px);
+      z-index: 15;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="crt-scanlines"></div>
+    <div id="overlay">
+      <h2 style="margin: 0; font-size: 1.6rem; text-shadow: 0 0 10px #33ff33; text-transform: uppercase;">PHANTOM SIGNAL</h2>
+      <p style="color: #88aa88; font-size: 0.72rem; text-align: center; margin: 10px 20px 0; line-height: 1.45;">
+        Tuning Protocol:<br/>
+        Adjust Amplitude, Frequency, and Phase sliders to match your GREEN wave with the anomalous RED target signal.<br/>
+        Maintain high sync to decode the files.<br/>
+        Beware of electrostatic sensor anomalies: click DE-GLITCH immediately to reset calibrations.
+      </p>
+      <button class="btn" id="start-btn">ENGAGE ANTENNA ARRAY</button>
+    </div>
+
+    <div id="left-panel">
+      <div class="hud-title">📟 OSCILLOSCOPE DECK</div>
+      <canvas id="scopeCanvas" width="370" height="200"></canvas>
+      
+      <div style="font-size: 0.8rem; display: flex; justify-content: space-between; border-top: 1px solid rgba(51, 255, 51, 0.2); padding-top: 6px;">
+        <span>SYNC STATUS: <span id="sync-val" style="color: #fff; font-weight: bold;">0%</span></span>
+        <span>SECTORS: <span id="sector-val" style="color: #33ffea;">0/3</span></span>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 4px;">
+        <button class="btn" id="deglitch-btn" style="flex: 1; margin: 0; padding: 6px; font-size: 0.75rem;">⚡ DE-GLITCH OVERRIDE</button>
+      </div>
+    </div>
+
+    <div id="right-panel">
+      <div style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+        <div style="font-size:0.75rem; text-align:center; font-weight:bold; border-bottom:1px solid rgba(51, 255, 51, 0.2); padding-bottom:4px;">TUNING BAY</div>
+        
+        <div class="slider-wrap">
+          <label>AMPLITUDE <span id="amp-txt">1.0</span></label>
+          <input type="range" id="slider-amp" min="0.1" max="3.0" step="0.05" value="1.0">
+        </div>
+
+        <div class="slider-wrap">
+          <label>FREQUENCY <span id="freq-txt">1.0</span></label>
+          <input type="range" id="slider-freq" min="0.1" max="4.0" step="0.05" value="1.0">
+        </div>
+
+        <div class="slider-wrap">
+          <label>PHASE SHIFT <span id="phase-txt">0.0</span></label>
+          <input type="range" id="slider-phase" min="-3.14" max="3.14" step="0.05" value="0.0">
+        </div>
+
+        <div id="log">
+          <div>[SYSTEM]: STANDBY FOR DECRYPT...</div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(51, 255, 51, 0.2); padding-top: 5px; font-size: 0.7rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom: 2px;">
+            <span>DISRUPTION:</span>
+            <span id="disrupt-txt" style="color: #ff3333; font-weight:bold;">0%</span>
+          </div>
+          <div style="width:100%; height:6px; background:rgba(255,0,0,0.1); border:1px solid #ff3333;">
+            <div id="disrupt-bar" style="width:0%; height:100%; background:#ff3333; box-shadow: 0 0 5px #ff3333;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('scopeCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('start-btn');
+    const deglitchBtn = document.getElementById('deglitch-btn');
+    const syncValText = document.getElementById('sync-val');
+    const sectorValText = document.getElementById('sector-val');
+    const logContainer = document.getElementById('log');
+    const disruptTxt = document.getElementById('disrupt-txt');
+    const disruptBar = document.getElementById('disrupt-bar');
+
+    const sliderAmp = document.getElementById('slider-amp');
+    const sliderFreq = document.getElementById('slider-freq');
+    const sliderPhase = document.getElementById('slider-phase');
+
+    const ampTxt = document.getElementById('amp-txt');
+    const freqTxt = document.getElementById('freq-txt');
+    const phaseTxt = document.getElementById('phase-txt');
+
+    let gameActive = false;
+    let sector = 0;
+    let targetAmp = 1.5;
+    let targetFreq = 2.0;
+    let targetPhase = 1.0;
+
+    let userAmp = 1.0;
+    let userFreq = 1.0;
+    let userPhase = 0.0;
+
+    let disruption = 0;
+    let anomalyTimer = 0;
+    let anomalyActive = false;
+    let glitchFlicker = 0;
+    let screenShake = 0;
+    let holdTime = 0; // seconds holding high sync
+
+    // Logs database
+    const sectorMissions = [
+      { amp: 2.0, freq: 1.2, phase: -0.8, dec: "[DECRYPTED]: SENSOR BEACON 01 REPORT - ICE DRILLS ENCOUNTERED REPEATING PATTERN BENEATH 140M..." },
+      { amp: 0.8, freq: 3.2, phase: 1.5, dec: "[DECRYPTED]: CLASSIFIED LOG - RETRO SIGNAL REFRACTS ON HUMAN RETINA, INDUCING SLEEPWALKING MOTIFS..." },
+      { amp: 2.7, freq: 0.7, phase: -2.1, dec: "[DECRYPTED]: FINAL LOG - RETREAT FROM ALASKAN SECTOR. IT IS NOT THE WIND. THE CORE HAS STARTED HUMMING..." }
+    ];
+
+    startBtn.addEventListener('click', () => {
+      gameActive = true;
+      sector = 0;
+      disruption = 0;
+      holdTime = 0;
+      anomalyActive = false;
+      anomalyTimer = 0;
+      overlay.style.display = 'none';
+      setupSector();
+      logMsg("[SYSTEM]: SCANNING DEEP CHANNELS...");
+      loop();
+    });
+
+    deglitchBtn.addEventListener('click', () => {
+      if (anomalyActive) {
+        anomalyActive = false;
+        disruption = Math.max(0, disruption - 15);
+        screenShake = 0;
+        logMsg("[SYSTEM]: MANUAL DE-GLITCH DEPLOYED. CALIBRATING FILTER...");
+      } else {
+        logMsg("[SYSTEM]: NO ANOMALIES IN DETECTOR RANGE.");
+      }
+    });
+
+    sliderAmp.addEventListener('input', e => {
+      userAmp = parseFloat(e.target.value);
+      ampTxt.innerText = userAmp.toFixed(2);
+    });
+    sliderFreq.addEventListener('input', e => {
+      userFreq = parseFloat(e.target.value);
+      freqTxt.innerText = userFreq.toFixed(2);
+    });
+    sliderPhase.addEventListener('input', e => {
+      userPhase = parseFloat(e.target.value);
+      phaseTxt.innerText = userPhase.toFixed(2);
+    });
+
+    function setupSector() {
+      if (sector >= sectorMissions.length) {
+        endGame(true);
+        return;
+      }
+      const mission = sectorMissions[sector];
+      targetAmp = mission.amp;
+      targetFreq = mission.freq;
+      targetPhase = mission.phase;
+      holdTime = 0;
+      sectorValText.innerText = `${sector}/3`;
+    }
+
+    function logMsg(str, warning = false) {
+      const div = document.createElement('div');
+      div.innerText = str;
+      if (warning) div.className = 'warning';
+      logContainer.appendChild(div);
+      logContainer.scrollTop = logContainer.scrollHeight;
+
+      while (logContainer.children.length > 15) {
+        logContainer.removeChild(logContainer.firstChild);
+      }
+    }
+
+    function update() {
+      if (!gameActive) return;
+
+      // Handle anomaly spawning
+      anomalyTimer++;
+      if (!anomalyActive && anomalyTimer > 280) {
+        if (Math.random() < 0.4) {
+          anomalyActive = true;
+          anomalyTimer = 0;
+          logMsg("[ALERT]: HIGH ELECTROMAGNETIC BURST INCOMING!", true);
+        }
+      }
+
+      if (anomalyActive) {
+        disruption += 0.35;
+        screenShake = Math.sin(Date.now()) * 5;
+        glitchFlicker = Math.random() < 0.3 ? 1 : 0;
+        
+        // Randomly slide user sliders
+        if (Math.random() < 0.05) {
+          userAmp = Math.max(0.1, Math.min(3.0, userAmp + (Math.random() - 0.5) * 0.4));
+          sliderAmp.value = userAmp;
+          ampTxt.innerText = userAmp.toFixed(2);
+
+          userFreq = Math.max(0.1, Math.min(4.0, userFreq + (Math.random() - 0.5) * 0.4));
+          sliderFreq.value = userFreq;
+          freqTxt.innerText = userFreq.toFixed(2);
+
+          userPhase = Math.max(-3.14, Math.min(3.14, userPhase + (Math.random() - 0.5) * 0.6));
+          sliderPhase.value = userPhase;
+          phaseTxt.innerText = userPhase.toFixed(2);
+        }
+
+        if (disruption >= 100) {
+          disruption = 100;
+          endGame(false);
+        }
+      } else {
+        screenShake = 0;
+        glitchFlicker = 0;
+        if (disruption > 0) disruption -= 0.05;
+      }
+
+      // Calculate Sync Accuracy
+      let ampDiff = Math.abs(userAmp - targetAmp);
+      let freqDiff = Math.abs(userFreq - targetFreq);
+      let phaseDiff = Math.abs(userPhase - targetPhase);
+
+      // Map accuracy to a 0-100 score
+      let ampAcc = Math.max(0, 100 - (ampDiff / 2.9) * 100);
+      let freqAcc = Math.max(0, 100 - (freqDiff / 3.9) * 100);
+      let phaseAcc = Math.max(0, 100 - (phaseDiff / 6.28) * 100);
+
+      let syncPercentage = Math.floor((ampAcc + freqAcc + phaseAcc) / 3);
+
+      // Handle distortion penalty
+      if (anomalyActive) {
+        syncPercentage = Math.max(0, syncPercentage - 35);
+      }
+
+      syncValText.innerText = syncPercentage + '%';
+      if (syncPercentage > 85) {
+        syncValText.style.color = '#33ffea';
+        holdTime++;
+        if (holdTime > 90) { // Approx 1.5 seconds at 60 FPS
+          logMsg(sectorMissions[sector].dec);
+          sector++;
+          setupSector();
+        }
+      } else {
+        syncValText.style.color = '#33ff33';
+        if (holdTime > 0) holdTime--;
+      }
+
+      // Render disruption HUD bar
+      disruptTxt.innerText = Math.floor(disruption) + '%';
+      disruptBar.style.width = disruption + '%';
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      // Apply screen shake
+      if (screenShake !== 0) {
+        ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+      }
+
+      // Draw Grid on scope
+      ctx.strokeStyle = 'rgba(51, 255, 51, 0.07)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 20) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 20) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Center baseline
+      ctx.strokeStyle = 'rgba(51, 255, 51, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+
+      const midY = canvas.height / 2;
+      const numPoints = canvas.width;
+
+      // Draw Target (RED) Wave
+      ctx.strokeStyle = anomalyActive ? '#ff33ff' : '#ff3333';
+      ctx.lineWidth = 2;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = ctx.strokeStyle;
+      ctx.beginPath();
+      
+      for (let x = 0; x < numPoints; x++) {
+        // target wave equation
+        let scaleX = (x / numPoints) * Math.PI * 6;
+        let y = midY + Math.sin(scaleX * targetFreq + targetPhase) * (targetAmp * 25);
+        
+        // Add random glitch displacement
+        if (anomalyActive && Math.random() < 0.08) {
+          y += (Math.random() - 0.5) * 35;
+        }
+
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Draw User (GREEN) Wave
+      if (glitchFlicker === 0 || Math.random() < 0.5) {
+        ctx.strokeStyle = '#33ffea';
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#33ffea';
+        ctx.beginPath();
+        for (let x = 0; x < numPoints; x++) {
+          let scaleX = (x / numPoints) * Math.PI * 6;
+          let y = midY + Math.sin(scaleX * userFreq + userPhase) * (userAmp * 25);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      // Ambient static noise when anomaly is active
+      if (anomalyActive) {
+        ctx.fillStyle = 'rgba(51, 255, 51, 0.08)';
+        for (let i = 0; i < 150; i++) {
+          let staticX = Math.random() * canvas.width;
+          let staticY = Math.random() * canvas.height;
+          ctx.fillRect(staticX, staticY, 2, 2);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function endGame(victory) {
+      gameActive = false;
+      overlay.style.display = 'flex';
+      
+      if (victory) {
+        overlay.querySelector('h2').innerText = 'SECTORS ALIGNED';
+        overlay.querySelector('h2').style.color = '#33ffea';
+        overlay.querySelector('p').innerHTML = `All anomalies mapped and logged successfully.<br/>RETRO SIGNAL TELEMETRY LOGGED IN CORE.<br/>STATUS: <span style="color:#33ffea; font-weight:bold;">SECURE</span>`;
+        startBtn.innerText = 'RE-SCAN CHANNELS';
+      } else {
+        overlay.querySelector('h2').innerText = 'SIGNAL TERMINATED';
+        overlay.querySelector('h2').style.color = '#ff3333';
+        overlay.querySelector('p').innerHTML = `Electrostatic envelope collapsed. Telecommunication lost.<br/>STATUS: <span style="color:#ff3333; font-weight:bold;">DISRUPTED</span>`;
+        startBtn.innerText = 'RE-INITIALIZE RECEIVER';
+      }
+    }
+
+    function loop() {
+      if (!gameActive) return;
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+  </script>
+</body>
+</html>

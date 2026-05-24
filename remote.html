@@ -2732,7 +2732,7 @@
         <!-- Search & Filters -->
         <div class="games-search-panel">
           <input type="text" class="games-search-bar" id="games-search" placeholder="SEARCH CLASSIFIED RECREATION ARTIFACTS..." oninput="searchGames()">
-          <span class="games-status-indicator" style="font-family: var(--ff-mono); font-size: 0.7rem; color: var(--green);">SYSTEMS ACTIVE [5/5]</span>
+          <span class="games-status-indicator" style="font-family: var(--ff-mono); font-size: 0.7rem; color: var(--green);">SYSTEMS ACTIVE [10/10]</span>
         </div>
 
         <!-- Featured Game Banner -->
@@ -2772,8 +2772,8 @@
             <div class="theater-controls-panel">
               <div class="theater-meta-title" id="theater-active-title">No Simulation Loaded</div>
               <div class="theater-actions">
-                <button class="btn-sm" id="theater-like-btn" onclick="rateGame(true)" style="background: rgba(0, 255, 136, 0.08); border-color: var(--green); color: var(--green);">👍 <span id="theater-likes">0</span></button>
-                <button class="btn-sm" id="theater-dislike-btn" onclick="rateGame(false)" style="background: rgba(255, 0, 85, 0.08); border-color: var(--magenta); color: var(--magenta);">👎 <span id="theater-dislikes">0</span></button>
+                <button class="btn-sm" id="theater-like-btn" onclick="rateGame(true)" style="background: rgba(0, 255, 136, 0.08); border-color: var(--green); color: var(--green); display: flex; align-items: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> LIKE <span id="theater-likes" style="margin-left: 4px;">0</span></button>
+                <button class="btn-sm" id="theater-dislike-btn" onclick="rateGame(false)" style="background: rgba(255, 0, 85, 0.08); border-color: var(--magenta); color: var(--magenta); display: flex; align-items: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg> DISLIKE <span id="theater-dislikes" style="margin-left: 4px;">0</span></button>
                 <button class="btn-sm" onclick="toggleLights()" style="border-color: var(--cyan); color: var(--cyan);">💡 Dim Lights</button>
                 <button class="btn-sm" onclick="toggleTheaterMode()" style="border-color: var(--orange); color: var(--orange);">🎭 Theater Mode</button>
                 <button class="btn-sm" onclick="toggleFullscreenGame()" style="background: var(--cyan); color: #000; font-weight: 700; border-color: var(--cyan);">⛶ Fullscreen</button>
@@ -3972,7 +3972,8 @@
         "Stellar Rift: Neon Uprising transports players to the rain-slicked, neon-drenched metropolis of Neo-Veridia. You play as a rogue neural deckrunner navigating a web of corporate espionage, street warfare, and synthetic consciousness.",
         "From the moment you step onto the high-rise walkways of Sector 9, the visual scale is staggering. Unreal Engine 5's Lumen and Nanite systems are pushed to their absolute limits, casting ray-traced reflections on wet asphalt and generating incredibly detailed dense crowds.",
         "The combat is a fluid hybrid of fast-paced gunplay, slow-motion cybernetic abilities, and real-time environment hacking. Upgradable bio-chips allow you to custom-tailor your playstyle, whether you want to ghost through sectors unseen or override enemy defenses. Despite launch-day performance concerns on mid-range hardware, optimization patches have ironed out frame pacing, solidifying this as the definitive next-gen cyberpunk RPG."
-      ]
+      ],
+      playableId: "stellarrift"
     },
     vortexprotocol: {
       title: "Vortex Protocol",
@@ -4007,7 +4008,8 @@
         "Echoes of Elara attempts a massive feat: generating a fully realized high-fantasy world with unique histories, factions, and character relationships for every new playthrough. And for the most part, it succeeds marvelously.",
         "The heart of the game is its dynamic story matrix. Instead of static quests, your actions ripple through local villages and global kingdoms, changing how companions respond and altering faction alignments.",
         "Combat takes place on a tactical hex grid, requiring careful positioning, elements-matching spells, and cover utilisation. The watercolor art direction is stunning, backed by a fully orchestral score that shifts dynamically based on combat tension. It is a landmark achievement in procedural story design."
-      ]
+      ],
+      playableId: "echoesofelara"
     },
     ironcladdynasty: {
       title: "Ironclad Dynasty",
@@ -4024,7 +4026,8 @@
         "Ironclad Dynasty places you at the helm of an empire during the steam-powered industrial revolution. Managing trade routes, technological breakthroughs, army deployments, and complex treaties requires a calm mind and meticulous planning.",
         "The macroeconomics simulator coordinates resource flows, inflation indices, and worker demands with incredible accuracy. However, the sheer density of data menus and tooltips can overwhelm newcomers, and the tutorial fails to explain secondary mechanics.",
         "If you can pierce through the dense user interface, there is a masterfully crafted grand strategy game underneath. The political simulator features faction interests and civil unrest variables that demand constant oversight."
-      ]
+      ],
+      playableId: "ironcladdynasty"
     },
     nexusgatereborn: {
       title: "Nexus Gate: Reborn",
@@ -4041,7 +4044,8 @@
         "Nexus Gate: Reborn attempts to blend the strategic depth of traditional lanes and items in MOBAs with the fast reflex action of hero shooters. The result is a highly addictive, fast-paced battle arena.",
         "Matches are limited to 15 minutes, pushing teams into early skirmishes and constant action. The cross-play optimization is flawless, allowing mobile gamers to compete on equal terms with PC players through intelligent auto-assists and tactile button layouts.",
         "While matching systems occasionally pair diamond veterans with bronze newcomers, the game's competitive integrity remains strong. Frequent balancing patches and new character drops show that the development team is committed to long-term community support."
-      ]
+      ],
+      playableId: "nexusgatereborn"
     },
     gridsurge2025: {
       title: "Grid Surge 2025",
@@ -4057,7 +4061,8 @@
       content: [
         "Grid Surge 2025 focuses on high-speed arcade drifting and competitive track times. Driving through rain-swept city tracks, the physics model strikes a great balance between realistic weight distribution and satisfying arcade drift slip.",
         "The graphics engine excels at wet road reflections and neon volumetric lighting. Multiplayer lobbies run smoothly with low input latency. The main negative is the single-player career path, which repeats events across similar tracks. If you want a quick, visually thrilling race simulator to play online with friends, Grid Surge 2025 is a great addition."
-      ]
+      ],
+      playableId: "gridsurge2025"
     },
     verdantabyss: {
       title: "Verdant Abyss",
@@ -4074,7 +4079,8 @@
         "Verdant Abyss takes you thousands of meters beneath an alien ocean to map bioluminescent ecosystems and explore sunken architectural ruins. The sense of isolation and wonder is unmatched.",
         "The developers wrote a custom graphics pipeline for underwater light refraction and particulate dust simulations. Sunlight beams pierce through the deep water, highlighting huge alien creatures drifting in the dark.",
         "With headphones, the 3D audio design creates a claustrophobic, immersive soundscape where every creak of your dive suit or sonar ping echoes realistically. It is a slow, methodical journey that rewards patience and curiosity."
-      ]
+      ],
+      playableId: "verdantabyss"
     },
     cybercorezero: {
       title: "CyberCore: Zero",
@@ -4091,7 +4097,8 @@
         "CyberCore: Zero is a modern brawler that pays tribute to 90s arcade action while introducing high-tech combat mechanics. You fight through waves of corporate cybernetic enforcers using combos, dash deflections, and special kinetic overrides.",
         "The animation frames are fast and hand-keyed, making every hit feel impactful. The soundtrack is a highlight, pulsing in sync with your combo multiplier.",
         "While camera controls can struggle in tight elevator shafts, the tight combat mechanics and diverse enemy types keep the action fresh. It is an excellent pick for players looking for direct, skill-based action."
-      ]
+      ],
+      playableId: "cybercorezero"
     },
     phantomsignal: {
       title: "Phantom Signal",
@@ -4108,7 +4115,8 @@
         "Phantom Signal is a masterclass in low-fidelity survival horror. You play as a lone telecommunications operator at a remote radar monitoring station in Alaska. When the sensors detect an anomalous, repeating signal from the arctic waste, things begin to decay.",
         "The game utilizes a vintage PS1-era low-poly visual style combined with an adjustable VHS tape filter, creating a murky, claustrophobic atmosphere.",
         "The horror is psychological, focusing on isolation, static radio white noise, and shadows. The puzzle design is organic, requiring you to physically tune oscilloscope waves and check radar sectors. Though short, the experience leaves a deep impression."
-      ]
+      ],
+      playableId: "phantomsignal"
     }
   };
 
@@ -4214,33 +4222,17 @@
       visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(255,0,85,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,0,85,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--magenta)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--magenta));"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="4"/><path d="M12 8v8M8 12h8"/></svg></div>`
     },
     {
-      id: "neondrift",
-      title: "Neon Drift Rider",
-      subtitle: "Outrun-Style Road Racer",
-      category: "driving",
-      description: "Cruise down retro-neon highway grids. Dodge obstacles, collect power cores, and ride the velocity grid lines forever.",
-      rating: "9.2",
-      url: "games/neon-drift-rider.html",
-      badge: "Driving",
-      badgeClass: "badge-driving",
-      likes: 856,
-      dislikes: 19,
-      telemetry: "PING: 5ms<br>FRAME RATE: 60 FPS<br>ENGINE: HTML5 Canvas 2D<br>V-SYNC: Active // GPU Accelerated",
-      controls: "A / D / Left / Right: Steer Car<br>W / Up: Accelerate Speed<br>S / Down: Decelerate / Brake<br>ESC: Exit Grid",
-      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,234,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,234,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--cyan));"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="3"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><circle cx="7" cy="16" r="1.5"/><circle cx="17" cy="16" r="1.5"/></svg></div>`
-    },
-    {
-      id: "cyberhacker",
-      title: "Cyber Hacker",
+      id: "stellarrift",
+      title: "Stellar Rift: Neon Uprising",
       subtitle: "Secure Core Decryptor",
       category: "clicker",
       description: "Infiltrate neural mainframes. Upgrade decrypt nodes, bypass firewalls, and execute automatic exploit injections.",
-      rating: "8.9",
+      rating: "9.4",
       url: "games/cyber-hacker.html",
       badge: "Clicker",
       badgeClass: "badge-rpg",
-      likes: 642,
-      dislikes: 31,
+      likes: 914,
+      dislikes: 12,
       telemetry: "PING: 1ms<br>FRAME RATE: 60 FPS<br>NODE LOAD: 14% // SYS TEMP: 41C<br>THREADS: 8x Auto-Injected",
       controls: "MOUSE CLICK: Extract Code Bit<br>BUY UPGRADES: Click on HUD elements<br>KEY 1-4: Fast Node Activator",
       visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,102,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,102,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--green));"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/></svg></div>`
@@ -4251,7 +4243,7 @@
       subtitle: "Vertical Laser Shooter",
       category: "shooting",
       description: "Pilot an experimental fighter craft. Dodge meteor strikes, destroy hostile fighter squadrons, and collect powerups.",
-      rating: "9.5",
+      rating: "9.1",
       url: "games/vortex-protocol.html",
       badge: "Shooter",
       badgeClass: "badge-fps",
@@ -4262,20 +4254,116 @@
       visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(255,170,0,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,170,0,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--orange));"><polygon points="12 2 22 22 12 17 2 22"/></svg></div>`
     },
     {
-      id: "gridsync",
-      title: "Grid Sync",
+      id: "echoesofelara",
+      title: "Echoes of Elara",
+      subtitle: "Turn-Based Spells Grid",
+      category: "puzzle",
+      description: "Infiltrate ancient mystical grids. Cast elements-matching runes to clear energy nodes and synchronize spell lines.",
+      rating: "8.8",
+      url: "games/echoes-of-elara.html",
+      badge: "RPG",
+      badgeClass: "badge-rpg",
+      likes: 742,
+      dislikes: 21,
+      telemetry: "PING: 4ms<br>FRAME RATE: 60 FPS<br>GRID SEED: RANDOMIZED // ENGINE: CANVAS 2D<br>MEMORY STACK: SECURE",
+      controls: "MOUSE CLICK: Select Element / Cast Spell<br>MATCH PATTERNS: Connect aligned elemental nodes<br>SPACEBAR: End Turn Sequence",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,150,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,150,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--green));"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>`
+    },
+    {
+      id: "ironcladdynasty",
+      title: "Ironclad Dynasty",
       subtitle: "Energy Pathway Puzzle",
       category: "puzzle",
       description: "Align power conduits to establish flow lines. Sync code packets from host server terminals to core mainframes.",
-      rating: "9.1",
+      rating: "7.6",
       url: "games/grid-sync.html",
-      badge: "Puzzle",
+      badge: "Strategy",
       badgeClass: "badge-puzzle",
       likes: 589,
       dislikes: 18,
       telemetry: "PING: 3ms<br>FRAME RATE: 60 FPS<br>GRID RESOLUTION: 4x4 / 5x5 / 6x6<br>LOGIC PIPELINE: Dynamic Solver",
       controls: "MOUSE CLICK / TOUCH: Rotate Pipe Core<br>MATCH CONDUITS: Complete connections<br>R KEY: Reinitialize Grid Layout",
-      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(189,0,255,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(189,0,255,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--purple));"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div>`
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(189,0,255,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(189,0,255,0.35)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--purple));"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div>`
+    },
+    {
+      id: "nexusgatereborn",
+      title: "Nexus Gate: Reborn",
+      subtitle: "Hero Lane Defender",
+      category: "shooting",
+      description: "Deploy tactical defenses. Steer your elite core drone and defend the base gates against waves of invading cyber squads.",
+      rating: "8.3",
+      url: "games/nexus-gate.html",
+      badge: "MOBA",
+      badgeClass: "badge-fps",
+      likes: 820,
+      dislikes: 15,
+      telemetry: "PING: 9ms<br>FRAME RATE: 60 FPS<br>ACTIVE CORES: 5x // FIRE MODE: SPREAD<br>MEMORY SWAP: COMPLETED",
+      controls: "MOUSE MOVE: Aim Core Weapon<br>LEFT CLICK / SPACEBAR: Fire Plasma Beams<br>A / D: Strafe Position Left/Right",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(130,0,255,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(130,0,255,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--purple));"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="12" y1="12" x2="22" y2="8.5"/><line x1="12" y1="12" x2="2" y2="8.5"/></svg></div>`
+    },
+    {
+      id: "gridsurge2025",
+      title: "Grid Surge 2025",
+      subtitle: "Outrun-Style Road Racer",
+      category: "driving",
+      description: "Cruise down retro-neon highway grids. Dodge obstacles, collect power cores, and ride the velocity grid lines forever.",
+      rating: "7.9",
+      url: "games/neon-drift-rider.html",
+      badge: "Driving",
+      badgeClass: "badge-driving",
+      likes: 856,
+      dislikes: 19,
+      telemetry: "PING: 5ms<br>FRAME RATE: 60 FPS<br>ENGINE: HTML5 Canvas 2D<br>V-SYNC: Active // GPU Accelerated",
+      controls: "A / D / Left / Right: Steer Car<br>W / Up: Accelerate Speed<br>S / Down: Decelerate / Brake<br>ESC: Exit Grid",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,234,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,234,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--cyan));"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="3"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><circle cx="7" cy="16" r="1.5"/><circle cx="17" cy="16" r="1.5"/></svg></div>`
+    },
+    {
+      id: "verdantabyss",
+      title: "Verdant Abyss",
+      subtitle: "Submarine Sonar Scanner",
+      category: "driving",
+      description: "Steer your sonar drone through deep sea trenches. Scan lifeforms, dodge heat vents, and map the ocean floor.",
+      rating: "9.0",
+      url: "games/verdant-abyss.html",
+      badge: "Adventure",
+      badgeClass: "badge-driving",
+      likes: 672,
+      dislikes: 9,
+      telemetry: "DEPTH: 12k Meters<br>VOLUMETRIC: ACTIVE<br>SONAR FREQ: 40KHz<br>PRESSURE HULL: NOMINAL",
+      controls: "MOUSE CLICK / DRAG: Steer Drone Vector<br>SPACEBAR: Fire Sonar Scan Pulse<br>MATCH COORDINATES: Map bioluminescent nodes",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,180,255,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,180,255,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--cyan));"><circle cx="12" cy="12" r="10"/><path d="M12 12m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0"/><path d="M12 2v20M2 12h20"/></svg></div>`
+    },
+    {
+      id: "cybercorezero",
+      title: "CyberCore: Zero",
+      subtitle: "Action Beat 'Em Up",
+      category: "clicker",
+      description: "Fight through waves of cybernetic security units in this high-octane neon-styled side-scrolling brawler.",
+      rating: "8.6",
+      url: "games/cyber-core.html",
+      badge: "Brawler",
+      badgeClass: "badge-rpg",
+      likes: 724,
+      dislikes: 21,
+      telemetry: "PING: 3ms<br>FRAME RATE: 60 FPS<br>COMBO CHIPS: ACTIVE // GPU: RENDERED<br>WAVE LOGIC: THREAD_OK",
+      controls: "A / D / W / S: Move Operative<br>J / Z / Click: Execute Strike Combo<br>K / X / Space: Dash / Evade Boost",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(0,255,102,0.25) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,255,102,0.35)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" style="filter: drop-shadow(0 0 10px var(--green));"><path d="M18 10h-1.5V8A3.5 3.5 0 0 0 13 4.5h-2A3.5 3.5 0 0 0 7.5 8v2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2zM9 10V8a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2H9z"/></svg></div>`
+    },
+    {
+      id: "phantomsignal",
+      title: "Phantom Signal",
+      subtitle: "Oscilloscope Horror Tuner",
+      category: "puzzle",
+      description: "Adjust frequency, amplitude, and phase to match incoming radio anomalies and decrypt classified logs.",
+      rating: "9.2",
+      url: "games/phantom-signal.html",
+      badge: "Horror",
+      badgeClass: "badge-puzzle",
+      likes: 902,
+      dislikes: 14,
+      telemetry: "SIGNAL STRENGTH: WEAK<br>STATIC: ACTIVE // DISRUPTION: SENSOR<br>ENVELOPE DEVIATION: DYNAMIC",
+      controls: "SLIDERS: Adjust Signal Parameters<br>DE-GLITCH BUTTON: Reset anomalous spikes<br>ALIGN WAVEFORMS: Maintain 85%+ accuracy",
+      visualSvg: `<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(51,255,51,0.2) 0%, rgba(10,10,25,0.9) 100%);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(51,255,51,0.3)"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#33ff33" stroke-width="1.5" style="filter: drop-shadow(0 0 10px #33ff33);"><path d="M2 10h3l2.5 9 3-14 3 10 2.5-7 2.5 5h3.5"/></svg></div>`
     }
   ];
 

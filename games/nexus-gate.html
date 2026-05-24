@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nexus Gate: Reborn // Lane Defense Tactical Simulator</title>
+  <style>
+    :root {
+      --cyan: #00f5ff;
+      --bg: #020508;
+      --panel: #051016;
+      --border: #0a2535;
+      --text: #c0f2ff;
+      --magenta: #ff0055;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: monospace;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      overflow: hidden;
+    }
+    .hud {
+      width: 600px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.1);
+    }
+    .hud-stat {
+      font-size: 0.85rem;
+    }
+    .hud-stat span {
+      color: var(--cyan);
+      font-weight: bold;
+    }
+    #game-container {
+      position: relative;
+    }
+    canvas {
+      background: #010408;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+    .log-panel {
+      width: 600px;
+      height: 90px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 10px;
+      padding: 8px 15px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: #7abcc9;
+    }
+  </style>
+</head>
+<body>
+  <div style="font-family: monospace; font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.2em; margin-bottom: 5px;">NEXUS GATE // GRID PROTECTION PROTOCOL v2.01</div>
+  
+  <div class="hud">
+    <div class="hud-stat">NEXUS INTEGRITY: <span id="hp-val">100%</span></div>
+    <div class="hud-stat">THREAT WAVES: <span id="wave-val">1</span></div>
+    <div class="hud-stat">SCORE: <span id="score-val" style="color: var(--cyan);">0</span></div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="canvas" width="600" height="400"></canvas>
+  </div>
+
+  <div class="log-panel" id="log-panel">
+    <div>[NEXUS HUD] Defense shields active. Align weapon grids. Move: A/D or Left/Right. Shoot: Spacebar.</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let nexusHp = 100;
+    let score = 0;
+    let wave = 1;
+    let gameOver = false;
+
+    let player = {
+      x: 300,
+      y: 360,
+      w: 60,
+      h: 15,
+      speed: 6,
+      color: '#00f5ff'
+    };
+
+    let bullets = [];
+    let drones = [];
+    let particles = [];
+    let keys = {};
+
+    function addLog(msg) {
+      const panel = document.getElementById('log-panel');
+      const item = document.createElement('div');
+      item.textContent = `> ${msg}`;
+      panel.appendChild(item);
+      panel.scrollTop = panel.scrollHeight;
+    }
+
+    // Key handlers
+    window.addEventListener('keydown', e => {
+      keys[e.code] = true;
+      if (e.code === 'Space' && !gameOver) {
+        fireBullet();
+        e.preventDefault();
+      }
+    });
+    window.addEventListener('keyup', e => {
+      keys[e.code] = false;
+    });
+
+    function fireBullet() {
+      bullets.push({
+        x: player.x,
+        y: player.y - 10,
+        vx: 0,
+        vy: -8,
+        r: 3,
+        color: '#00f5ff'
+      });
+    }
+
+    class Drone {
+      constructor() {
+        this.x = Math.random() * (canvas.width - 40) + 20;
+        this.y = -20;
+        this.w = 30;
+        this.h = 20;
+        this.speed = 1 + Math.random() * 0.8 + (wave * 0.25);
+        this.hp = Math.ceil(wave / 2);
+        this.color = '#ff0055';
+      }
+    }
+
+    let spawnTimer = 0;
+    function update() {
+      if (gameOver) return;
+
+      // Player relocation
+      if (keys['KeyA'] || keys['ArrowLeft']) player.x = Math.max(player.w/2, player.x - player.speed);
+      if (keys['KeyD'] || keys['ArrowRight']) player.x = Math.min(canvas.width - player.w/2, player.x + player.speed);
+
+      // Spawn drone entities
+      spawnTimer++;
+      let spawnRate = Math.max(40 - wave * 3, 15);
+      if (spawnTimer >= spawnRate) {
+        drones.push(new Drone());
+        spawnTimer = 0;
+      }
+
+      // Update bullets
+      bullets.forEach((b, idx) => {
+        b.y += b.vy;
+        if (b.y < 0) bullets.splice(idx, 1);
+      });
+
+      // Update drones
+      drones.forEach((d, idx) => {
+        d.y += d.speed;
+        if (d.y > canvas.height) {
+          drones.splice(idx, 1);
+          nexusHp -= 10;
+          addLog(`[ALERT] Drone breached grid perimeter! Nexus Integrity degraded by 10%.`);
+          if (nexusHp <= 0) {
+            nexusHp = 0;
+            gameOver = true;
+            addLog("NEXUS CORE BREACHED. DEFENSE SEQUENCE TERMINATED.");
+          }
+          document.getElementById('hp-val').textContent = `${nexusHp}%`;
+        }
+      });
+
+      // Collision loops
+      bullets.forEach((b, bIdx) => {
+        drones.forEach((d, dIdx) => {
+          if (b.x > d.x - d.w/2 && b.x < d.x + d.w/2 && b.y > d.y - d.h/2 && b.y < d.y + d.h/2) {
+            bullets.splice(bIdx, 1);
+            d.hp--;
+            createExplosion(b.x, b.y, '#00f5ff', 4);
+            if (d.hp <= 0) {
+              drones.splice(dIdx, 1);
+              score += 50;
+              createExplosion(d.x, d.y, '#ff0055', 12);
+              document.getElementById('score-val').textContent = score;
+              
+              // Wave progression thresholds
+              if (score > 0 && score % 1000 === 0) {
+                wave++;
+                addLog(`[INTEL] Threat index elevated. Wave ${wave} active.`);
+                document.getElementById('wave-val').textContent = wave;
+              }
+            }
+          }
+        });
+      });
+
+      // Update particles
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+    }
+
+    function createExplosion(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        let angle = Math.random() * Math.PI * 2;
+        let speed = Math.random() * 4 + 1;
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 20 + Math.random() * 15,
+          color: color
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grid line paths
+      ctx.strokeStyle = '#051622';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+
+      // Draw player defender
+      ctx.fillStyle = player.color;
+      ctx.shadowColor = player.color;
+      ctx.shadowBlur = 15;
+      ctx.fillRect(player.x - player.w/2, player.y - player.h/2, player.w, player.h);
+      
+      // Draw weapon turret core
+      ctx.fillRect(player.x - 5, player.y - player.h/2 - 8, 10, 8);
+      ctx.shadowBlur = 0;
+
+      // Draw bullets
+      bullets.forEach(b => {
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Draw falling drones
+      drones.forEach(d => {
+        ctx.fillStyle = d.color;
+        ctx.shadowColor = d.color;
+        ctx.shadowBlur = 8;
+        
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y - d.h/2);
+        ctx.lineTo(d.x + d.w/2, d.y + d.h/2);
+        ctx.lineTo(d.x - d.w/2, d.y + d.h/2);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.shadowBlur = 0;
+      });
+
+      // Draw particles
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 2, 2);
+      });
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff0055';
+        ctx.font = 'bold 24px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('NEXUS GATE COLLAPSED', canvas.width/2, canvas.height/2 - 20);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px monospace';
+        ctx.fillText(`TACTICAL DEBRIEF SCORE: ${score}`, canvas.width/2, canvas.height/2 + 20);
+      }
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verdant Abyss // Sonar Scan Simulation</title>
+  <style>
+    :root {
+      --green: #00ff88;
+      --bg: #010405;
+      --panel: #030d10;
+      --border: #092c30;
+      --text: #c0f9ff;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: monospace;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      overflow: hidden;
+    }
+    .hud {
+      width: 600px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
+    }
+    .hud-stat {
+      font-size: 0.85rem;
+    }
+    .hud-stat span {
+      color: var(--green);
+      font-weight: bold;
+    }
+    #game-container {
+      position: relative;
+    }
+    canvas {
+      background: #010608;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+    .log-panel {
+      width: 600px;
+      height: 90px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-top: 10px;
+      padding: 8px 15px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: #7ab3b8;
+    }
+  </style>
+</head>
+<body>
+  <div style="font-family: monospace; font-size: 0.65rem; color: var(--green); letter-spacing: 0.2em; margin-bottom: 5px;">VERDANT ABYSS // DEEP SUBMERSIBLE RADAR SCANNER v1.12</div>
+  
+  <div class="hud">
+    <div class="hud-stat">HULL INTEGRITY: <span id="hp-val">100%</span></div>
+    <div class="hud-stat">BATTERY CHARGE: <span id="battery-val">100%</span></div>
+    <div class="hud-stat">BIOLOGICS SCAN CARD: <span id="scanned-val">0 / 5</span></div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="canvas" width="600" height="400"></canvas>
+  </div>
+
+  <div class="controls" style="margin-top:10px; font-size:0.72rem; color: var(--green);">
+    CONTROLS: WASD / Arrows = Navigate Submarine | SPACEBAR (Hold near anomalies) = Engage Sonar Scan
+  </div>
+
+  <div class="log-panel" id="log-panel">
+    <div>[SUB HUD] Submersible coordinates stable at -4200m. Locate 5 glowing deep sea anomalies.</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let hullHp = 100;
+    let battery = 100;
+    let scannedCount = 0;
+    let gameOver = false;
+    let gameWon = false;
+
+    let sub = {
+      x: 300,
+      y: 200,
+      r: 12,
+      vx: 0,
+      vy: 0,
+      speed: 0.2,
+      drag: 0.98,
+      color: '#00ff88'
+    };
+
+    let anomalies = [];
+    let rocks = [];
+    let sonarPulses = [];
+    let keys = {};
+
+    function addLog(msg) {
+      const panel = document.getElementById('log-panel');
+      const item = document.createElement('div');
+      item.textContent = `> ${msg}`;
+      panel.appendChild(item);
+      panel.scrollTop = panel.scrollHeight;
+    }
+
+    // Spawn anomalies
+    function spawnAnomaly() {
+      anomalies.push({
+        x: Math.random() * (canvas.width - 100) + 50,
+        y: Math.random() * (canvas.height - 100) + 50,
+        r: 8,
+        scanProgress: 0,
+        color: '#00ffff',
+        name: `Luminescent Specimen ${Math.floor(Math.random() * 900 + 100)}`
+      });
+    }
+
+    // Spawn obstacles
+    for (let i = 0; i < 8; i++) {
+      rocks.push({
+        x: Math.random() * (canvas.width - 100) + 50,
+        y: Math.random() * (canvas.height - 100) + 50,
+        r: Math.random() * 15 + 12
+      });
+    }
+
+    spawnAnomaly();
+    spawnAnomaly();
+
+    window.addEventListener('keydown', e => {
+      keys[e.code] = true;
+    });
+    window.addEventListener('keyup', e => {
+      keys[e.code] = false;
+    });
+
+    let scanHoldTimer = 0;
+    function update() {
+      if (gameOver || gameWon) return;
+
+      // Relocation
+      let accX = 0;
+      let accY = 0;
+      if (keys['KeyW'] || keys['ArrowUp']) accY = -sub.speed;
+      if (keys['KeyS'] || keys['ArrowDown']) accY = sub.speed;
+      if (keys['KeyA'] || keys['ArrowLeft']) accX = -sub.speed;
+      if (keys['KeyD'] || keys['ArrowRight']) accX = sub.speed;
+
+      if (accX !== 0 || accY !== 0) {
+        sub.vx += accX;
+        sub.vy += accY;
+        battery = Math.max(0, battery - 0.05);
+        document.getElementById('battery-val').textContent = `${Math.ceil(battery)}%`;
+        if (battery <= 0) {
+          gameOver = true;
+          addLog("[ALERT] Battery depleted! Life support systems offline.");
+        }
+      }
+
+      sub.vx *= sub.drag;
+      sub.vy *= sub.drag;
+
+      sub.x += sub.vx;
+      sub.y += sub.vy;
+
+      // Screen boundary check
+      if (sub.x < sub.r) { sub.x = sub.r; sub.vx = 0; }
+      if (sub.x > canvas.width - sub.r) { sub.x = canvas.width - sub.r; sub.vx = 0; }
+      if (sub.y < sub.r) { sub.y = sub.r; sub.vy = 0; }
+      if (sub.y > canvas.height - sub.r) { sub.y = canvas.height - sub.r; sub.vy = 0; }
+
+      // Rock collision checks
+      rocks.forEach(r => {
+        let dx = sub.x - r.x;
+        let dy = sub.y - r.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < sub.r + r.r) {
+          // Bounce off
+          let angle = Math.atan2(dy, dx);
+          sub.vx = Math.cos(angle) * 3;
+          sub.vy = Math.sin(angle) * 3;
+          hullHp -= 15;
+          addLog(`[ALERT] Impact! Hull integrity damaged by 15%. Current status: ${hullHp}%`);
+          if (hullHp <= 0) {
+            hullHp = 0;
+            gameOver = true;
+            addLog("[CRITICAL] Hull breach! Submersible collapsed.");
+          }
+          document.getElementById('hp-val').textContent = `${hullHp}%`;
+        }
+      });
+
+      // Scanning Logic
+      let nearAnomaly = false;
+      anomalies.forEach((an, idx) => {
+        let dx = sub.x - an.x;
+        let dy = sub.y - an.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 60) { // Scan range
+          nearAnomaly = true;
+          if (keys['Space']) {
+            an.scanProgress += 0.5;
+            
+            // Sonar visual pulse triggers
+            if (Math.random() < 0.1) {
+              sonarPulses.push({
+                x: sub.x,
+                y: sub.y,
+                r: 10,
+                maxR: 70,
+                color: 'rgba(0, 255, 136, 0.4)'
+              });
+            }
+
+            if (an.scanProgress >= 100) {
+              anomalies.splice(idx, 1);
+              scannedCount++;
+              addLog(`[SUCCESS] Scanned and logged ${an.name} database entries.`);
+              document.getElementById('scanned-val').textContent = `${scannedCount} / 5`;
+              
+              if (scannedCount >= 5) {
+                gameWon = true;
+                addLog("RESEARCH LOG DATA COMPLETE. RETURNING TO SURFACE VESSEL.");
+              } else {
+                spawnAnomaly();
+              }
+            }
+          }
+        }
+      });
+
+      // Sonar pulse update
+      sonarPulses.forEach((sp, idx) => {
+        sp.r += 2;
+        if (sp.r >= sp.maxR) sonarPulses.splice(idx, 1);
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Sonar scans backdrop grids
+      ctx.strokeStyle = '#021812';
+      ctx.lineWidth = 1;
+      for (let r = 50; r < 500; r += 50) {
+        ctx.beginPath();
+        ctx.arc(300, 200, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Draw obstacles (volcanic basalt stones)
+      ctx.fillStyle = '#061314';
+      ctx.strokeStyle = '#0d2528';
+      ctx.lineWidth = 2;
+      rocks.forEach(r => {
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      // Draw scan target anomalies
+      anomalies.forEach(an => {
+        ctx.fillStyle = an.color;
+        ctx.shadowColor = an.color;
+        ctx.shadowBlur = 15;
+        
+        ctx.beginPath();
+        ctx.arc(an.x, an.y, an.r, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.shadowBlur = 0;
+
+        // Draw scan progress ring overlay
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(an.x, an.y, an.r + 6, -Math.PI/2, (-Math.PI/2) + (Math.PI * 2) * (an.scanProgress / 100));
+        ctx.stroke();
+      });
+
+      // Draw sonar pulses
+      sonarPulses.forEach(sp => {
+        ctx.strokeStyle = sp.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // Draw sub explorer
+      ctx.fillStyle = sub.color;
+      ctx.shadowColor = sub.color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(sub.x, sub.y, sub.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Draw sub headlamp light cone
+      let angle = Math.atan2(sub.vy, sub.vx);
+      if (sub.vx === 0 && sub.vy === 0) angle = -Math.PI/2; // face up when stationary
+      ctx.fillStyle = 'rgba(0, 255, 136, 0.08)';
+      ctx.beginPath();
+      ctx.moveTo(sub.x, sub.y);
+      ctx.arc(sub.x, sub.y, 80, angle - Math.PI/6, angle + Math.PI/6);
+      ctx.closePath();
+      ctx.fill();
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff3344';
+        ctx.font = 'bold 24px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('SUBMERSIBLE TERMINATED', canvas.width/2, canvas.height/2 - 10);
+      }
+
+      if (gameWon) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#00ff88';
+        ctx.font = 'bold 24px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('SIMULATION COMPLETION', canvas.width/2, canvas.height/2 - 10);
+      }
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>

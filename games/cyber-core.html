@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberCore: Zero - Arcade Brawler</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #020205;
+      color: #00ff66;
+      font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #game-container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 2px solid #00ff66;
+      box-shadow: 0 0 20px rgba(0, 255, 102, 0.3);
+    }
+    canvas {
+      display: block;
+      background: #07050e;
+    }
+    #overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(2, 1, 4, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .btn {
+      background: #00ff66;
+      color: #000;
+      border: none;
+      padding: 12px 28px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 102, 0.9);
+      transform: scale(1.05);
+    }
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      font-size: 0.85rem;
+      text-shadow: 0 0 5px #00ff66;
+      z-index: 5;
+    }
+    .hud-bar-container {
+      width: 120px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #00ff66;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+    .hud-bar-fill {
+      height: 100%;
+      background: #00ff66;
+      width: 100%;
+      box-shadow: 0 0 8px #00ff66;
+      transition: width 0.1s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="hud">
+      <div>OPERATIVE HP: <div class="hud-bar-container"><div id="hp-fill" class="hud-bar-fill"></div></div></div>
+      <div>SCORE: <span id="score-val">0000</span></div>
+      <div>WAVE: <span id="wave-val">1</span></div>
+    </div>
+    <div id="overlay">
+      <h2 style="margin: 0; font-size: 1.8rem; text-shadow: 0 0 10px #00ff66; text-transform: uppercase;">CYBERCORE: ZERO</h2>
+      <p style="color: #a5a5b5; font-size: 0.75rem; text-align: center; margin: 10px 20px 0; line-height: 1.4;">
+        Controls:<br/>
+        WASD / Arrow Keys: Move Operative<br/>
+        J / Z / Click: Execute Strike Combo<br/>
+        K / X: Dash/Evade Boost<br/>
+        Clear the rogue corporate cyborg security forces.
+      </p>
+      <button class="btn" id="start-btn">ENGAGE INTERRUPT PROTOCOL</button>
+    </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('start-btn');
+    const scoreVal = document.getElementById('score-val');
+    const waveVal = document.getElementById('wave-val');
+    const hpFill = document.getElementById('hp-fill');
+
+    let gameActive = false;
+    let score = 0;
+    let wave = 1;
+    let keys = {};
+    let particles = [];
+    let floatingTexts = [];
+    let healthPacks = [];
+
+    // Player structure
+    const player = {
+      x: 100,
+      y: 280,
+      vx: 0,
+      vy: 0,
+      width: 25,
+      height: 60,
+      speed: 3.5,
+      hp: 100,
+      maxHp: 100,
+      state: 'idle', // idle, walk, punch1, punch2, hit, dead, dash
+      animFrame: 0,
+      animTimer: 0,
+      direction: 1, // 1 = right, -1 = left
+      comboStep: 0,
+      lastAttackTime: 0,
+      isDashing: false,
+      dashCooldown: 0,
+      dashDuration: 0,
+      invulFrames: 0
+    };
+
+    // Enemies array
+    let enemies = [];
+
+    window.addEventListener('keydown', e => {
+      keys[e.code] = true;
+      if (gameActive) {
+        if (e.code === 'KeyJ' || e.code === 'KeyZ') {
+          playerAttack();
+        }
+        if (e.code === 'KeyK' || e.code === 'KeyX' || e.code === 'Space') {
+          playerDash();
+        }
+      }
+    });
+
+    window.addEventListener('keyup', e => {
+      keys[e.code] = false;
+    });
+
+    canvas.addEventListener('mousedown', e => {
+      if (gameActive && e.button === 0) {
+        playerAttack();
+      }
+    });
+
+    startBtn.addEventListener('click', () => {
+      gameActive = true;
+      score = 0;
+      wave = 1;
+      player.hp = player.maxHp;
+      player.x = 100;
+      player.y = 280;
+      player.state = 'idle';
+      player.direction = 1;
+      enemies = [];
+      particles = [];
+      floatingTexts = [];
+      healthPacks = [];
+      overlay.style.display = 'none';
+      spawnWave();
+      loop();
+    });
+
+    function spawnWave() {
+      // Spawn enemies based on wave number
+      const numEnemies = wave * 2 + 1;
+      for (let i = 0; i < numEnemies; i++) {
+        enemies.push({
+          x: canvas.width + 50 + i * 80,
+          y: 240 + Math.random() * 80,
+          width: 24,
+          height: 60,
+          speed: 1.2 + Math.random() * 0.6,
+          hp: 30 + wave * 5,
+          maxHp: 30 + wave * 5,
+          state: 'idle', // idle, walk, attack, hit, dead
+          animFrame: 0,
+          animTimer: 0,
+          attackCooldown: 0,
+          damage: 8 + wave * 2,
+          type: Math.random() < 0.3 ? 'Heavy' : 'Drone'
+        });
+      }
+      showFloatingText("WAVE " + wave + " INITIALIZED", canvas.width / 2, 100, '#00ff66', 30);
+    }
+
+    function showFloatingText(str, x, y, color = '#fff', size = 16) {
+      floatingTexts.push({
+        str: str,
+        x: x,
+        y: y,
+        vx: 0,
+        vy: -1.2,
+        life: 50,
+        maxLife: 50,
+        color: color,
+        size: size
+      });
+    }
+
+    function createSparks(x, y, color = '#00ff66', count = 8) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          life: 15 + Math.random() * 15,
+          maxLife: 30,
+          color: color,
+          size: 2 + Math.random() * 2
+        });
+      }
+    }
+
+    function playerAttack() {
+      if (player.state === 'dead' || player.isDashing) return;
+
+      const now = Date.now();
+      if (now - player.lastAttackTime > 300) {
+        player.comboStep = (player.comboStep % 2) + 1;
+        player.state = 'punch' + player.comboStep;
+        player.animFrame = 0;
+        player.animTimer = 0;
+        player.lastAttackTime = now;
+
+        // Check hits in attack range
+        let hitBox = {
+          x: player.x + (player.direction === 1 ? player.width : -40),
+          y: player.y,
+          w: 40,
+          h: player.height
+        };
+
+        let hitAny = false;
+
+        enemies.forEach(e => {
+          if (e.state === 'dead') return;
+
+          // Simple rect box collision
+          if (hitBox.x < e.x + e.width &&
+              hitBox.x + hitBox.w > e.x &&
+              hitBox.y < e.y + e.height &&
+              hitBox.y + hitBox.h > e.y) {
+            
+            // Hit enemy!
+            let damage = 10 + (player.comboStep === 2 ? 6 : 0);
+            e.hp -= damage;
+            e.state = 'hit';
+            e.animFrame = 0;
+            e.animTimer = 0;
+            hitAny = true;
+
+            createSparks(e.x + e.width/2, e.y + e.height/3, '#00ff66', 10);
+            showFloatingText(`-${damage}`, e.x + 10, e.y - 10, '#00ff66', 15);
+
+            if (e.hp <= 0) {
+              e.state = 'dead';
+              score += e.type === 'Heavy' ? 100 : 50;
+              showFloatingText("TERMINATED", e.x + 10, e.y - 30, '#ff0055', 14);
+              createSparks(e.x + e.width/2, e.y + e.height/2, '#ff0055', 20);
+
+              // Chance to drop health pack
+              if (Math.random() < 0.4) {
+                healthPacks.push({
+                  x: e.x,
+                  y: e.y + e.height - 20,
+                  width: 20,
+                  height: 20,
+                  life: 400 // time before disappearing
+                });
+              }
+            }
+          }
+        });
+
+        if (hitAny) {
+          score += 10;
+        }
+      }
+    }
+
+    function playerDash() {
+      if (player.state === 'dead' || player.isDashing || player.dashCooldown > 0) return;
+      player.isDashing = true;
+      player.dashDuration = 12; // Frames
+      player.dashCooldown = 45; // Frames before next dash
+      player.invulFrames = 12;
+      player.state = 'dash';
+      createSparks(player.x + player.width/2, player.y + player.height - 5, '#00ffea', 12);
+    }
+
+    function update() {
+      if (player.state === 'dead') return;
+
+      // Handle invul frames
+      if (player.invulFrames > 0) player.invulFrames--;
+      if (player.dashCooldown > 0) player.dashCooldown--;
+
+      // Handle movement input
+      let mx = 0;
+      let my = 0;
+
+      if (!player.isDashing && player.state !== 'punch1' && player.state !== 'punch2' && player.state !== 'hit') {
+        if (keys['ArrowLeft'] || keys['KeyA']) {
+          mx = -1;
+          player.direction = -1;
+          player.state = 'walk';
+        }
+        if (keys['ArrowRight'] || keys['KeyD']) {
+          mx = 1;
+          player.direction = 1;
+          player.state = 'walk';
+        }
+        if (keys['ArrowUp'] || keys['KeyW']) {
+          my = -1;
+          player.state = 'walk';
+        }
+        if (keys['ArrowDown'] || keys['KeyS']) {
+          my = 1;
+          player.state = 'walk';
+        }
+
+        if (mx === 0 && my === 0) {
+          player.state = 'idle';
+        }
+      }
+
+      // Handle dash physics
+      if (player.isDashing) {
+        player.vx = player.direction * player.speed * 2.5;
+        player.vy = 0;
+        player.dashDuration--;
+        if (player.dashDuration <= 0) {
+          player.isDashing = false;
+          player.vx = 0;
+          player.state = 'idle';
+        }
+      } else {
+        player.vx = mx * player.speed;
+        player.vy = my * player.speed * 0.7; // Walk slower vertically to simulate perspective depth
+      }
+
+      // Attack animations timeout
+      if (player.state === 'punch1' || player.state === 'punch2') {
+        player.vx = player.direction * 0.5; // slight slide during attack
+        player.vy = 0;
+        player.animTimer++;
+        if (player.animTimer > 15) {
+          player.state = 'idle';
+        }
+      }
+
+      // Hit animations timeout
+      if (player.state === 'hit') {
+        player.animTimer++;
+        if (player.animTimer > 12) {
+          player.state = 'idle';
+        }
+      }
+
+      // Apply movement
+      player.x += player.vx;
+      player.y += player.vy;
+
+      // Constrain player to road boundaries
+      player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+      player.y = Math.max(220, Math.min(canvas.height - player.height - 10, player.y));
+
+      // Update Enemies
+      enemies.forEach((e, index) => {
+        if (e.state === 'dead') {
+          e.animTimer++;
+          if (e.animTimer > 100) {
+            enemies.splice(index, 1);
+          }
+          return;
+        }
+
+        if (e.state === 'hit') {
+          e.animTimer++;
+          if (e.animTimer > 15) {
+            e.state = 'idle';
+          }
+          return;
+        }
+
+        // Simple enemy AI - Chase player
+        let dx = player.x - e.x;
+        let dy = player.y - e.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (e.attackCooldown > 0) e.attackCooldown--;
+
+        if (dist > 40) {
+          // Walk towards player
+          e.state = 'walk';
+          let ex_dir = dx > 0 ? 1 : -1;
+          e.x += (dx / dist) * e.speed;
+          e.y += (dy / dist) * e.speed * 0.7;
+        } else {
+          // Attack player
+          e.state = 'attack';
+          if (e.attackCooldown === 0) {
+            e.attackCooldown = 60 + Math.random() * 40;
+            // Hit player
+            if (player.state !== 'dead' && !player.isDashing && player.invulFrames === 0) {
+              player.hp -= e.damage;
+              player.state = 'hit';
+              player.animFrame = 0;
+              player.animTimer = 0;
+              player.vx = (e.x > player.x ? -1.5 : 1.5) * 3; // knockback
+              player.vy = 0;
+              player.invulFrames = 20;
+
+              createSparks(player.x + player.width/2, player.y + player.height/3, '#ff0055', 12);
+              showFloatingText(`-${e.damage}`, player.x + 10, player.y - 10, '#ff0055', 16);
+
+              if (player.hp <= 0) {
+                player.hp = 0;
+                player.state = 'dead';
+                endGame();
+              }
+            }
+          }
+        }
+      });
+
+      // Update Health Packs
+      healthPacks.forEach((hp, idx) => {
+        hp.life--;
+        // Collision with player
+        if (player.state !== 'dead' &&
+            player.x < hp.x + hp.width &&
+            player.x + player.width > hp.x &&
+            player.y < hp.y + hp.height &&
+            player.y + player.height > hp.y) {
+          
+          player.hp = Math.min(player.maxHp, player.hp + 25);
+          showFloatingText("+25 HP", player.x + 5, player.y - 25, '#00ffea', 18);
+          createSparks(hp.x + hp.width/2, hp.y + hp.height/2, '#00ffea', 15);
+          healthPacks.splice(idx, 1);
+        } else if (hp.life <= 0) {
+          healthPacks.splice(idx, 1);
+        }
+      });
+
+      // Wave completion check
+      if (enemies.length === 0) {
+        wave++;
+        spawnWave();
+      }
+
+      // Update Particles
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+
+      // Update Floating Texts
+      floatingTexts.forEach((t, idx) => {
+        t.x += t.vx;
+        t.y += t.vy;
+        t.life--;
+        if (t.life <= 0) floatingTexts.splice(idx, 1);
+      });
+
+      // Update HUD Values
+      scoreVal.innerText = String(score).padStart(4, '0');
+      waveVal.innerText = wave;
+      hpFill.style.width = (player.hp / player.maxHp * 100) + '%';
+      if (player.hp < 30) {
+        hpFill.style.background = '#ff0055';
+        hpFill.style.boxShadow = '0 0 10px #ff0055';
+      } else {
+        hpFill.style.background = '#00ff66';
+        hpFill.style.boxShadow = '0 0 10px #00ff66';
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Grid / Perspective Road
+      ctx.strokeStyle = 'rgba(0, 255, 102, 0.08)';
+      ctx.lineWidth = 1;
+      
+      // Horizontal floor lines
+      for (let y = 220; y <= canvas.height; y += 30) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Vanishing lines
+      const horizonY = 190;
+      const numLines = 14;
+      for (let i = 0; i <= numLines; i++) {
+        let xOffset = (i / numLines) * canvas.width * 2 - (canvas.width / 2);
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 + xOffset * 0.15, horizonY);
+        ctx.lineTo(canvas.width / 2 + xOffset * 1.5, canvas.height);
+        ctx.stroke();
+      }
+
+      // Horizon glow
+      ctx.fillStyle = 'rgba(0, 255, 102, 0.03)';
+      ctx.fillRect(0, horizonY, canvas.width, 30);
+      ctx.strokeStyle = '#00ff66';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, horizonY + 30);
+      ctx.lineTo(canvas.width, horizonY + 30);
+      ctx.stroke();
+
+      // Draw background neon pillars/city shapes (silhouette)
+      ctx.fillStyle = 'rgba(7, 5, 14, 0.8)';
+      ctx.fillRect(0, 0, canvas.width, horizonY + 30);
+
+      ctx.strokeStyle = 'rgba(0, 255, 102, 0.15)';
+      ctx.lineWidth = 1.5;
+      const pillars = [50, 180, 320, 480];
+      pillars.forEach(x => {
+        ctx.strokeRect(x, 60, 40, 160);
+        ctx.beginPath();
+        ctx.moveTo(x, 60);
+        ctx.lineTo(x + 20, 30);
+        ctx.lineTo(x + 40, 60);
+        ctx.stroke();
+      });
+
+      // Draw Health Packs
+      healthPacks.forEach(hp => {
+        ctx.fillStyle = 'rgba(0, 255, 234, 0.15)';
+        ctx.strokeStyle = '#00ffea';
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = '#00ffea';
+        ctx.fillRect(hp.x, hp.y, hp.width, hp.height);
+        ctx.strokeRect(hp.x, hp.y, hp.width, hp.height);
+        
+        // Draw cross inside pack
+        ctx.beginPath();
+        ctx.moveTo(hp.x + hp.width / 2, hp.y + 4);
+        ctx.lineTo(hp.x + hp.width / 2, hp.y + hp.height - 4);
+        ctx.moveTo(hp.x + 4, hp.y + hp.height / 2);
+        ctx.lineTo(hp.x + hp.width - 4, hp.y + hp.height / 2);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      });
+
+      // Draw Enemies
+      enemies.forEach(e => {
+        ctx.save();
+        ctx.shadowBlur = 8;
+        
+        if (e.state === 'dead') {
+          ctx.strokeStyle = 'rgba(255, 0, 85, 0.2)';
+          ctx.shadowColor = 'rgba(255, 0, 85, 0.1)';
+        } else if (e.state === 'hit') {
+          ctx.strokeStyle = '#ffffff';
+          ctx.shadowColor = '#ffffff';
+        } else if (e.type === 'Heavy') {
+          ctx.strokeStyle = '#ff0055';
+          ctx.shadowColor = '#ff0055';
+        } else {
+          ctx.strokeStyle = '#ffaa00';
+          ctx.shadowColor = '#ffaa00';
+        }
+
+        ctx.lineWidth = 2;
+
+        // Draw Cyborg Shape
+        if (e.state === 'dead') {
+          // Draw fallen shape on the floor
+          ctx.beginPath();
+          ctx.ellipse(e.x + e.width / 2, e.y + e.height - 10, e.height / 2, 10, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        } else {
+          // Walk animation offset
+          let walkOffset = (e.state === 'walk') ? Math.sin(Date.now() * 0.01) * 8 : 0;
+
+          // Draw head
+          ctx.beginPath();
+          ctx.arc(e.x + e.width/2, e.y + 10, 7, 0, Math.PI*2);
+          ctx.stroke();
+          
+          // Draw body/torso
+          ctx.beginPath();
+          ctx.moveTo(e.x + e.width/2, e.y + 17);
+          ctx.lineTo(e.x + e.width/2, e.y + 42);
+          ctx.stroke();
+
+          // Draw arms (punching or walking)
+          ctx.beginPath();
+          if (e.state === 'attack') {
+            // extending arm forward
+            ctx.moveTo(e.x + e.width/2, e.y + 22);
+            ctx.lineTo(e.x + (e.x > player.x ? -10 : e.width + 10), e.y + 25);
+          } else {
+            ctx.moveTo(e.x + e.width/2, e.y + 22);
+            ctx.lineTo(e.x + e.width/2 - 6 - walkOffset * 0.3, e.y + 35);
+            ctx.moveTo(e.x + e.width/2, e.y + 22);
+            ctx.lineTo(e.x + e.width/2 + 6 + walkOffset * 0.3, e.y + 35);
+          }
+          ctx.stroke();
+
+          // Draw legs
+          ctx.beginPath();
+          ctx.moveTo(e.x + e.width/2, e.y + 42);
+          ctx.lineTo(e.x + 5 - walkOffset * 0.5, e.y + e.height);
+          ctx.moveTo(e.x + e.width/2, e.y + 42);
+          ctx.lineTo(e.x + e.width - 5 + walkOffset * 0.5, e.y + e.height);
+          ctx.stroke();
+
+          // Draw enemy mini HP bar
+          if (e.hp < e.maxHp) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+            ctx.fillRect(e.x - 5, e.y - 12, e.width + 10, 4);
+            ctx.fillStyle = '#ff0055';
+            ctx.fillRect(e.x - 5, e.y - 12, (e.hp / e.maxHp) * (e.width + 10), 4);
+          }
+        }
+        ctx.restore();
+      });
+
+      // Draw Player
+      ctx.save();
+      ctx.shadowBlur = 10;
+      
+      if (player.state === 'dead') {
+        ctx.strokeStyle = 'rgba(255, 0, 85, 0.3)';
+        ctx.shadowColor = 'rgba(255, 0, 85, 0.2)';
+      } else if (player.state === 'hit') {
+        ctx.strokeStyle = '#ffffff';
+        ctx.shadowColor = '#ffffff';
+      } else if (player.isDashing) {
+        ctx.strokeStyle = '#00ffea';
+        ctx.shadowColor = '#00ffea';
+      } else {
+        ctx.strokeStyle = '#00ff66';
+        ctx.shadowColor = '#00ff66';
+      }
+
+      ctx.lineWidth = 2.5;
+
+      if (player.state === 'dead') {
+        ctx.beginPath();
+        ctx.ellipse(player.x + player.width/2, player.y + player.height - 10, player.height/2, 10, 0, 0, Math.PI*2);
+        ctx.stroke();
+      } else {
+        let walkOffset = (player.state === 'walk') ? Math.sin(Date.now() * 0.012) * 9 : 0;
+
+        // Draw Head
+        ctx.beginPath();
+        ctx.arc(player.x + player.width/2, player.y + 10, 8, 0, Math.PI*2);
+        ctx.stroke();
+
+        // Cyber visor eye glow
+        ctx.fillStyle = player.isDashing ? '#00ffea' : '#ffaa00';
+        ctx.fillRect(player.x + player.width/2 + (player.direction === 1 ? -1 : -6), player.y + 7, 7, 2);
+
+        // Draw Torso
+        ctx.beginPath();
+        ctx.moveTo(player.x + player.width/2, player.y + 18);
+        ctx.lineTo(player.x + player.width/2, player.y + 40);
+        ctx.stroke();
+
+        // Draw Arms (punching poses)
+        ctx.beginPath();
+        if (player.state === 'punch1') {
+          // Punch 1: straight punch
+          ctx.moveTo(player.x + player.width/2, player.y + 24);
+          ctx.lineTo(player.x + player.width/2 + player.direction * 22, player.y + 24);
+          ctx.moveTo(player.x + player.width/2, player.y + 24);
+          ctx.lineTo(player.x + player.width/2 - player.direction * 8, player.y + 32);
+        } else if (player.state === 'punch2') {
+          // Punch 2: uppercut / hook
+          ctx.moveTo(player.x + player.width/2, player.y + 24);
+          ctx.lineTo(player.x + player.width/2 + player.direction * 18, player.y + 14);
+          ctx.moveTo(player.x + player.width/2, player.y + 24);
+          ctx.lineTo(player.x + player.width/2 - player.direction * 8, player.y + 30);
+        } else {
+          // standard walking/idle arms
+          ctx.moveTo(player.x + player.width/2, player.y + 24);
+          ctx.lineTo(player.x + player.width/2 - 7 - walkOffset * 0.3 * player.direction, player.y + 36);
+          ctx.moveTo(player.x + player.width/2, player.y + 24);
+          ctx.lineTo(player.x + player.width/2 + 7 + walkOffset * 0.3 * player.direction, player.y + 36);
+        }
+        ctx.stroke();
+
+        // Draw Legs
+        ctx.beginPath();
+        ctx.moveTo(player.x + player.width/2, player.y + 40);
+        ctx.lineTo(player.x + 5 - walkOffset * 0.5, player.y + player.height);
+        ctx.moveTo(player.x + player.width/2, player.y + 40);
+        ctx.lineTo(player.x + player.width - 5 + walkOffset * 0.5, player.y + player.height);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Draw Particles
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+      });
+
+      // Draw Floating Texts
+      floatingTexts.forEach(t => {
+        ctx.fillStyle = t.color;
+        ctx.font = `bold ${t.size}px 'Share Tech Mono', monospace`;
+        ctx.textAlign = 'center';
+        ctx.globalAlpha = t.life / t.maxLife;
+        ctx.fillText(t.str, t.x, t.y);
+        ctx.globalAlpha = 1.0;
+      });
+    }
+
+    function endGame() {
+      gameActive = false;
+      overlay.style.display = 'flex';
+      overlay.querySelector('h2').innerText = 'OPERATIVE FALLEN';
+      overlay.querySelector('p').innerHTML = `Cybernetic link severed. Mission failed.<br/>FINAL SCORE: <span style="color:#00ff66; font-weight:bold;">${score}</span> // SECTOR WAVE: <span style="color:#00ffea; font-weight:bold;">${wave}</span>`;
+      startBtn.innerText = 'RE-INITIALIZE LINK';
+    }
+
+    function loop() {
+      if (!gameActive) return;
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+  </script>
+</body>
+</html>
