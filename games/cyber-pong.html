@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Pong</title>
+  <style>
+    body {
+      background: #030305;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      color: #00ff66;
+    }
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      width: 480px;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+    }
+    canvas {
+      border: 2px solid #00ff66;
+      box-shadow: 0 0 25px rgba(0, 255, 102, 0.4), inset 0 0 15px rgba(0, 255, 102, 0.1);
+      background: #08080f;
+    }
+    #overlay {
+      display: none;
+      position: absolute;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3, 3, 5, 0.9);
+      border: 1px solid #ff0055;
+      box-shadow: 0 0 30px rgba(255, 0, 87, 0.3);
+      width: 320px;
+      height: 180px;
+      text-align: center;
+      color: #ff0055;
+    }
+    #overlay h2 {
+      margin: 0 0 10px 0;
+      text-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
+    }
+    #btn-restart {
+      background: transparent;
+      border: 1px solid #00ff66;
+      color: #00ff66;
+      padding: 8px 16px;
+      font-family: inherit;
+      cursor: pointer;
+      text-transform: uppercase;
+      margin-top: 15px;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+    }
+    #btn-restart:hover {
+      background: #00ff66;
+      color: #030305;
+      box-shadow: 0 0 15px #00ff66;
+    }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <div>PLAYER: <span id="player-score">00</span></div>
+    <div>AI: <span id="ai-score">00</span></div>
+  </div>
+  <div style="position: relative;">
+    <canvas id="canvas" width="480" height="320"></canvas>
+    <div id="overlay">
+      <h2 id="overlay-title">MATCH FINISHED</h2>
+      <div>FINAL SCORE: <span id="final-score">0 - 0</span></div>
+      <button id="btn-restart">REINITIALIZE DUEL</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const playerScoreEl = document.getElementById('player-score');
+    const aiScoreEl = document.getElementById('ai-score');
+    const finalScore = document.getElementById('final-score');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const restartBtn = document.getElementById('btn-restart');
+
+    let playerScore = 0;
+    let aiScore = 0;
+    let isGameOver = false;
+
+    // Paddle Config
+    const paddleWidth = 10;
+    const paddleHeight = 60;
+    
+    let playerY = (canvas.height - paddleHeight) / 2;
+    let aiY = (canvas.height - paddleHeight) / 2;
+    const paddleSpeed = 5;
+
+    // Ball Config
+    let ballSize = 8;
+    let ballX = canvas.width / 2;
+    let ballY = canvas.height / 2;
+    let ballSpeedX = 4;
+    let ballSpeedY = 2;
+
+    // AI speed factor
+    const aiSpeed = 3.6;
+
+    // Particles hit ripple
+    let particles = [];
+
+    const keys = {};
+
+    window.addEventListener('keydown', e => {
+      keys[e.key.toLowerCase()] = true;
+    });
+
+    window.addEventListener('keyup', e => {
+      keys[e.key.toLowerCase()] = false;
+    });
+
+    function spawnHitParticles(x, y, color) {
+      for (let i = 0; i < 8; i++) {
+        particles.push({
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 3 + (x < 50 ? 2 : -2),
+          vy: (Math.random() - 0.5) * 3,
+          life: 15,
+          color: color || '#00ff66'
+        });
+      }
+    }
+
+    function resetBall(direction) {
+      ballX = canvas.width / 2;
+      ballY = canvas.height / 2;
+      ballSpeedX = direction * 4.0;
+      ballSpeedY = (Math.random() - 0.5) * 4.0;
+    }
+
+    function update() {
+      if (isGameOver) return;
+
+      // Player Movement
+      if (keys['w'] || keys['arrowup']) {
+        if (playerY > 0) playerY -= paddleSpeed;
+      }
+      if (keys['s'] || keys['arrowdown']) {
+        if (playerY < canvas.height - paddleHeight) playerY += paddleSpeed;
+      }
+
+      // AI Movement (Smooth follow)
+      const aiCenter = aiY + paddleHeight / 2;
+      if (aiCenter < ballY - 10) {
+        if (aiY < canvas.height - paddleHeight) aiY += aiSpeed;
+      } else if (aiCenter > ballY + 10) {
+        if (aiY > 0) aiY -= aiSpeed;
+      }
+
+      // Ball Movement
+      ballX += ballSpeedX;
+      ballY += ballSpeedY;
+
+      // Ball Bounds (Top/Bottom)
+      if (ballY - ballSize / 2 <= 0 || ballY + ballSize / 2 >= canvas.height) {
+        ballSpeedY = -ballSpeedY;
+      }
+
+      // Ball Collision (Player Paddle)
+      if (ballX - ballSize / 2 <= paddleWidth + 5) {
+        if (ballY >= playerY && ballY <= playerY + paddleHeight) {
+          ballSpeedX = -ballSpeedX;
+          // Increase speed slightly
+          ballSpeedX *= 1.05;
+          ballSpeedY *= 1.05;
+          
+          let relativeHit = (ballY - (playerY + paddleHeight / 2)) / (paddleHeight / 2);
+          ballSpeedY = relativeHit * 3.5;
+
+          spawnHitParticles(paddleWidth + 5, ballY, '#00ff66');
+        } else if (ballX < 0) {
+          aiScore++;
+          aiScoreEl.textContent = aiScore < 10 ? '0' + aiScore : aiScore;
+          if (aiScore >= 5) {
+            endMatch(false);
+          } else {
+            resetBall(1);
+          }
+        }
+      }
+
+      // Ball Collision (AI Paddle)
+      if (ballX + ballSize / 2 >= canvas.width - paddleWidth - 5) {
+        if (ballY >= aiY && ballY <= aiY + paddleHeight) {
+          ballSpeedX = -ballSpeedX;
+          ballSpeedX *= 1.05;
+          ballSpeedY *= 1.05;
+
+          let relativeHit = (ballY - (aiY + paddleHeight / 2)) / (paddleHeight / 2);
+          ballSpeedY = relativeHit * 3.5;
+
+          spawnHitParticles(canvas.width - paddleWidth - 5, ballY, '#00ffea');
+        } else if (ballX > canvas.width) {
+          playerScore++;
+          playerScoreEl.textContent = playerScore < 10 ? '0' + playerScore : playerScore;
+          if (playerScore >= 5) {
+            endMatch(true);
+          } else {
+            resetBall(-1);
+          }
+        }
+      }
+
+      // Update Particles
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        if (p.life <= 0) {
+          particles.splice(idx, 1);
+        }
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Mid-court dashed line
+      ctx.strokeStyle = "rgba(0, 255, 102, 0.08)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.stroke();
+      ctx.setLineDash([]); // Reset
+
+      // Draw Particles
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+        ctx.closePath();
+      });
+      ctx.shadowBlur = 0;
+
+      // Draw Ball
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, ballSize / 2, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "#ffffff";
+      ctx.fill();
+      ctx.closePath();
+      ctx.shadowBlur = 0;
+
+      // Draw Player Paddle (Green)
+      ctx.beginPath();
+      ctx.rect(5, playerY, paddleWidth, paddleHeight);
+      ctx.fillStyle = "#00ff66";
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = "#00ff66";
+      ctx.fill();
+      ctx.closePath();
+      ctx.shadowBlur = 0;
+
+      // Draw AI Paddle (Cyan)
+      ctx.beginPath();
+      ctx.rect(canvas.width - paddleWidth - 5, aiY, paddleWidth, paddleHeight);
+      ctx.fillStyle = "#00ffea";
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = "#00ffea";
+      ctx.fill();
+      ctx.closePath();
+      ctx.shadowBlur = 0;
+    }
+
+    function loop() {
+      update();
+      draw();
+      if (!isGameOver) {
+        requestAnimationFrame(loop);
+      }
+    }
+
+    function endMatch(victory) {
+      isGameOver = true;
+      finalScore.textContent = `${playerScore} - ${aiScore}`;
+      if (victory) {
+        overlayTitle.textContent = "AI SYSTEM BYPASSED";
+        overlayTitle.style.color = "#00ffea";
+        overlay.style.border = "1px solid #00ffea";
+        overlay.style.boxShadow = "0 0 30px rgba(0, 255, 234, 0.3)";
+        
+        // Notify parent Next.js application of achievement
+        window.parent.postMessage({ type: 'ACHIEVEMENT_UNLOCK', game: 'cyberpong', achievement: 'AI_OVERLORD' }, '*');
+      } else {
+        overlayTitle.textContent = "AI DEFEATED YOU";
+        overlayTitle.style.color = "#ff0055";
+        overlay.style.border = "1px solid #ff0055";
+        overlay.style.boxShadow = "0 0 30px rgba(255, 0, 85, 0.3)";
+      }
+      overlay.style.display = "flex";
+      overlay.style.top = "70px";
+      overlay.style.left = "80px";
+    }
+
+    function startGame() {
+      isGameOver = false;
+      playerScore = 0;
+      aiScore = 0;
+      playerScoreEl.textContent = '00';
+      aiScoreEl.textContent = '00';
+      playerY = (canvas.height - paddleHeight) / 2;
+      aiY = (canvas.height - paddleHeight) / 2;
+      particles = [];
+      overlay.style.display = "none";
+      resetBall(Math.random() < 0.5 ? 1 : -1);
+      loop();
+    }
+
+    restartBtn.addEventListener('click', startGame);
+
+    startGame();
+  </script>
+</body>
+</html>
