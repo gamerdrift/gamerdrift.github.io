@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Space Invaders",
+    "description": "Classic arcade shooter in HTML5.",
+    "coverImage": "https://example.com/covers/space-invaders.jpg",
+    "gameUrl": "https://example.com/games/space-invaders/index.html"
+  },
+  {
+    "id": 2,
+    "title": "Puzzle Quest",
+    "description": "A fun puzzle game for all ages.",
+    "coverImage": "https://example.com/covers/puzzle-quest.jpg",
+    "gameUrl": "https://example.com/games/puzzle-quest/index.html"
+  },
+  {
+    "id": 3,
+    "title": "Retro Racer",
+    "description": "Fast-paced racing game with retro graphics.",
+    "coverImage": "https://example.com/covers/retro-racer.jpg",
+    "gameUrl": "https://example.com/games/retro-racer/index.html"
+  }
+]

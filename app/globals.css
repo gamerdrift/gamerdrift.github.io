@@ -1,0 +1,51 @@
+/* Vanilla CSS design system for premium gaming hub */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+  /* Color palette */
+  --accent-neon: #00ffea; /* cyan neon */
+  --background: #111111; /* dark fallback */
+  --text-primary: #f5f5f5;
+  --text-secondary: #b0b0b0;
+  --wood-texture: url('https://images.unsplash.com/photo-1589986999383-2fe6c7ec0b57?auto=format&fit=crop&w=1600&q=80');
+}
+
+/* Global resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--background) url(var(--wood-texture)) repeat center/cover;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Neon accent utility */
+.neon {
+  color: var(--accent-neon);
+  text-shadow: 0 0 8px var(--accent-neon), 0 0 12px var(--accent-neon);
+}
+
+/* Layout helpers */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Scrollbar styling for modern look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--accent-neon);
+  border-radius: 4px;
+}
