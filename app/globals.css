@@ -7,7 +7,7 @@
   --background: #111111; /* dark fallback */
   --text-primary: #f5f5f5;
   --text-secondary: #b0b0b0;
-  --wood-texture: url('https://images.unsplash.com/photo-1589986999383-2fe6c7ec0b57?auto=format&fit=crop&w=1600&q=80');
+  --wood-texture: url('/wood_texture.png');
 }
 
 /* Global resets */
