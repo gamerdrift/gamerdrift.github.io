@@ -1,24 +1,13 @@
-"use client";
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import GameCard from '../components/GameCard';
 import HeroSlider from '../components/HeroSlider';
 import AuthButton from '../components/AuthButton';
 
+// Static placeholder data; replace with real data if needed
+const games: any[] = [];
+
 export default function Home() {
-  const [games, setGames] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const limit = 20;
-
-  useEffect(() => {
-    fetch(`/api/games?page=${page}&limit=${limit}`)
-      .then(res => res.json())
-      .then(data => setGames(prev => [...prev, ...data.games]));
-  }, [page]);
-
-  const loadMore = () => setPage(p => p + 1);
-
   return (
     <>
       <Head>
@@ -36,11 +25,11 @@ export default function Home() {
         </div>
         <HeroSlider />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-          {games.map(game => (
+          {games.map((game) => (
             <GameCard key={game.id} game={game} />
           ))}
         </div>
-        <button className="neon-button mt-8" onClick={loadMore}>Load More</button>
+        <button className="neon-button mt-8">Load More</button>
       </div>
     </>
   );
