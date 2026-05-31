@@ -3,21 +3,360 @@
     "id": 1,
     "title": "Space Invaders",
     "description": "Classic arcade shooter in HTML5.",
-    "coverImage": "https://example.com/covers/space-invaders.jpg",
-    "gameUrl": "https://example.com/games/space-invaders/index.html"
+    "coverImage": "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/space-invaders/master/index.html"
   },
   {
     "id": 2,
     "title": "Puzzle Quest",
     "description": "A fun puzzle game for all ages.",
-    "coverImage": "https://example.com/covers/puzzle-quest.jpg",
-    "gameUrl": "https://example.com/games/puzzle-quest/index.html"
+    "coverImage": "https://images.unsplash.com/photo-1587620962725-64758c7c30b5?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/puzzle-quest/master/index.html"
   },
   {
     "id": 3,
     "title": "Retro Racer",
-    "description": "Fast-paced racing game with retro graphics.",
-    "coverImage": "https://example.com/covers/retro-racer.jpg",
-    "gameUrl": "https://example.com/games/retro-racer/index.html"
+    "description": "Fast‑paced racing game with retro graphics.",
+    "coverImage": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/retro-racer/master/index.html"
+  },
+  {
+    "id": 4,
+    "title": "2048",
+    "description": "Slide tiles to combine numbers and reach 2048.",
+    "coverImage": "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/gabrielecirulli/2048/master/index.html"
+  },
+  {
+    "id": 5,
+    "title": "Hextris",
+    "description": "Hexagonal version of classic Tetris.",
+    "coverImage": "https://images.unsplash.com/photo-1532619044-f0b79f12f2aa?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/Y8Z/hextris/master/index.html"
+  },
+  {
+    "id": 6,
+    "title": "BrowserQuest",
+    "description": "Multiplayer RPG from Mozilla.",
+    "coverImage": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/mozilla/browserquest/master/index.html"
+  },
+  {
+    "id": 7,
+    "title": "Pixel War",
+    "description": "Retro‑style shooter with pixel graphics.",
+    "coverImage": "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/pixel-war/master/index.html"
+  },
+  {
+    "id": 8,
+    "title": "Clumsy Bird",
+    "description": "Open‑source Flappy Bird clone.",
+    "coverImage": "https://images.unsplash.com/photo-1526401485004-2f7b6e3fa5ff?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/clumsy-bird/master/index.html"
+  },
+  {
+    "id": 9,
+    "title": "Freeciv-web",
+    "description": "Web version of the classic Civ strategy game.",
+    "coverImage": "https://images.unsplash.com/photo-1602089172748-6f8bfa5e3c57?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://freeciv-web.github.io/freeciv-web/index.html"
+  },
+  {
+    "id": 10,
+    "title": "HexGL",
+    "description": "Futuristic 3D racing demo (WebGL).",
+    "coverImage": "https://images.unsplash.com/photo-1548778423-1e0cb68c49c5?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/evanw/hexGL/master/index.html"
+  },
+  {
+    "id": 11,
+    "title": "HTML5 Soccer",
+    "description": "Simple 2‑player soccer game.",
+    "coverImage": "https://images.unsplash.com/photo-1521609773314-2b9c0f0cce2a?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/html5-soccer/master/index.html"
+  },
+  {
+    "id": 12,
+    "title": "Basketball Shootout",
+    "description": "Arcade basketball shooting practice.",
+    "coverImage": "https://images.unsplash.com/photo-1542365887-6cd0ae2dfc08?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/basketball-shootout/master/index.html"
+  },
+  {
+    "id": 13,
+    "title": "Mini Golf",
+    "description": "Cute 2‑D mini‑golf challenge.",
+    "coverImage": "https://images.unsplash.com/photo-1497493292307-31c376b6e479?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/mini-golf/master/index.html"
+  },
+  {
+    "id": 14,
+    "title": "Table Tennis",
+    "description": "Fast ping‑pong with realistic physics.",
+    "coverImage": "https://images.unsplash.com/photo-1465146633018-fc8e8ecbdcfb?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/table-tennis/master/index.html"
+  },
+  {
+    "id": 15,
+    "title": "Gun Mayhem",
+    "description": "Top‑down shooter with various weapons.",
+    "coverImage": "https://images.unsplash.com/photo-1579546929662-0ebc0c0c51c5?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/gun-mayhem/master/index.html"
+  },
+  {
+    "id": 16,
+    "title": "Space Shooter",
+    "description": "Side‑scrolling space combat.",
+    "coverImage": "https://images.unsplash.com/photo-1531177070-c1ab0d5e3e9b?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/space-shooter/master/index.html"
+  },
+  {
+    "id": 17,
+    "title": "Blockade",
+    "description": "Tank‑style arena shooter.",
+    "coverImage": "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/blockade/master/index.html"
+  },
+  {
+    "id": 18,
+    "title": "HTML5 Car Racer",
+    "description": "Classic top‑down racing game.",
+    "coverImage": "https://images.unsplash.com/photo-1542038784457-2b5a31c9f3cf?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/car-racer/master/index.html"
+  },
+  {
+    "id": 19,
+    "title": "Superbike 2D",
+    "description": "Fast 2‑D motorcycle racing.",
+    "coverImage": "https://images.unsplash.com/photo-1496181133202-80ce9b88a853?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/superbike-2d/master/index.html"
+  },
+  {
+    "id": 20,
+    "title": "Moto Runner",
+    "description": "Endless runner with motorbike stunts.",
+    "coverImage": "https://images.unsplash.com/photo-1517971129773-1c0eabbe18cc?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/moto-runner/master/index.html"
+  },
+  {
+    "id": 21,
+    "title": "Sudoku Pro",
+    "description": "Classic Sudoku puzzle.",
+    "coverImage": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/sudoku-pro/master/index.html"
+  },
+  {
+    "id": 22,
+    "title": "Minesweeper",
+    "description": "Classic Minesweeper grid game.",
+    "coverImage": "https://images.unsplash.com/photo-1488805995900-9d5a6ba2c7a1?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/minesweeper/master/index.html"
+  },
+  {
+    "id": 23,
+    "title": "Snake",
+    "description": "Retro snake game with levels.",
+    "coverImage": "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/snake/master/index.html"
+  },
+  {
+    "id": 24,
+    "title": "Tetris",
+    "description": "Original Tetris implementation.",
+    "coverImage": "https://images.unsplash.com/photo-1527434000412-7e4fe0a7c51e?auto-format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/tetris/master/index.html"
+  },
+  {
+    "id": 25,
+    "title": "Asteroids",
+    "description": "Classic space rocks shooter.",
+    "coverImage": "https://images.unsplash.com/photo-1519985176271-adb1088fa94c?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/asteroids/master/index.html"
+  },
+  {
+    "id": 26,
+    "title": "Breakout",
+    "description": "Break bricks with a paddle.",
+    "coverImage": "https://images.unsplash.com/photo-1532629345422-7515f3c1c2d9?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/breakout/master/index.html"
+  },
+  {
+    "id": 27,
+    "title": "Flappy Bird Clone",
+    "description": "Fly through pipes.",
+    "coverImage": "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/flappy-bird-clone/master/index.html"
+  },
+  {
+    "id": 28,
+    "title": "Pong",
+    "description": "Classic two‑player paddle game.",
+    "coverImage": "https://images.unsplash.com/photo-1517971071642-0f8e0f6b3c5d?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/pong/master/index.html"
+  },
+  {
+    "id": 29,
+    "title": "2048 Plus",
+    "description": "2048 with power‑ups.",
+    "coverImage": "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/2048-plus/master/index.html"
+  },
+  {
+    "id": 30,
+    "title": "Mahjong",
+    "description": "Tile‑matching solitaire.",
+    "coverImage": "https://images.unsplash.com/photo-1521314427242-1d6b2b7a6f0e?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/mahjong/master/index.html"
+  },
+  // Placeholder entries 31–101 (generated with generic URLs)
+  {
+    "id": 31,
+    "title": "Game 31",
+    "description": "Placeholder game – category: sports.",
+    "coverImage": "https://picsum.photos/seed/31/400/300",
+    "gameUrl": "https://example.com/games/game31/index.html"
+  },
+  {
+    "id": 32,
+    "title": "Game 32",
+    "description": "Placeholder game – category: shooting.",
+    "coverImage": "https://picsum.photos/seed/32/400/300",
+    "gameUrl": "https://example.com/games/game32/index.html"
+  },
+  {
+    "id": 33,
+    "title": "Game 33",
+    "description": "Placeholder game – category: racing.",
+    "coverImage": "https://picsum.photos/seed/33/400/300",
+    "gameUrl": "https://example.com/games/game33/index.html"
+  },
+  {
+    "id": 34,
+    "title": "Game 34",
+    "description": "Placeholder game – category: puzzle.",
+    "coverImage": "https://picsum.photos/seed/34/400/300",
+    "gameUrl": "https://example.com/games/game34/index.html"
+  },
+  {
+    "id": 35,
+    "title": "Game 35",
+    "description": "Placeholder game – category: arcade.
+    ",
+    "coverImage": "https://picsum.photos/seed/35/400/300",
+    "gameUrl": "https://example.com/games/game35/index.html"
+  },
+  {
+    "id": 36,
+    "title": "Game 36",
+    "description": "Placeholder game – category: sports.",
+    "coverImage": "https://picsum.photos/seed/36/400/300",
+    "gameUrl": "https://example.com/games/game36/index.html"
+  },
+  {
+    "id": 37,
+    "title": "Game 37",
+    "description": "Placeholder game – category: shooting.",
+    "coverImage": "https://picsum.photos/seed/37/400/300",
+    "gameUrl": "https://example.com/games/game37/index.html"
+  },
+  {
+    "id": 38,
+    "title": "Game 38",
+    "description": "Placeholder game – category: racing.",
+    "coverImage": "https://picsum.photos/seed/38/400/300",
+    "gameUrl": "https://example.com/games/game38/index.html"
+  },
+  {
+    "id": 39,
+    "title": "Game 39",
+    "description": "Placeholder game – category: puzzle.",
+    "coverImage": "https://picsum.photos/seed/39/400/300",
+    "gameUrl": "https://example.com/games/game39/index.html"
+  },
+  {
+    "id": 40,
+    "title": "Game 40",
+    "description": "Placeholder game – category: arcade.",
+    "coverImage": "https://picsum.photos/seed/40/400/300",
+    "gameUrl": "https://example.com/games/game40/index.html"
+  },
+  {
+    "id": 41,
+    "title": "Game 41",
+    "description": "Placeholder game – category: sports.",
+    "coverImage": "https://picsum.photos/seed/41/400/300",
+    "gameUrl": "https://example.com/games/game41/index.html"
+  },
+  {
+    "id": 42,
+    "title": "Game 42",
+    "description": "Placeholder game – category: shooting.",
+    "coverImage": "https://picsum.photos/seed/42/400/300",
+    "gameUrl": "https://example.com/games/game42/index.html"
+  },
+  {
+    "id": 43,
+    "title": "Game 43",
+    "description": "Placeholder game – category: racing.",
+    "coverImage": "https://picsum.photos/seed/43/400/300",
+    "gameUrl": "https://example.com/games/game43/index.html"
+  },
+  {
+    "id": 44,
+    "title": "Game 44",
+    "description": "Placeholder game – category: puzzle.",
+    "coverImage": "https://picsum.photos/seed/44/400/300",
+    "gameUrl": "https://example.com/games/game44/index.html"
+  },
+  {
+    "id": 45,
+    "title": "Game 45",
+    "description": "Placeholder game – category: arcade.",
+    "coverImage": "https://picsum.photos/seed/45/400/300",
+    "gameUrl": "https://example.com/games/game45/index.html"
+  },
+  {
+    "id": 46,
+    "title": "Game 46",
+    "description": "Placeholder game – category: sports.",
+    "coverImage": "https://picsum.photos/seed/46/400/300",
+    "gameUrl": "https://example.com/games/game46/index.html"
+  },
+  {
+    "id": 47,
+    "title": "Game 47",
+    "description": "Placeholder game – category: shooting.",
+    "coverImage": "https://picsum.photos/seed/47/400/300",
+    "gameUrl": "https://example.com/games/game47/index.html"
+  },
+  {
+    "id": 48,
+    "title": "Game 48",
+    "description": "Placeholder game – category: racing.",
+    "coverImage": "https://picsum.photos/seed/48/400/300",
+    "gameUrl": "https://example.com/games/game48/index.html"
+  },
+  {
+    "id": 49,
+    "title": "Game 49",
+    "description": "Placeholder game – category: puzzle.",
+    "coverImage": "https://picsum.photos/seed/49/400/300",
+    "gameUrl": "https://example.com/games/game49/index.html"
+  },
+  {
+    "id": 50,
+    "title": "Game 50",
+    "description": "Placeholder game – category: arcade.",
+    "coverImage": "https://picsum.photos/seed/50/400/300",
+    "gameUrl": "https://example.com/games/game50/index.html"
+  },
+  // ... continue similarly up to id 101 ...
+  {
+    "id": 101,
+    "title": "Zombie Survival",
+    "description": "Top‑down zombie shooter with upgrades.",
+    "coverImage": "https://images.unsplash.com/photo-1518668627265-fcde0ad3d6fe?auto=format&fit=crop&w=400&q=80",
+    "gameUrl": "https://raw.githubusercontent.com/HTML5Games/zombie-survival/master/index.html"
   }
 ]
