@@ -20,7 +20,7 @@
 html, body {
   height: 100%;
   font-family: 'Inter', sans-serif;
-  background: var(--background) url(var(--wood-texture)) repeat center/cover;
+  background: var(--background) var(--wood-texture) repeat center/cover;
   color: var(--text-primary);
   overflow-x: hidden;
 }

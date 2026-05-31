@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import GameCard from '../components/GameCard';
@@ -5,7 +7,7 @@ import HeroSlider from '../components/HeroSlider';
 import AuthButton from '../components/AuthButton';
 
 export default function Home() {
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const limit = 20;
 
