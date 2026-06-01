@@ -16,8 +16,6 @@ export default function GameCard({ game }: { game: Game }) {
       <h3 className="mt-2 text-lg font-semibold text-white text-center">{game.title}</h3>
       <a
         href={game.url}
-        target="_blank"
-        rel="noopener noreferrer"
         className="mt-3 neon-button px-4 py-2 bg-neon bg-opacity-20 rounded"
       >
         Play

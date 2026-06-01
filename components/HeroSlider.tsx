@@ -1,24 +1,19 @@
 "use client";
 
 import React from 'react';
+import { games } from '../data/games';
 
 // Simple static slider with placeholder images
 export default function HeroSlider() {
-  const placeholderGames = [
-    { id: '1', title: 'Retro Racer', thumbnail: '/wood_texture.png', url: '#' },
-    { id: '2', title: 'Space Invaders', thumbnail: '/wood_texture.png', url: '#' },
-    { id: '3', title: 'Pixel Platformer', thumbnail: '/wood_texture.png', url: '#' },
-  ];
+  const sliderGames = games.slice(0, 3);
   return (
     <div className="w-full overflow-hidden rounded-lg mb-8">
       <div className="flex space-x-4 animate-slide">
-        {placeholderGames.map((game) => (
+        {sliderGames.map((game) => (
           <a
             key={game.id}
             href={game.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-shrink-0 w-1/3"
+            className="flex-shrink-0 w-1/3 animate-glow hover:scale-102 transform transition duration-300"
           >
             <img
               src={game.thumbnail}
