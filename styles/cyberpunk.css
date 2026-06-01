@@ -1,0 +1,43 @@
+:root {
+  --bg-primary: #0d0d0d;
+  --bg-gradient: radial-gradient(circle at 30% 30%, #0d0d0d, #1a001f);
+  --neon-pink: #ff00ff;
+  --neon-blue: #00f0ff;
+  --neon-purple: #b400ff;
+  --card-bg: rgba(20, 0, 30, 0.6);
+  --text-primary: #e0e0e0;
+  --font-main: 'Space Grotesk', sans-serif;
+}
+
+body {
+  background: var(--bg-gradient);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  overflow-x: hidden;
+}
+
+.cyber-card {
+  background: var(--card-bg);
+  border: 2px solid var(--neon-pink);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.cyber-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 20px var(--neon-pink), 0 0 30px var(--neon-blue);
+}
+.neon-button {
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--neon-pink);
+  transition: box-shadow 0.2s;
+}
+.neon-button:hover {
+  box-shadow: 0 0 16px var(--neon-pink), 0 0 24px var(--neon-blue);
+}

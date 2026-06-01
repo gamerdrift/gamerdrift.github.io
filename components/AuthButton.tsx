@@ -1,11 +1,13 @@
 "use client";
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AuthButton() {
+  const router = useRouter();
   const handleAuth = () => {
-    // Placeholder: In a real app, integrate Firebase auth or other provider.
-    alert('Auth button clicked! Implement login here.');
+    // Navigate to a dedicated auth page (you can implement Firebase here later)
+    router.push('/auth');
   };
 
   return (

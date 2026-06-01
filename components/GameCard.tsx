@@ -11,7 +11,7 @@ interface Game {
 
 export default function GameCard({ game }: { game: Game }) {
   return (
-    <div className="neon bg-gray-900 bg-opacity-50 backdrop-blur-lg rounded-lg p-4 flex flex-col items-center hover:scale-105 transform transition duration-300">
+    <div className="cyber-card neon bg-gray-900 bg-opacity-50 backdrop-blur-lg rounded-lg p-4 flex flex-col items-center hover:scale-105 transform transition duration-300">
       <img src={game.thumbnail} alt={game.title} className="w-full h-48 object-cover rounded" />
       <h3 className="mt-2 text-lg font-semibold text-white text-center">{game.title}</h3>
       <a

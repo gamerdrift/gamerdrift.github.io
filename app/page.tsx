@@ -3,9 +3,9 @@ import Head from 'next/head';
 import GameCard from '../components/GameCard';
 import HeroSlider from '../components/HeroSlider';
 import AuthButton from '../components/AuthButton';
+import { games } from '../data/games';
 
-// Static placeholder data; replace with real data if needed
-const games: any[] = [];
+
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
         <meta property="og:title" content="GamerDrift Gaming Hub" />
         <meta property="og:description" content="Play classic arcade games with a modern, premium design." />
         <meta property="og:image" content="/wood_texture.png" />
-        <meta property="og:url" content="https://gamerdrift.github.io" />
+        <meta property="og:url" content="https://gamerdrift.com" />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
       <div className="container flex flex-col items-center">
