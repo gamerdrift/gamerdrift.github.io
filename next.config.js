@@ -1,0 +1,1 @@
+// next.config.js – set turbopack root to project directory\nmodule.exports = {\n  // Ensure Turbopack resolves from the project root\n  experimental: {\n    turbopack: {\n      root: __dirname\n    }\n  },\n  // Optional: you can add other Next.js config here\n};\n
