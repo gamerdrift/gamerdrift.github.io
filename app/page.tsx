@@ -1,11 +1,9 @@
 import React from 'react';
 import Head from 'next/head';
 import GameCard from '../components/GameCard';
-import HeroSlider from '../components/HeroSlider';
+import GlassCarousel from '../components/GlassCarousel';
 import AuthButton from '../components/AuthButton';
 import { games } from '../data/games';
-
-
 
 export default function Home() {
   return (
@@ -20,14 +18,21 @@ export default function Home() {
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
       <div className="container flex flex-col items-center">
-        <div className="flex justify-end w-full mb-4">
+        <div className="flex justify-between items-center w-full mb-4">
+          <h1 className="text-3xl font-extrabold text-white tracking-widest neon">GAMERDRIFT</h1>
           <AuthButton />
         </div>
-        <HeroSlider />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-          {games.map((game) => (
-            <GameCard key={game.id} game={game} />
-          ))}
+        
+        {/* Futuristic 3D Glass Carousel Selector */}
+        <GlassCarousel />
+
+        <div className="w-full mt-12 border-t border-neon-pink/20 pt-10">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center tracking-wider neon">ALL ARCADE TERMINALS</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {games.map((game) => (
+              <GameCard key={game.id} game={game} />
+            ))}
+          </div>
         </div>
         <button className="neon-button mt-8">Load More</button>
       </div>
