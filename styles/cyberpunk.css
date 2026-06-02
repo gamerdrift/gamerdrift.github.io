@@ -1,12 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 :root {
   --bg-primary: #0d0d0d;
   --bg-gradient: radial-gradient(circle at 30% 30%, #0d0d0d, #1a001f);
   --neon-pink: #ff00ff;
   --neon-blue: #00f0ff;
   --neon-purple: #b400ff;
-  --card-bg: rgba(20, 0, 30, 0.6);
+  --card-bg: rgba(20, 0, 30, 0.65);
   --text-primary: #e0e0e0;
+  --text-secondary: #9f9fb5;
   --font-main: 'Space Grotesk', sans-serif;
+  --border-neon: rgba(255, 0, 255, 0.3);
+}
+
+/* Light Theme Variables */
+html:not(.dark) {
+  --bg-primary: #f0f2f5;
+  --bg-gradient: radial-gradient(circle at 30% 30%, #f4f6fa, #d9e1f2);
+  --neon-pink: #d900b9;
+  --neon-blue: #0088cc;
+  --neon-purple: #8600d9;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --text-primary: #121220;
+  --text-secondary: #5a5a75;
+  --border-neon: rgba(217, 0, 185, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -14,41 +37,69 @@ body {
   color: var(--text-primary);
   font-family: var(--font-main);
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Cyberpunk Card Component */
 .cyber-card {
   background: var(--card-bg);
-  border: 2px solid var(--neon-pink);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid var(--border-neon);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .cyber-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 0 20px var(--neon-pink), 0 0 30px var(--neon-blue);
+  transform: translateY(-4px);
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.25), 0 0 30px rgba(0, 240, 255, 0.15);
 }
+
+/* Neon Button Styling */
 .neon-button {
   background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
   border: none;
   color: #fff;
+  font-family: var(--font-main);
   font-weight: 600;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 0 8px var(--neon-pink);
-  transition: box-shadow 0.2s;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.05em;
 }
 .neon-button:hover {
-  box-shadow: 0 0 16px var(--neon-pink), 0 0 24px var(--neon-blue);
+  transform: scale(1.02);
+  box-shadow: 0 0 18px var(--neon-pink), 0 0 26px var(--neon-blue);
+}
+.neon-button:active {
+  transform: scale(0.98);
 }
 
 .neon-text {
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+  color: #fff;
+  text-shadow: 0 0 8px var(--neon-blue), 0 0 15px var(--neon-pink);
 }
 
+/* Futuristic background grid pattern */
 .bg-cyber-grid {
-  background-size: 40px 40px;
+  background-size: 35px 35px;
   background-image: 
-    linear-gradient(to right, rgba(0, 240, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 240, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
+}
+html:not(.dark) .bg-cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 136, 204, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 136, 204, 0.07) 1px, transparent 1px);
 }

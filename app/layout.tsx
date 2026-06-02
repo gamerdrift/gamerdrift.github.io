@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   description: "Discover and play premium retro games with a cyber‑punk UI.",
 };
 
-// Updated layout with cyber‑punk design
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +28,18 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col"><NavBar />{process.env.NEXT_PUBLIC_GA_ID && (<><script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script><script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}} /></>)}{children}</body>
+      <body className="min-h-full flex flex-col bg-cyber-bg text-text-primary transition-colors duration-300">
+        <NavBar />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
+            <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}} />
+          </>
+        )}
+        <main className="flex-grow flex flex-col">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
