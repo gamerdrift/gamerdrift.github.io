@@ -11,13 +11,19 @@ export default function NavBar() {
         <Link href="/" className="text-xl font-extrabold text-white tracking-widest neon-text">
           GAMERDRIFT
         </Link>
-        <div className="flex space-x-8 items-center">
+        <div className="flex space-x-12 items-center">
           <Link href="/" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
             Home
           </Link>
-          <Link href="/games" className="text-text-primary hover:text-neon-blue font-medium transition-colors duration-200">Games</Link>
-          <Link href="/leaderboard" className="text-text-primary hover:text-neon-blue font-medium transition-colors duration-200">Leaderboard</Link>
-          <Link href="/contact" className="text-text-primary hover:text-neon-blue font-medium transition-colors duration-200">Contact</Link>
+          <Link href="/games" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+            Games
+          </Link>
+          <Link href="/leaderboard" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+            Leaderboard
+          </Link>
+          <Link href="/contact" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+            Contact
+          </Link>
         </div>
       </div>
       <AuthButton />
