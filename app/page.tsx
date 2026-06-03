@@ -17,17 +17,7 @@ export default function Home() {
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
       <div className="w-full min-h-screen pt-4 pb-12 px-4 md:px-8 bg-cyber-grid flex flex-col items-center">
-        <div className="w-full max-w-6xl flex flex-col items-center">
-          <div className="flex justify-start items-center w-full mb-6">
-            <h1 className="h-[120px] flex items-center">
-              <img 
-                src="/mylogo.png" 
-                alt="GamerDrift Logo" 
-                className="h-[120px] w-[400px] object-fill hover:scale-105 transition-transform duration-300"
-              />
-            </h1>
-          </div>
-          
+        <div className="w-full max-w-6xl flex flex-col items-center mt-6">
           {/* Futuristic 3D Glass Carousel Selector */}
           <GlassCarousel />
 

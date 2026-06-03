@@ -2,19 +2,42 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { games } from '../../../data/games';
-import NavBar from '../../../components/NavBar';
 import Link from 'next/link';
 
 export default function GameClientRunner({ gameId }: { gameId: string }) {
   const game = games.find((g) => g.id === gameId);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cabinetRef = useRef<HTMLDivElement>(null);
   const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // States specific to 2048 (non-canvas game)
   const [grid2048, setGrid2048] = useState<number[][]>([]);
+
+  const toggleFullscreen = () => {
+    const cabinet = cabinetRef.current;
+    if (!cabinet) return;
+    if (!document.fullscreenElement) {
+      cabinet.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   // 1. SNAKE GAME LOGIC
   const runSnake = () => {
@@ -768,23 +791,45 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
 
   return (
     <div className="container flex flex-col items-center py-6">
-      <NavBar />
       <div className="w-full max-w-4xl flex flex-col items-center mt-4">
-        <div className="flex justify-between w-full mb-4 px-4">
+        <div className="flex justify-between w-full mb-4 px-4 items-center">
           <h2 className="text-3xl font-bold text-white neon">{game.title}</h2>
-          {!game.isExternal ? (
-            <div className="text-xl font-bold text-neon-blue neon">
-              Score: <span className="text-white">{score}</span>
-            </div>
-          ) : (
-            <div className="text-xl font-bold text-neon-pink neon">
-              ARCADE MODE
-            </div>
-          )}
+          <div className="flex items-center space-x-6">
+            <button
+              onClick={toggleFullscreen}
+              className="text-xs font-mono font-bold tracking-widest px-3 py-1.5 border border-neon-blue text-neon-blue hover:bg-neon-blue/20 hover:text-white rounded transition-all duration-300 shadow-[0_0_10px_rgba(0,240,255,0.1)] active:scale-95 transform"
+            >
+              [ ⛶ FULLSCREEN ]
+            </button>
+            {!game.isExternal ? (
+              <div className="text-xl font-bold text-neon-blue neon">
+                Score: <span className="text-white">{score}</span>
+              </div>
+            ) : (
+              <div className="text-xl font-bold text-neon-pink neon">
+                ARCADE MODE
+              </div>
+            )}
+          </div>
         </div>
 
         {/* CRT Arcade Cabinet Screen */}
-        <div className="relative w-full max-w-xl aspect-[4/3] bg-black border-4 border-neon-pink rounded-xl overflow-hidden shadow-[0_0_30px_rgba(255,0,255,0.3)]">
+        <div 
+          ref={cabinetRef}
+          className={`relative bg-black transition-all duration-300 ${
+            isFullscreen 
+              ? 'fixed inset-0 w-screen h-screen z-50 border-0 rounded-none' 
+              : 'w-full max-w-xl aspect-[4/3] border-4 border-neon-pink rounded-xl overflow-hidden shadow-[0_0_30px_rgba(255,0,255,0.3)]'
+          }`}
+        >
+          {isFullscreen && (
+            <button
+              onClick={toggleFullscreen}
+              className="absolute top-4 right-4 z-40 text-xs font-mono font-bold tracking-widest px-3 py-1.5 bg-black/80 border border-neon-pink text-neon-pink hover:bg-neon-pink/20 hover:text-white rounded transition-all duration-300"
+            >
+              EXIT FULLSCREEN [ESC]
+            </button>
+          )}
           <div className="absolute inset-0 scanlines pointer-events-none z-10 opacity-30"></div>
           <div className="absolute inset-0 bg-radial-crt pointer-events-none z-15"></div>
 
