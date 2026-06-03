@@ -14,7 +14,7 @@ export default function LogoNavBar() {
             <img 
               src="/mylogo.png" 
               alt="GamerDrift Logo" 
-              className="h-12 sm:h-16 md:h-[80px] w-auto object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]"
+              className="h-12 w-[180px] sm:h-16 sm:w-[240px] md:h-[80px] md:w-[300px] object-fill filter drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]"
             />
           </div>
         </Link>
