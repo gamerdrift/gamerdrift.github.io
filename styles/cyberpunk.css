@@ -97,11 +97,13 @@ body {
   background-image: 
     linear-gradient(to right, rgba(0, 240, 255, 0.15) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 0, 255, 0.15) 1px, transparent 1px);
+  background-attachment: fixed;
 }
 html:not(.dark) .bg-cyber-grid {
   background-image: 
     linear-gradient(to right, rgba(0, 136, 204, 0.15) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(217, 0, 185, 0.15) 1px, transparent 1px);
+  background-attachment: fixed;
 }
 
 /* Dynamic Silver Beams Travelling along Grid Lines */

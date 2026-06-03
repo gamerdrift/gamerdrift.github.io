@@ -17,30 +17,32 @@ export default function Home() {
         <meta property="og:url" content="https://gamerdrift.com" />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
-      <div className="container flex flex-col items-center">
-        <div className="flex justify-between items-center w-full mb-4">
-          <h1 className="h-[120px] flex items-center">
-            <img 
-              src="/mylogo.png" 
-              alt="GamerDrift Logo" 
-              className="h-[120px] w-[400px] object-fill hover:scale-105 transition-transform duration-300"
-            />
-          </h1>
-          <AuthButton />
-        </div>
-        
-        {/* Futuristic 3D Glass Carousel Selector */}
-        <GlassCarousel />
-
-        <div className="w-full mt-12 border-t border-neon-pink/20 pt-10">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center tracking-wider neon">ALL ARCADE TERMINALS</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {games.map((game) => (
-              <GameCard key={game.id} game={game} />
-            ))}
+      <div className="w-full min-h-screen py-12 px-4 md:px-8 bg-cyber-grid flex flex-col items-center">
+        <div className="w-full max-w-6xl flex flex-col items-center">
+          <div className="flex justify-between items-center w-full mb-4">
+            <h1 className="h-[120px] flex items-center">
+              <img 
+                src="/mylogo.png" 
+                alt="GamerDrift Logo" 
+                className="h-[120px] w-[400px] object-fill hover:scale-105 transition-transform duration-300"
+              />
+            </h1>
+            <AuthButton />
           </div>
+          
+          {/* Futuristic 3D Glass Carousel Selector */}
+          <GlassCarousel />
+
+          <div className="w-full mt-12 border-t border-neon-pink/20 pt-10">
+            <h2 className="text-2xl font-bold text-white mb-6 text-center tracking-wider neon">ALL ARCADE TERMINALS</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {games.map((game) => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </div>
+          </div>
+          <button className="neon-button mt-8">Load More</button>
         </div>
-        <button className="neon-button mt-8">Load More</button>
       </div>
     </>
   );
