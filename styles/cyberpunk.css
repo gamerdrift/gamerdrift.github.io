@@ -95,11 +95,65 @@ body {
 .bg-cyber-grid {
   background-size: 35px 35px;
   background-image: 
-    linear-gradient(to right, rgba(0, 240, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 0, 255, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 240, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 0, 255, 0.045) 1px, transparent 1px);
 }
 html:not(.dark) .bg-cyber-grid {
   background-image: 
-    linear-gradient(to right, rgba(0, 136, 204, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(217, 0, 185, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 136, 204, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(217, 0, 185, 0.045) 1px, transparent 1px);
 }
+
+/* Dynamic Silver Beams Travelling along Grid Lines */
+@keyframes travel-horizontal {
+  0% {
+    left: -250px;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes travel-vertical {
+  0% {
+    top: -250px;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.silver-beam-h {
+  position: absolute;
+  height: 1px;
+  width: 250px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), #ffffff, rgba(255, 255, 255, 0.3), transparent);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+  animation: travel-horizontal linear forwards;
+}
+
+.silver-beam-v {
+  position: absolute;
+  width: 1px;
+  height: 250px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), #ffffff, rgba(255, 255, 255, 0.3), transparent);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+  animation: travel-vertical linear forwards;
+}
+

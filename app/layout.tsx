@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "../styles/cyberpunk.css";
 import NavBar from "../components/NavBar";
+import GridBeams from "../components/GridBeams";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-cyber-bg text-text-primary transition-colors duration-300">
+        <GridBeams />
         <NavBar />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
