@@ -30,7 +30,7 @@ export default function LogoNavBar() {
         </Link>
 
         {/* Navigation Tabs aligned in one row next to the logo */}
-        <nav className="flex items-center space-x-4 lg:space-x-8 overflow-x-auto scrollbar-none py-2 flex-grow justify-start">
+        <nav className="flex items-center space-x-8 lg:space-x-14 overflow-x-auto scrollbar-none py-2 flex-grow justify-start">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -38,8 +38,8 @@ export default function LogoNavBar() {
                 key={link.href}
                 href={link.href}
                 className={`${
-                  isActive ? 'diamond-tab' : 'metallic-tab'
-                } px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm md:px-8 md:py-3.5 md:text-base lg:px-10 lg:py-4 lg:text-lg font-extrabold tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 active:translate-y-0.5 whitespace-nowrap`}
+                  isActive ? 'metal-plate-tab-active' : 'metal-plate-tab'
+                } px-6 py-3 text-xs sm:px-8 sm:py-3.5 sm:text-sm md:px-10 md:py-4 md:text-base lg:px-12 lg:py-[18px] lg:text-lg font-extrabold tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 active:translate-y-0.5 whitespace-nowrap`}
               >
                 {link.name}
               </Link>
