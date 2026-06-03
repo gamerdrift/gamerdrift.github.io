@@ -124,13 +124,13 @@ export default function Header() {
   return (
     <header className="w-full h-[90px] md:h-[110px] bg-[#090311]/90 backdrop-blur-lg border-b border-neon-blue/20 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 transition-all duration-300">
       <div className="flex items-center space-x-6 lg:space-x-10 h-full flex-grow overflow-hidden">
-        {/* Cyberpunk hanging plate for Logo */}
+        {/* Cyberpunk rectangular silver frame for Logo */}
         <Link href="/" className="relative z-50 block transition-transform duration-300 hover:scale-[1.03] active:scale-95 flex-shrink-0">
-          <div className="bg-[#12021c] border-2 border-t-0 border-neon-blue rounded-b-2xl px-4 py-3 shadow-[0_10px_25px_rgba(0,240,255,0.35),inset_0_1px_2px_rgba(255,255,255,0.1)] flex items-center justify-center -mt-[2px] w-[180px] sm:w-[230px] md:w-[250px] h-[70px] sm:h-[85px] md:h-[95px]">
+          <div className="bg-[#0f0a18]/90 border-2 border-[#aab0c4] px-2 py-1 shadow-[0_0_15px_rgba(170,176,196,0.3),inset_0_1px_2px_rgba(255,255,255,0.05)] flex items-center justify-center -mt-[2px] w-[180px] sm:w-[230px] md:w-[250px] h-[70px] sm:h-[85px] md:h-[95px]">
             <img 
               src="/mylogo.png" 
               alt="GamerDrift Logo" 
-              className="h-full w-full object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]"
+              className="h-full w-full object-contain filter drop-shadow-[0_0_6px_rgba(170,176,196,0.4)]"
             />
           </div>
         </Link>
