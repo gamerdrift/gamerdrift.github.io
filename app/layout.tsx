@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-cyber-bg text-text-primary transition-colors duration-300">
         <NavBar />
         {process.env.NEXT_PUBLIC_GA_ID && (
