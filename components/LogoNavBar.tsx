@@ -20,11 +20,11 @@ export default function LogoNavBar() {
       <div className="flex items-center space-x-6 md:space-x-12 h-full flex-grow overflow-hidden">
         {/* Cyberpunk hanging plate for Logo */}
         <Link href="/" className="relative z-10 block transition-transform duration-300 hover:scale-[1.03] active:scale-95 flex-shrink-0">
-          <div className="bg-[#12021c] border-2 border-t-0 border-neon-blue rounded-b-2xl px-6 py-4 shadow-[0_10px_25px_rgba(0,240,255,0.35),inset_0_1px_2px_rgba(255,255,255,0.1)] flex items-center justify-center -mt-[2px]">
+          <div className="bg-[#12021c] border-2 border-t-0 border-neon-blue rounded-b-2xl px-4 py-3 shadow-[0_10px_25px_rgba(0,240,255,0.35),inset_0_1px_2px_rgba(255,255,255,0.1)] flex items-center justify-center -mt-[2px] w-[180px] sm:w-[240px] md:w-[250px] h-[70px] sm:h-[90px] md:h-[105px]">
             <img 
               src="/mylogo.png" 
               alt="GamerDrift Logo" 
-              className="h-12 w-[180px] sm:h-16 sm:w-[240px] md:h-[80px] md:w-[300px] object-fill filter drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]"
+              className="h-full w-full object-contain filter drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]"
             />
           </div>
         </Link>
