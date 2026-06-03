@@ -772,9 +772,15 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
       <div className="w-full max-w-4xl flex flex-col items-center mt-4">
         <div className="flex justify-between w-full mb-4 px-4">
           <h2 className="text-3xl font-bold text-white neon">{game.title}</h2>
-          <div className="text-xl font-bold text-neon-blue neon">
-            Score: <span className="text-white">{score}</span>
-          </div>
+          {!game.isExternal ? (
+            <div className="text-xl font-bold text-neon-blue neon">
+              Score: <span className="text-white">{score}</span>
+            </div>
+          ) : (
+            <div className="text-xl font-bold text-neon-pink neon">
+              ARCADE MODE
+            </div>
+          )}
         </div>
 
         {/* CRT Arcade Cabinet Screen */}
@@ -794,7 +800,23 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
             </div>
           )}
 
-          {gameId === '2048' ? (
+          {game.isExternal ? (
+            isPlaying ? (
+              <iframe
+                src={game.embedUrl}
+                className="w-full h-full border-none bg-black"
+                allow="autoplay; gamepad; keyboard"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#0a000f] flex items-center justify-center text-text-secondary">
+                <div className="text-center p-4">
+                  <p className="text-lg font-semibold text-neon-blue mb-2">Preparing External Subgrid...</p>
+                  <p className="text-xs text-slate-500">Connect to open-source game host via iframe tunnel</p>
+                </div>
+              </div>
+            )
+          ) : gameId === '2048' ? (
             <div className="w-full h-full flex items-center justify-center bg-[#150a21]">
               <div className="grid grid-cols-4 gap-3 p-4 bg-[#231238] rounded-xl w-[320px] h-[320px]">
                 {grid2048.map((row, rIdx) =>
@@ -827,6 +849,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
         {/* Controls Overlay info */}
         <div className="cyber-card p-6 mt-8 w-full max-w-xl text-text-secondary">
           <h3 className="text-xl font-semibold text-white mb-3 neon">HOW TO PLAY</h3>
+          {game.isExternal && <p className="text-lg">{game.description || 'Use the game-specific controls or keyboard keys to play this open-source game. Enjoy!'}</p>}
           {gameId === 'snake' && <p className="text-lg">Use the Arrow Keys (▲ ▼ ◀ ▶) on your keyboard to navigate the snake. Eat neon pink apples and do not hit the walls or yourself!</p>}
           {gameId === 'tetris' && <p className="text-lg">Use Arrow Left/Right (◀ ▶) to move, Arrow Down (▼) to drop, and Arrow Up (▲) to rotate the falling block pieces. Clear complete rows to score!</p>}
           {gameId === 'space-invaders' && <p className="text-lg">Use Arrow Left/Right (◀ ▶) to move your spaceship. Press Spacebar to shoot lasers. Eliminate all alien invaders before they reach your spaceship line!</p>}

@@ -8,22 +8,11 @@ export default function GamesPage() {
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState('All');
 
-  // Categories mapping based on game id
-  const getCategory = (id: string) => {
-    if (id === 'retro-racer') return 'Arcade';
-    if (id === 'space-invaders') return 'Shooting';
-    if (id === 'pixel-platformer') return 'Casual';
-    if (id === 'snake') return 'Arcade';
-    if (id === 'tetris') return 'Puzzle';
-    if (id === '2048') return 'Puzzle';
-    return 'Arcade';
-  };
-
-  const categories = ['All', 'Arcade', 'Shooting', 'Puzzle', 'Casual'];
+  const categories = ['All', 'Arcade', 'Shooting', 'Puzzle', 'Casual', 'Action', 'Retro'];
 
   const filteredGames = games.filter(game => {
     const matchesSearch = game.title.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = activeTab === 'All' || getCategory(game.id) === activeTab;
+    const matchesCategory = activeTab === 'All' || game.category === activeTab;
     return matchesSearch && matchesCategory;
   });
 

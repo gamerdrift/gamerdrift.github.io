@@ -3,15 +3,17 @@
 import React, { useState } from 'react';
 import { games } from '../data/games';
 
+const featuredGames = games.slice(0, 6);
+
 export default function GlassCarousel() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const nextSlide = () => {
-    setActiveIndex((prev) => (prev + 1) % games.length);
+    setActiveIndex((prev) => (prev + 1) % featuredGames.length);
   };
 
   const prevSlide = () => {
-    setActiveIndex((prev) => (prev - 1 + games.length) % games.length);
+    setActiveIndex((prev) => (prev - 1 + featuredGames.length) % featuredGames.length);
   };
 
   return (
@@ -21,11 +23,11 @@ export default function GlassCarousel() {
 
       {/* Main Carousel Display */}
       <div className="relative w-full h-[450px] flex items-center justify-center overflow-hidden">
-        {games.map((game, index) => {
+        {featuredGames.map((game, index) => {
           // Calculate relative position offset
           let offset = index - activeIndex;
-          if (offset < -games.length / 2) offset += games.length;
-          if (offset > games.length / 2) offset -= games.length;
+          if (offset < -featuredGames.length / 2) offset += featuredGames.length;
+          if (offset > featuredGames.length / 2) offset -= featuredGames.length;
 
           const isCenter = offset === 0;
           const isLeft = offset === -1;
@@ -148,7 +150,7 @@ export default function GlassCarousel() {
           ◀
         </button>
         <div className="flex space-x-2">
-          {games.map((_, idx) => (
+          {featuredGames.map((_, idx) => (
             <div
               key={idx}
               onClick={() => setActiveIndex(idx)}
