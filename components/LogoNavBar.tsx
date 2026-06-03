@@ -30,7 +30,7 @@ export default function LogoNavBar() {
         </Link>
 
         {/* Navigation Tabs aligned in one row next to the logo */}
-        <nav className="flex items-center space-x-8 lg:space-x-14 overflow-x-auto scrollbar-none py-2 flex-grow justify-start">
+        <nav className="flex items-center space-x-10 lg:space-x-16 overflow-x-auto scrollbar-none py-2 flex-grow justify-start">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
