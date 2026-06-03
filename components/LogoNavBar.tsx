@@ -2,14 +2,24 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import AuthButton from './AuthButton';
 
 export default function LogoNavBar() {
+  const pathname = usePathname();
+
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Games', href: '/games' },
+    { name: 'Leaderboard', href: '/leaderboard' },
+    { name: 'Contact', href: '/contact' }
+  ];
+
   return (
     <header className="w-full h-[90px] md:h-[120px] bg-[#0c0517]/85 backdrop-blur-md border-b border-neon-pink/20 px-4 md:px-8 flex justify-between items-center sticky top-0 z-50 transition-all duration-300">
-      {/* Cyberpunk hanging plate for Logo */}
-      <div className="flex items-center h-full">
-        <Link href="/" className="relative z-10 block transition-transform duration-300 hover:scale-[1.03] active:scale-95">
+      <div className="flex items-center space-x-6 md:space-x-12 h-full flex-grow overflow-hidden">
+        {/* Cyberpunk hanging plate for Logo */}
+        <Link href="/" className="relative z-10 block transition-transform duration-300 hover:scale-[1.03] active:scale-95 flex-shrink-0">
           <div className="bg-[#12021c] border-2 border-t-0 border-neon-blue rounded-b-2xl px-6 py-4 shadow-[0_10px_25px_rgba(0,240,255,0.35),inset_0_1px_2px_rgba(255,255,255,0.1)] flex items-center justify-center -mt-[2px]">
             <img 
               src="/mylogo.png" 
@@ -18,10 +28,28 @@ export default function LogoNavBar() {
             />
           </div>
         </Link>
+
+        {/* Navigation Tabs aligned in one row next to the logo */}
+        <nav className="flex items-center space-x-4 lg:space-x-8 overflow-x-auto scrollbar-none py-2 flex-grow justify-start">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`${
+                  isActive ? 'diamond-tab' : 'metallic-tab'
+                } px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm md:px-8 md:py-3.5 md:text-base lg:px-10 lg:py-4 lg:text-lg font-extrabold tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 active:translate-y-0.5 whitespace-nowrap`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
+        </nav>
       </div>
 
       {/* Auth Button */}
-      <div className="flex items-center">
+      <div className="flex items-center space-x-4 flex-shrink-0 pl-4">
         <AuthButton />
       </div>
     </header>
