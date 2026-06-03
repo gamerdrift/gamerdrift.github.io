@@ -19,7 +19,13 @@ export default function Home() {
       </Head>
       <div className="container flex flex-col items-center">
         <div className="flex justify-between items-center w-full mb-4">
-          <h1 className="text-3xl font-extrabold text-white tracking-widest neon">GAMERDRIFT</h1>
+          <h1 className="h-[36px] flex items-center">
+            <img 
+              src="/mylogo.png" 
+              alt="GamerDrift Logo" 
+              className="h-[36px] w-[220px] object-contain object-left hover:scale-105 transition-transform duration-300"
+            />
+          </h1>
           <AuthButton />
         </div>
         
