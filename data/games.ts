@@ -49,7 +49,7 @@ const gamePhotoIds = [
 ];
 
 const getUnsplashUrl = (photoId: string) => 
-  `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=400&h=500&q=80`;
+  `https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=400&h=500&q=80`;
 
 export const games: Game[] = [
   // --- Built-in Games (6) ---
