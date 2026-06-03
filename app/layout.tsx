@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "../styles/cyberpunk.css";
-import LogoNavBar from "../components/LogoNavBar";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import GridBeams from "../components/GridBeams";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { GameProvider } from "../lib/state/GameContext";
+import { UserProvider } from "../lib/state/UserContext";
 
 export const metadata: Metadata = {
   title: "GamerDrift – Premium Gaming Hub",
@@ -28,19 +20,24 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
+      className="h-full antialiased dark">
       <body className="min-h-full flex flex-col bg-cyber-bg text-text-primary transition-colors duration-300">
-        <GridBeams />
-        <LogoNavBar />
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
-            <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}} />
-          </>
-        )}
-        <main className="flex-grow flex flex-col">
-          {children}
-        </main>
+        <UserProvider>
+          <GameProvider>
+            <GridBeams />
+            <Header />
+            {process.env.NEXT_PUBLIC_GA_ID && (
+              <>
+                <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
+                <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}} />
+              </>
+            )}
+            <main className="flex-grow flex flex-col">
+              {children}
+            </main>
+            <Footer />
+          </GameProvider>
+        </UserProvider>
       </body>
     </html>
   );

@@ -52,7 +52,8 @@ const getUnsplashUrl = (photoId: string) =>
   `https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=400&h=500&q=80`;
 
 export const games: Game[] = [
-  // --- Built-in Games (6) ---
+  // --- Built-in Games (7) ---
+  { id: "captn-ghost", title: "Captn.Ghost", thumbnail: "/captn_ghost_preview.png", url: "/play/captn-ghost/", category: "Shooting", description: "Gritty 3D AAA action rail shooter. Breaching checkpoints, dodging cover, and eliminating target drones." },
   { id: "retro-racer", title: "Retro Racer", thumbnail: "/retro_racer_thumb.png", url: "/play/retro-racer/", category: "Arcade", description: "Steer through heavy cyber-highway traffic and survive as long as possible." },
   { id: "space-invaders", title: "Space Invaders", thumbnail: "/space_invaders_thumb.png", url: "/play/space-invaders/", category: "Shooting", description: "Blast waves of descending alien invaders before they reach your defenses." },
   { id: "pixel-platformer", title: "Pixel Platformer", thumbnail: "/pixel_platformer_thumb.png", url: "/play/pixel-platformer/", category: "Casual", description: "Jump and dodge incoming obstacles in this retro high-speed platformer runner." },

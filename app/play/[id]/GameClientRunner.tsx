@@ -1,22 +1,56 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { games } from '../../../data/games';
 import Link from 'next/link';
+import * as THREE from 'three';
+import { useGames, GameComment } from '../../../lib/state/GameContext';
+import { useUser } from '../../../lib/state/UserContext';
+import InteractiveGameCard from '../../../components/InteractiveGameCard';
 
 export default function GameClientRunner({ gameId }: { gameId: string }) {
+  const { games, comments, addComment, addToHistory } = useGames();
+  const { user, gainXP } = useUser();
   const game = games.find((g) => g.id === gameId);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cabinetRef = useRef<HTMLDivElement>(null);
-  const [score, setScore] = useState<number>(0);
-  const [gameOver, setGameOver] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // States specific to 2048 (non-canvas game)
-  const [grid2048, setGrid2048] = useState<number[][]>([]);
+  // Layout & UI States
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isTheaterMode, setIsTheaterMode] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [gameWon, setGameWon] = useState(false);
+  const [score, setScore] = useState(0);
+  const [health, setHealth] = useState(100);
+  const [ammo, setAmmo] = useState(30);
+  const [maxAmmo] = useState(30);
+  const [stage, setStage] = useState(1);
+  const [inCover, setInCover] = useState(false);
 
+  // Initialize stage from search parameters on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const s = params.get('stage');
+      if (s) {
+        const val = parseInt(s, 10);
+        if (val >= 1 && val <= 5) {
+          setStage(val);
+        }
+      }
+    }
+  }, []);
+
+  // Review System States
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+
+  // Related Games Selection
+  const relatedGames = games.filter(g => g.id !== gameId && g.approved).slice(0, 4);
+
+  // Toggle layout mode
   const toggleFullscreen = () => {
     const cabinet = cabinetRef.current;
     if (!cabinet) return;
@@ -39,745 +73,493 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     };
   }, []);
 
-  // 1. SNAKE GAME LOGIC
-  const runSnake = () => {
+  const handlePostReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewText.trim()) return;
+    const author = user ? user.username : 'GuestDrifter';
+    addComment(gameId, author, reviewRating, reviewText);
+    setReviewText('');
+    gainXP(25); // Reward XP for review
+  };
+
+  // Add game to play history on start
+  useEffect(() => {
+    if (isPlaying) {
+      addToHistory(gameId);
+    }
+  }, [isPlaying, gameId]);
+
+  // -------------------------------------------------------------
+  // 3D CAPTN.GHOST GAME ENGINE ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== 'captn-ghost' || !isPlaying || gameOver || gameWon) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
 
-    const grid = 20;
-    let count = 0;
-    let snake = [{ x: 160, y: 160 }, { x: 140, y: 160 }, { x: 120, y: 160 }];
-    let dx = grid;
-    let dy = 0;
-    let apple = { x: 320, y: 320 };
-    let currentScore = 0;
+    // WebGL Renderer Setup
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(width, height, false);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    const getRandomInt = (min: number, max: number) => {
-      return Math.floor(Math.random() * (max - min) + min);
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x07020d, 0.015);
+
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(65, width / height, 0.1, 1000);
+    const cameraGroup = new THREE.Group();
+    cameraGroup.position.set(0, 2, 10);
+    cameraGroup.add(camera);
+    scene.add(cameraGroup);
+
+    // Dynamic Weather Particles setup
+    const particleCount = 200;
+    const particleGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities: number[] = [];
+
+    for (let i = 0; i < particleCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 40;
+      positions[i * 3 + 1] = Math.random() * 20;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+      velocities.push(0.1 + Math.random() * 0.2); // Y speed
+    }
+
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    
+    // Choose particle color by stage theme
+    let particleColor = 0x00f0ff; // Rain
+    if (stage === 3) particleColor = 0xff8c00; // Ash
+    if (stage === 4) particleColor = 0xc2a678; // Sandstorm
+    if (stage === 5) particleColor = 0x3b6b12; // Falling leaves
+
+    const particleMaterial = new THREE.PointsMaterial({
+      color: particleColor,
+      size: 0.15,
+      transparent: true,
+      opacity: 0.6
+    });
+    const weatherParticles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(weatherParticles);
+
+    // Procedural Camouflage Material Canvas Generator
+    const createCamoMaterial = (type: string) => {
+      const textureCanvas = document.createElement('canvas');
+      textureCanvas.width = 128;
+      textureCanvas.height = 128;
+      const textureCtx = textureCanvas.getContext('2d');
+      if (textureCtx) {
+        let colors = ['#2d4a22', '#1a3311', '#4d5c43']; // forest
+        if (type === 'desert') colors = ['#c2a678', '#d6be96', '#4d412e'];
+        if (type === 'snowy') colors = ['#e6ecef', '#bec5c8', '#42484a'];
+        if (type === 'navy') colors = ['#1d2d44', '#3e5c76', '#0d1321'];
+
+        textureCtx.fillStyle = colors[0];
+        textureCtx.fillRect(0, 0, 128, 128);
+        for (let i = 0; i < 20; i++) {
+          textureCtx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+          textureCtx.beginPath();
+          textureCtx.arc(Math.random() * 128, Math.random() * 128, 10 + Math.random() * 15, 0, Math.PI * 2);
+          textureCtx.fill();
+        }
+      }
+      const texture = new THREE.CanvasTexture(textureCanvas);
+      return new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
     };
 
-    const resetApple = () => {
-      apple.x = getRandomInt(0, 20) * grid;
-      apple.y = getRandomInt(0, 20) * grid;
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0x00f0ff, 0.8);
+    dirLight.position.set(10, 20, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    scene.add(dirLight);
+
+    // Point Light for Muzzle Flash
+    const flashLight = new THREE.PointLight(0xffaa00, 0, 10);
+    camera.add(flashLight);
+    flashLight.position.set(0.3, -0.2, -1);
+
+    // Procedural Weapon Model attached to Camera
+    const weaponGroup = new THREE.Group();
+    weaponGroup.position.set(0.4, -0.3, -0.8);
+    camera.add(weaponGroup);
+
+    // Gun barrel
+    const barrelGeom = new THREE.CylinderGeometry(0.015, 0.015, 0.4, 8);
+    barrelGeom.rotateX(Math.PI / 2);
+    const steelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 });
+    const barrel = new THREE.Mesh(barrelGeom, steelMaterial);
+    barrel.position.set(0, 0, -0.2);
+    weaponGroup.add(barrel);
+
+    // Gun body
+    const bodyGeom = new THREE.BoxGeometry(0.04, 0.06, 0.3);
+    const gunBody = new THREE.Mesh(bodyGeom, steelMaterial);
+    weaponGroup.add(gunBody);
+
+    // Scope
+    const scopeGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.12, 8);
+    scopeGeom.rotateX(Math.PI / 2);
+    const scope = new THREE.Mesh(scopeGeom, steelMaterial);
+    scope.position.set(0, 0.04, 0);
+    weaponGroup.add(scope);
+
+    // Staging Level Geometry Nodes
+    const buildEnvironment = () => {
+      // Floor
+      const floorGeom = new THREE.PlaneGeometry(60, 200);
+      floorGeom.rotateX(-Math.PI / 2);
+      const floorMat = new THREE.MeshStandardMaterial({ color: 0x100d20, roughness: 0.9 });
+      const floor = new THREE.Mesh(floorGeom, floorMat);
+      floor.position.set(0, 0, -50);
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      // Environment props depending on Stage
+      const propGroup = new THREE.Group();
+      scene.add(propGroup);
+
+      if (stage === 1) { // Container Yard
+        for (let i = 0; i < 25; i++) {
+          const size = 2 + Math.random() * 3;
+          const boxGeom = new THREE.BoxGeometry(size, size, size * 2);
+          const boxMat = new THREE.MeshStandardMaterial({ 
+            color: Math.random() > 0.5 ? 0x00f0ff : 0xff00ff,
+            metalness: 0.7 
+          });
+          const box = new THREE.Mesh(boxGeom, boxMat);
+          box.position.set(
+            (Math.random() - 0.5) * 30,
+            size / 2,
+            -Math.random() * 100
+          );
+          box.castShadow = true;
+          box.receiveShadow = true;
+          propGroup.add(box);
+        }
+      } else if (stage === 2) { // Cargo Ship
+        // Draw guardrails
+        const railGeom = new THREE.BoxGeometry(40, 1, 0.1);
+        const rail = new THREE.Mesh(railGeom, steelMaterial);
+        rail.position.set(0, 1, -20);
+        propGroup.add(rail);
+      } else if (stage === 4) { // Afghan Desert
+        // Add clay huts
+        const hutGeom = new THREE.BoxGeometry(4, 3, 4);
+        const hutMat = createCamoMaterial('desert');
+        for (let i = 0; i < 6; i++) {
+          const hut = new THREE.Mesh(hutGeom, hutMat);
+          hut.position.set(
+            (Math.random() > 0.5 ? 8 : -8) + (Math.random() - 0.5) * 3,
+            1.5,
+            -15 - i * 20
+          );
+          hut.castShadow = true;
+          propGroup.add(hut);
+        }
+      } else { // default hangar / jungle foliage
+        const leafGeom = new THREE.SphereGeometry(1, 8, 8);
+        const trunkGeom = new THREE.CylinderGeometry(0.1, 0.1, 3);
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x3b6b12 });
+        for (let i = 0; i < 15; i++) {
+          const tree = new THREE.Group();
+          const trunk = new THREE.Mesh(trunkGeom, steelMaterial);
+          const leaves = new THREE.Mesh(leafGeom, leafMat);
+          leaves.position.y = 1.5;
+          tree.add(trunk);
+          tree.add(leaves);
+          tree.position.set(
+            (Math.random() - 0.5) * 30,
+            1.5,
+            -Math.random() * 100
+          );
+          propGroup.add(tree);
+        }
+      }
+    };
+    buildEnvironment();
+
+    // Spawning Enemies
+    const enemies: { mesh: THREE.Group; type: 'soldier' | 'drone'; health: number; py: number; speed: number; direction: number }[] = [];
+    const spawnEnemy = () => {
+      const enemyGroup = new THREE.Group();
+
+      const isDrone = Math.random() > 0.6;
+      if (isDrone) {
+        // Drone sphere model
+        const droneGeom = new THREE.SphereGeometry(0.3, 12, 12);
+        const droneMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff });
+        const drone = new THREE.Mesh(droneGeom, droneMat);
+        enemyGroup.add(drone);
+        enemyGroup.position.set((Math.random() - 0.5) * 10, 3 + Math.random() * 2, cameraGroup.position.z - 15);
+        scene.add(enemyGroup);
+        enemies.push({ mesh: enemyGroup, type: 'drone', health: 40, py: enemyGroup.position.y, speed: 0.05, direction: Math.random() > 0.5 ? 1 : -1 });
+      } else {
+        // Soldier humanoid model
+        const soldierMat = createCamoMaterial(stage === 4 ? 'desert' : stage === 3 ? 'snowy' : 'forest');
+        
+        // Head
+        const headGeom = new THREE.SphereGeometry(0.18, 10, 10);
+        const head = new THREE.Mesh(headGeom, soldierMat);
+        head.position.y = 0.9;
+        enemyGroup.add(head);
+
+        // Helmet
+        const helmetGeom = new THREE.SphereGeometry(0.2, 10, 10, 0, Math.PI * 2, 0, Math.PI / 2);
+        const helmet = new THREE.Mesh(helmetGeom, steelMaterial);
+        helmet.position.y = 0.92;
+        enemyGroup.add(helmet);
+
+        // Torso
+        const torsoGeom = new THREE.CylinderGeometry(0.22, 0.15, 0.7);
+        const torso = new THREE.Mesh(torsoGeom, soldierMat);
+        torso.position.y = 0.4;
+        enemyGroup.add(torso);
+
+        enemyGroup.position.set((Math.random() - 0.5) * 12, 0.5, cameraGroup.position.z - 15 - Math.random() * 5);
+        scene.add(enemyGroup);
+        enemies.push({ mesh: enemyGroup, type: 'soldier', health: 100, py: enemyGroup.position.y, speed: 0.03, direction: Math.random() > 0.5 ? 1 : -1 });
+      }
     };
 
-    let animId: number;
+    // Initial spawns
+    for (let i = 0; i < 3; i++) spawnEnemy();
 
-    const loop = () => {
-      if (!isPlaying || gameOver) return;
-      animId = requestAnimationFrame(loop);
+    // Spawn timer
+    const spawnInterval = setInterval(() => {
+      if (enemies.length < 5) spawnEnemy();
+    }, 3000);
 
-      // Slow game loop to 15 fps
-      if (++count < 6) return;
-      count = 0;
+    // Raycast hit detection
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const handleShoot = (e: MouseEvent) => {
+      e.preventDefault();
+      
+      // Check ammo
+      let currentAmmo = 0;
+      setAmmo(prev => {
+        if (prev <= 0) return 0;
+        currentAmmo = prev - 1;
+        return currentAmmo;
+      });
 
-      // Move snake
-      const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-
-      // Wall collision
-      if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
-        setGameOver(true);
-        setIsPlaying(false);
+      if (currentAmmo === 0) {
+        // Trigger empty clip click
         return;
       }
 
-      // Self collision
-      for (let i = 0; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-          setGameOver(true);
-          setIsPlaying(false);
-          return;
+      // Muzzle Flash animation
+      flashLight.intensity = 2.5;
+      weaponGroup.position.z += 0.12; // Recoil pushback
+      weaponGroup.rotation.x -= 0.05; // Recoil barrel lift
+
+      setTimeout(() => {
+        flashLight.intensity = 0;
+      }, 50);
+
+      // Mouse coords
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      // Check intersect enemies
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
+        const children = enemy.mesh.children;
+        const intersects = raycaster.intersectObjects(children);
+
+        if (intersects.length > 0) {
+          // Hit! Damage enemy
+          enemy.health -= 35;
+          setScore(prev => prev + 50);
+
+          // Spawn blood splatter/sparks particles
+          const sparkGeom = new THREE.BufferGeometry();
+          const sparkPos = new Float32Array(15 * 3);
+          const contactPoint = intersects[0].point;
+          for (let j = 0; j < 15; j++) {
+            sparkPos[j * 3] = contactPoint.x + (Math.random() - 0.5) * 0.2;
+            sparkPos[j * 3 + 1] = contactPoint.y + (Math.random() - 0.5) * 0.2;
+            sparkPos[j * 3 + 2] = contactPoint.z + (Math.random() - 0.5) * 0.2;
+          }
+          sparkGeom.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+          const sparkMat = new THREE.PointsMaterial({
+            color: enemy.type === 'drone' ? 0x00f0ff : 0xff0000,
+            size: 0.1,
+            transparent: true,
+            opacity: 0.8
+          });
+          const sparks = new THREE.Points(sparkGeom, sparkMat);
+          scene.add(sparks);
+          setTimeout(() => scene.remove(sparks), 300);
+
+          if (enemy.health <= 0) {
+            // Kill enemy
+            scene.remove(enemy.mesh);
+            enemies.splice(i, 1);
+            setScore(prev => prev + 150);
+            gainXP(5); // Reward XP for kill
+          }
+          break; // hit first target
         }
       }
-
-      snake.unshift(head);
-
-      // Eat apple
-      if (head.x === apple.x && head.y === apple.y) {
-        currentScore += 100;
-        setScore(currentScore);
-        resetApple();
-      } else {
-        snake.pop();
-      }
-
-      // Draw apple
-      ctx.fillStyle = '#ff00ff';
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = '#ff00ff';
-      ctx.fillRect(apple.x, apple.y, grid - 2, grid - 2);
-
-      // Draw snake
-      ctx.fillStyle = '#00f0ff';
-      ctx.shadowColor = '#00f0ff';
-      snake.forEach((cell, index) => {
-        ctx.fillRect(cell.x, cell.y, grid - 2, grid - 2);
-      });
-      ctx.shadowBlur = 0; // reset
     };
 
+    window.addEventListener('click', handleShoot);
+
+    // Keyboard Key Handling
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft' && dx === 0) {
-        dx = -grid; dy = 0;
-      } else if (e.key === 'ArrowUp' && dy === 0) {
-        dx = 0; dy = -grid;
-      } else if (e.key === 'ArrowRight' && dx === 0) {
-        dx = grid; dy = 0;
-      } else if (e.key === 'ArrowDown' && dy === 0) {
-        dx = 0; dy = grid;
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        setInCover(true);
+        // Translate camera down in cover
+        cameraGroup.position.y = 1.0;
+        // Auto reload
+        setTimeout(() => {
+          setAmmo(maxAmmo);
+        }, 1000);
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        // Lower gun reload animation
+        weaponGroup.position.y -= 0.3;
+        setTimeout(() => {
+          setAmmo(maxAmmo);
+          weaponGroup.position.y += 0.3;
+        }, 800);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        setInCover(false);
+        cameraGroup.position.y = 2.0;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    animId = requestAnimationFrame(loop);
+    window.addEventListener('keyup', handleKeyUp);
 
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('keydown', handleKeyDown);
+    // Mouse movement sway
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Apply lerp target values to scope sway
+      camera.rotation.y = -x * 0.15;
+      camera.rotation.x = y * 0.12;
+
+      weaponGroup.position.x = 0.4 - x * 0.05;
+      weaponGroup.position.y = -0.3 + y * 0.05;
     };
-  };
+    window.addEventListener('mousemove', handleMouseMove);
 
-  // 2. TETRIS GAME LOGIC
-  const runTetris = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    // -------------------------------------------------------------
+    // Game Loop
+    // -------------------------------------------------------------
+    let animationFrameId: number;
+    let clock = new THREE.Clock();
+    let moveProgress = 0;
 
-    const grid = 20;
-    const cols = 12;
-    const rows = 20;
-    let board = Array.from({ length: rows }, () => Array(cols).fill(0));
-    let currentScore = 0;
-    let count = 0;
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
 
-    const SHAPES = [
-      [[1, 1, 1, 1]],
-      [[1, 1, 1], [0, 1, 0]],
-      [[1, 1, 1], [1, 0, 0]],
-      [[1, 1, 1], [0, 0, 1]],
-      [[1, 1], [1, 1]],
-      [[1, 1, 0], [0, 1, 1]],
-      [[0, 1, 1], [1, 1, 0]]
-    ];
+      // Recoil recovery
+      if (weaponGroup.position.z > -0.8) weaponGroup.position.z -= delta * 0.8;
+      if (weaponGroup.rotation.x < 0) weaponGroup.rotation.x += delta * 0.4;
 
-    const COLORS = ['#00f0ff', '#ff00ff', '#b400ff', '#ffff00', '#00ff00', '#ff0000', '#ff8000'];
+      // Weather animation
+      const posAttr = weatherParticles.geometry.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < particleCount; i++) {
+        posAttr.setY(i, posAttr.getY(i) - velocities[i]);
+        if (posAttr.getY(i) < 0) {
+          posAttr.setY(i, 20); // Reset height
+        }
+      }
+      posAttr.needsUpdate = true;
 
-    let piece = {
-      matrix: SHAPES[Math.floor(Math.random() * SHAPES.length)],
-      row: 0,
-      col: 4,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)]
-    };
-
-    const collide = (matrix: number[][], row: number, col: number) => {
-      for (let r = 0; r < matrix.length; r++) {
-        for (let c = 0; c < matrix[r].length; c++) {
-          if (matrix[r][c]) {
-            const nextRow = row + r;
-            const nextCol = col + c;
-            if (nextCol < 0 || nextCol >= cols || nextRow >= rows || (nextRow >= 0 && board[nextRow][nextCol])) {
-              return true;
+      // Camera rail path move simulation
+      if (enemies.length === 0) {
+        moveProgress += delta * 2;
+        cameraGroup.position.z -= delta * 1.5;
+        
+        // Progress to next Stage
+        if (cameraGroup.position.z < -100) {
+          cameraGroup.position.z = 10;
+          setStage(prev => {
+            if (prev >= 5) {
+              setGameWon(true);
+              setIsPlaying(false);
+              return 5;
             }
-          }
+            return prev + 1;
+          });
         }
       }
-      return false;
-    };
 
-    const merge = () => {
-      piece.matrix.forEach((r, rowIdx) => {
-        r.forEach((val, colIdx) => {
-          if (val) {
-            board[piece.row + rowIdx][piece.col + colIdx] = piece.color;
-          }
-        });
-      });
-    };
-
-    const rotate = (matrix: number[][]) => {
-      const N = matrix.length;
-      const M = matrix[0].length;
-      let rotated = Array.from({ length: M }, () => Array(N).fill(0));
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < M; c++) {
-          rotated[c][N - 1 - r] = matrix[r][c];
+      // Update enemies
+      enemies.forEach((enemy, idx) => {
+        // Move back and forth
+        enemy.mesh.position.x += enemy.speed * enemy.direction;
+        if (Math.abs(enemy.mesh.position.x) > 6) {
+          enemy.direction *= -1;
         }
-      }
-      return rotated;
-    };
 
-    const clearLines = () => {
-      let linesCleared = 0;
-      for (let r = rows - 1; r >= 0; r--) {
-        if (board[r].every(val => val !== 0)) {
-          board.splice(r, 1);
-          board.unshift(Array(cols).fill(0));
-          linesCleared++;
-          r++; // Check same row index again
+        // Float drone height
+        if (enemy.type === 'drone') {
+          enemy.mesh.position.y = enemy.py + Math.sin(clock.getElapsedTime() * 5 + idx) * 0.3;
         }
-      }
-      if (linesCleared > 0) {
-        currentScore += linesCleared * linesCleared * 100;
-        setScore(currentScore);
-      }
-    };
 
-    const resetPiece = () => {
-      piece.matrix = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-      piece.row = 0;
-      piece.col = 4;
-      piece.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      if (collide(piece.matrix, piece.row, piece.col)) {
-        setGameOver(true);
-        setIsPlaying(false);
-      }
-    };
-
-    let animId: number;
-
-    const loop = () => {
-      if (!isPlaying || gameOver) return;
-      animId = requestAnimationFrame(loop);
-
-      if (++count < 30) return; // Drop every 30 frames
-      count = 0;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Move piece down
-      piece.row++;
-      if (collide(piece.matrix, piece.row, piece.col)) {
-        piece.row--;
-        merge();
-        clearLines();
-        resetPiece();
-      }
-
-      // Draw board
-      board.forEach((r, rowIdx) => {
-        r.forEach((val, colIdx) => {
-          if (val) {
-            ctx.fillStyle = val as string;
-            ctx.fillRect(colIdx * grid, rowIdx * grid, grid - 1, grid - 1);
-          }
-        });
+        // Enemy fires at player
+        if (Math.random() < 0.005 && !inCover) {
+          setHealth(prev => {
+            const next = prev - 8;
+            if (next <= 0) {
+              setGameOver(true);
+              setIsPlaying(false);
+            }
+            return Math.max(0, next);
+          });
+        }
       });
 
-      // Draw active piece
-      ctx.fillStyle = piece.color;
-      piece.matrix.forEach((r, rowIdx) => {
-        r.forEach((val, colIdx) => {
-          if (val) {
-            ctx.fillRect((piece.col + colIdx) * grid, (piece.row + rowIdx) * grid, grid - 1, grid - 1);
-          }
-        });
-      });
+      renderer.render(scene, camera);
     };
+    animate();
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        piece.col--;
-        if (collide(piece.matrix, piece.row, piece.col)) piece.col++;
-      } else if (e.key === 'ArrowRight') {
-        piece.col++;
-        if (collide(piece.matrix, piece.row, piece.col)) piece.col--;
-      } else if (e.key === 'ArrowDown') {
-        piece.row++;
-        if (collide(piece.matrix, piece.row, piece.col)) piece.row--;
-      } else if (e.key === 'ArrowUp') {
-        const rotated = rotate(piece.matrix);
-        const oldMatrix = piece.matrix;
-        piece.matrix = rotated;
-        if (collide(piece.matrix, piece.row, piece.col)) {
-          piece.matrix = oldMatrix;
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    animId = requestAnimationFrame(loop);
-
+    // Cleanup listeners
     return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  };
-
-  // 3. SPACE INVADERS LOGIC
-  const runSpaceInvaders = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let playerX = 180;
-    const playerY = 360;
-    const playerWidth = 40;
-    const playerHeight = 15;
-
-    let bullets: { x: number; y: number }[] = [];
-    let invaders: { x: number; y: number; width: number; height: number; alive: boolean }[] = [];
-    let invaderSpeed = 1;
-    let invaderDirection = 1;
-    let currentScore = 0;
-
-    // Initialize invaders
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 6; col++) {
-        invaders.push({
-          x: 40 + col * 50,
-          y: 30 + row * 40,
-          width: 30,
-          height: 20,
-          alive: true
-        });
-      }
-    }
-
-    let leftPressed = false;
-    let rightPressed = false;
-
-    let animId: number;
-
-    const loop = () => {
-      if (!isPlaying || gameOver) return;
-      animId = requestAnimationFrame(loop);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Move player
-      if (leftPressed && playerX > 0) playerX -= 4;
-      if (rightPressed && playerX < canvas.width - playerWidth) playerX += 4;
-
-      // Draw player
-      ctx.fillStyle = '#00f0ff';
-      ctx.fillRect(playerX, playerY, playerWidth, playerHeight);
-
-      // Move and draw bullets
-      ctx.fillStyle = '#ffff00';
-      bullets = bullets.filter(bullet => {
-        bullet.y -= 6;
-        ctx.fillRect(bullet.x, bullet.y, 4, 10);
-        return bullet.y > 0;
-      });
-
-      // Move and draw invaders
-      let hitSide = false;
-      invaders.forEach(invader => {
-        if (!invader.alive) return;
-
-        invader.x += invaderSpeed * invaderDirection;
-        if (invader.x <= 0 || invader.x >= canvas.width - invader.width) {
-          hitSide = true;
-        }
-
-        // Draw alien
-        ctx.fillStyle = '#ff00ff';
-        ctx.fillRect(invader.x, invader.y, invader.width, invader.height);
-
-        // Check alien reaching player line
-        if (invader.y + invader.height >= playerY) {
-          setGameOver(true);
-          setIsPlaying(false);
-        }
-      });
-
-      if (hitSide) {
-        invaderDirection *= -1;
-        invaders.forEach(invader => {
-          invader.y += 10;
-        });
-      }
-
-      // Collisions
-      bullets.forEach((bullet, bIdx) => {
-        invaders.forEach(invader => {
-          if (invader.alive &&
-              bullet.x >= invader.x &&
-              bullet.x <= invader.x + invader.width &&
-              bullet.y >= invader.y &&
-              bullet.y <= invader.y + invader.height) {
-            invader.alive = false;
-            bullets.splice(bIdx, 1);
-            currentScore += 200;
-            setScore(currentScore);
-          }
-        });
-      });
-
-      // Win check
-      if (invaders.every(inv => !inv.alive)) {
-        // Next level
-        invaderSpeed += 0.5;
-        invaders.forEach(inv => { inv.alive = true; inv.y = 30; });
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft' && isPlaying) leftPressed = true;
-      if (e.key === 'ArrowRight' && isPlaying) rightPressed = true;
-      if ((e.key === ' ' || e.key === 'Spacebar') && isPlaying) {
-        bullets.push({ x: playerX + playerWidth / 2 - 2, y: playerY });
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') leftPressed = false;
-      if (e.key === 'ArrowRight') rightPressed = false;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    animId = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(animationFrameId);
+      clearInterval(spawnInterval);
+      window.removeEventListener('click', handleShoot);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('mousemove', handleMouseMove);
     };
-  };
+  }, [isPlaying, gameId, stage, inCover]);
 
-  // 4. RETRO RACER LOGIC
-  const runRetroRacer = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let playerX = 180;
-    const playerWidth = 35;
-    const playerHeight = 60;
-    const playerY = 300;
-
-    let obstacles: { x: number; y: number; width: number; height: number; speed: number }[] = [];
-    let currentScore = 0;
-    let roadOffset = 0;
-
-    let leftPressed = false;
-    let rightPressed = false;
-
-    let animId: number;
-
-    const loop = () => {
-      if (!isPlaying || gameOver) return;
-      animId = requestAnimationFrame(loop);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw scrolling road
-      roadOffset = (roadOffset + 5) % 40;
-      ctx.fillStyle = '#111';
-      ctx.fillRect(80, 0, 240, canvas.height);
-
-      ctx.fillStyle = '#fff';
-      // Road borders
-      ctx.fillRect(80, 0, 5, canvas.height);
-      ctx.fillRect(315, 0, 5, canvas.height);
-
-      // Center dashed line
-      for (let y = -40 + roadOffset; y < canvas.height; y += 40) {
-        ctx.fillRect(198, y, 4, 20);
-      }
-
-      // Move player
-      if (leftPressed && playerX > 85) playerX -= 5;
-      if (rightPressed && playerX < 315 - playerWidth) playerX += 5;
-
-      // Draw player car
-      ctx.fillStyle = '#00f0ff';
-      ctx.fillRect(playerX, playerY, playerWidth, playerHeight);
-
-      // Spawning obstacles
-      if (Math.random() < 0.02) {
-        obstacles.push({
-          x: Math.random() * (220 - playerWidth) + 90,
-          y: -60,
-          width: playerWidth,
-          height: playerHeight,
-          speed: Math.random() * 3 + 4
-        });
-      }
-
-      // Update and draw obstacles
-      obstacles = obstacles.filter(obs => {
-        obs.y += obs.speed;
-        ctx.fillStyle = '#ff00ff';
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-
-        // Collision Check
-        if (
-          playerX < obs.x + obs.width &&
-          playerX + playerWidth > obs.x &&
-          playerY < obs.y + obs.height &&
-          playerY + playerHeight > obs.y
-        ) {
-          setGameOver(true);
-          setIsPlaying(false);
-        }
-
-        if (obs.y > canvas.height) {
-          currentScore += 50;
-          setScore(currentScore);
-          return false;
-        }
-        return true;
-      });
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') leftPressed = true;
-      if (e.key === 'ArrowRight') rightPressed = true;
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') leftPressed = false;
-      if (e.key === 'ArrowRight') rightPressed = false;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    animId = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  };
-
-  // 5. PIXEL PLATFORMER LOGIC
-  const runPixelPlatformer = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let player = { x: 100, y: 300, vx: 0, vy: 0, width: 20, height: 30, jumping: false };
-    const gravity = 0.5;
-    const groundY = 350;
-
-    let obstacles: { x: number; width: number; height: number; speed: number }[] = [];
-    let currentScore = 0;
-
-    let jumpPressed = false;
-
-    let animId: number;
-
-    const loop = () => {
-      if (!isPlaying || gameOver) return;
-      animId = requestAnimationFrame(loop);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw ground
-      ctx.fillStyle = '#222';
-      ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
-      ctx.fillStyle = '#ff00ff';
-      ctx.fillRect(0, groundY, canvas.width, 4);
-
-      // Physics
-      if (jumpPressed && !player.jumping) {
-        player.vy = -10;
-        player.jumping = true;
-      }
-
-      player.vy += gravity;
-      player.y += player.vy;
-
-      if (player.y >= groundY - player.height) {
-        player.y = groundY - player.height;
-        player.vy = 0;
-        player.jumping = false;
-      }
-
-      // Draw player
-      ctx.fillStyle = '#00f0ff';
-      ctx.fillRect(player.x, player.y, player.width, player.height);
-
-      // Spawn obstacles
-      if (Math.random() < 0.015) {
-        obstacles.push({
-          x: canvas.width,
-          width: 15,
-          height: Math.random() * 20 + 20,
-          speed: 4
-        });
-      }
-
-      // Move and draw obstacles
-      obstacles = obstacles.filter(obs => {
-        obs.x -= obs.speed;
-        ctx.fillStyle = '#ff00ff';
-        ctx.fillRect(obs.x, groundY - obs.height, obs.width, obs.height);
-
-        // Collision Check
-        if (
-          player.x < obs.x + obs.width &&
-          player.x + player.width > obs.x &&
-          player.y + player.height > groundY - obs.height
-        ) {
-          setGameOver(true);
-          setIsPlaying(false);
-        }
-
-        if (obs.x < -obs.width) {
-          currentScore += 100;
-          setScore(currentScore);
-          return false;
-        }
-        return true;
-      });
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp' || e.key === ' ' || e.key === 'Spacebar') {
-        jumpPressed = true;
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp' || e.key === ' ' || e.key === 'Spacebar') {
-        jumpPressed = false;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    animId = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  };
-
-  // 6. 2048 LOGIC (DOM BASED)
-  const init2048 = () => {
-    let grid = Array.from({ length: 4 }, () => Array(4).fill(0));
-    grid = addNumber2048(grid);
-    grid = addNumber2048(grid);
-    setGrid2048(grid);
-    setScore(0);
-    setGameOver(false);
-  };
-
-  const addNumber2048 = (grid: number[][]) => {
-    const emptyCells = [];
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 4; c++) {
-        if (grid[r][c] === 0) emptyCells.push({ r, c });
-      }
-    }
-    if (emptyCells.length > 0) {
-      const { r, c } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      grid[r][c] = Math.random() < 0.9 ? 2 : 4;
-    }
-    return grid;
-  };
-
-  const handle2048Input = (direction: 'up' | 'down' | 'left' | 'right') => {
-    let grid = JSON.parse(JSON.stringify(grid2048));
-    let moved = false;
-    let currentScore = score;
-
-    const rotateGrid = (g: number[][]) => {
-      let next = Array.from({ length: 4 }, () => Array(4).fill(0));
-      for (let r = 0; r < 4; r++) {
-        for (let c = 0; c < 4; c++) {
-          next[c][3 - r] = g[r][c];
-        }
-      }
-      return next;
-    };
-
-    let rotations = 0;
-    if (direction === 'up') rotations = 1;
-    if (direction === 'right') rotations = 2;
-    if (direction === 'down') rotations = 3;
-
-    for (let i = 0; i < rotations; i++) {
-      grid = rotateGrid(grid);
-    }
-
-    for (let r = 0; r < 4; r++) {
-      let row = grid[r].filter((v: number) => v !== 0);
-      let nextRow = [];
-      for (let i = 0; i < row.length; i++) {
-        if (row[i] === row[i + 1]) {
-          nextRow.push(row[i] * 2);
-          currentScore += row[i] * 2;
-          i++;
-          moved = true;
-        } else {
-          nextRow.push(row[i]);
-        }
-      }
-      while (nextRow.length < 4) nextRow.push(0);
-      if (JSON.stringify(grid[r]) !== JSON.stringify(nextRow)) {
-        moved = true;
-      }
-      grid[r] = nextRow;
-    }
-
-    const revRotations = (4 - rotations) % 4;
-    for (let i = 0; i < revRotations; i++) {
-      grid = rotateGrid(grid);
-    }
-
-    if (moved) {
-      grid = addNumber2048(grid);
-      setGrid2048(grid);
-      setScore(currentScore);
-
-      let canMove = false;
-      for (let r = 0; r < 4; r++) {
-        for (let c = 0; c < 4; c++) {
-          if (grid[r][c] === 0) canMove = true;
-          if (r < 3 && grid[r][c] === grid[r + 1][c]) canMove = true;
-          if (c < 3 && grid[r][c] === grid[r][c + 1]) canMove = true;
-        }
-      }
-      if (!canMove) {
-        setGameOver(true);
-        setIsPlaying(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    if (gameId === '2048') {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'ArrowUp') handle2048Input('up');
-        if (e.key === 'ArrowDown') handle2048Input('down');
-        if (e.key === 'ArrowLeft') handle2048Input('left');
-        if (e.key === 'ArrowRight') handle2048Input('right');
-      };
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }
-
-    if (gameId === 'snake') return runSnake();
-    if (gameId === 'tetris') return runTetris();
-    if (gameId === 'space-invaders') return runSpaceInvaders();
-    if (gameId === 'retro-racer') return runRetroRacer();
-    if (gameId === 'pixel-platformer') return runPixelPlatformer();
-  }, [isPlaying, gameId, grid2048]);
-
+  // Game startup initializer
   const startGame = () => {
     setScore(0);
+    setHealth(100);
+    setAmmo(maxAmmo);
+    setStage(1);
     setGameOver(false);
+    setGameWon(false);
     setIsPlaying(true);
-    if (gameId === '2048') {
-      init2048();
-    }
   };
 
   if (!game) {
@@ -790,122 +572,246 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
   }
 
   return (
-    <div className="container flex flex-col items-center py-6">
-      <div className="w-full max-w-4xl flex flex-col items-center mt-4">
-        <div className="flex justify-between w-full mb-4 px-4 items-center">
-          <h2 className="text-3xl font-bold text-white neon">{game.title}</h2>
-          <div className="flex items-center space-x-6">
-            <button
-              onClick={toggleFullscreen}
-              className="text-xs font-mono font-bold tracking-widest px-3 py-1.5 border border-neon-blue text-neon-blue hover:bg-neon-blue/20 hover:text-white rounded transition-all duration-300 shadow-[0_0_10px_rgba(0,240,255,0.1)] active:scale-95 transform"
-            >
-              [ ⛶ FULLSCREEN ]
-            </button>
-            {!game.isExternal ? (
-              <div className="text-xl font-bold text-neon-blue neon">
-                Score: <span className="text-white">{score}</span>
+    <div className="w-full flex-grow bg-[#090311] py-8 px-4 md:px-8 flex flex-col items-center relative overflow-hidden" ref={containerRef}>
+      
+      {/* Background elements */}
+      <div className="absolute inset-0 bg-cyber-grid opacity-5 pointer-events-none z-0"></div>
+
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 relative z-10">
+        
+        {/* Main gameplay panel */}
+        <div className={`flex-grow flex flex-col items-center transition-all ${isTheaterMode ? 'w-full' : 'lg:w-[70%]'}`}>
+          
+          {/* Header controls overlay */}
+          <div className="flex justify-between w-full mb-4 items-center">
+            <div className="flex flex-col">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-wider neon-text uppercase">{game.title}</h2>
+              <span className="text-[10px] font-mono text-neon-blue uppercase tracking-widest">{game.category} TERMINAL</span>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setIsTheaterMode(!isTheaterMode)}
+                className="text-[10px] font-mono font-bold tracking-widest px-3 py-1.5 border border-neon-purple text-neon-purple hover:bg-neon-purple/20 hover:text-white rounded transition-all duration-300"
+              >
+                [ {isTheaterMode ? 'STANDARD_MODE' : 'THEATER_MODE'} ]
+              </button>
+              <button
+                onClick={toggleFullscreen}
+                className="text-[10px] font-mono font-bold tracking-widest px-3 py-1.5 border border-neon-blue text-neon-blue hover:bg-neon-blue/20 hover:text-white rounded transition-all duration-300 shadow-[0_0_10px_rgba(0,240,255,0.1)]"
+              >
+                [ ⛶ FULLSCREEN ]
+              </button>
+            </div>
+          </div>
+
+          {/* CRT Cabinet Box Frame */}
+          <div 
+            ref={cabinetRef}
+            className={`relative bg-black transition-all duration-300 flex items-center justify-center ${
+              isFullscreen 
+                ? 'fixed inset-0 w-screen h-screen z-50 border-0 rounded-none' 
+                : isTheaterMode
+                ? 'w-full aspect-[21/9] border-4 border-neon-pink rounded-xl overflow-hidden shadow-[0_0_40px_rgba(255,0,255,0.4)]'
+                : 'w-full aspect-[4/3] max-w-2xl border-4 border-neon-pink rounded-xl overflow-hidden shadow-[0_0_30px_rgba(255,0,255,0.3)]'
+            }`}
+          >
+            {/* Exit Fullscreen overlay */}
+            {isFullscreen && (
+              <button
+                onClick={toggleFullscreen}
+                className="absolute top-4 right-4 z-40 text-xs font-mono font-bold tracking-widest px-3 py-1.5 bg-black/80 border border-neon-pink text-neon-pink hover:bg-neon-pink/20 hover:text-white rounded transition-all"
+              >
+                EXIT FULLSCREEN [ESC]
+              </button>
+            )}
+
+            {/* Retro CRT Overlays */}
+            <div className="absolute inset-0 scanlines pointer-events-none z-10 opacity-30"></div>
+            <div className="absolute inset-0 bg-radial-crt pointer-events-none z-15"></div>
+
+            {/* Menu Panel HUD */}
+            {!isPlaying && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-20 gap-4">
+                {gameOver && <h3 className="text-4xl text-neon-pink font-black tracking-wider animate-pulse neon-text">SYS_COLLAPSE: GAME OVER</h3>}
+                {gameWon && <h3 className="text-4xl text-neon-blue font-black tracking-wider animate-pulse neon-text">SYS_CLEARED: VICTORY</h3>}
+                <button
+                  onClick={startGame}
+                  className="neon-button text-xl px-8 py-3 bg-neon-pink/30 hover:bg-neon-pink/50 transition border border-neon-pink rounded-lg font-bold tracking-widest"
+                >
+                  {gameOver ? 'RELOAD_TERMINAL' : gameWon ? 'PLAY_AGAIN' : 'BOOT_GAME_SIGNAL'}
+                </button>
               </div>
+            )}
+
+            {/* Dynamic Game Rendering Canvas */}
+            {gameId === 'captn-ghost' ? (
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full bg-[#05000a] block cursor-crosshair"
+              />
             ) : (
-              <div className="text-xl font-bold text-neon-pink neon">
-                ARCADE MODE
+              // Fallback default iframe for legacy HTML5 games
+              isPlaying ? (
+                <iframe
+                  src={game.embedUrl || 'https://hextris.github.io/hextris/'}
+                  className="w-full h-full border-none bg-black"
+                  allow="autoplay; gamepad; keyboard"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#0a000f] flex items-center justify-center text-text-secondary">
+                  <div className="text-center p-4">
+                    <p className="text-lg font-semibold text-neon-blue mb-2">Preparing External Subgrid...</p>
+                    <p className="text-xs text-slate-500 font-mono">Connect to open-source game host via iframe tunnel</p>
+                  </div>
+                </div>
+              )
+            )}
+
+            {/* Captn.Ghost HUD Overlay */}
+            {isPlaying && gameId === 'captn-ghost' && (
+              <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between pointer-events-none font-mono text-xs select-none">
+                
+                {/* Health & Armor */}
+                <div className="flex flex-col gap-1 p-2 rounded bg-black/60 border border-neon-pink/30 text-neon-pink shadow-[0_0_8px_rgba(255,0,255,0.15)]">
+                  <div className="font-bold">HEV_HEALTH: {health}%</div>
+                  <div className="w-24 bg-[#1b0d2d] h-1.5 rounded overflow-hidden">
+                    <div className="bg-neon-pink h-full" style={{ width: `${health}%` }} />
+                  </div>
+                </div>
+
+                {/* Tactical HUD center cover indicator */}
+                {inCover && (
+                  <div className="self-center px-4 py-1.5 rounded border border-neon-blue bg-black/80 text-neon-blue animate-pulse font-extrabold text-sm tracking-wider">
+                    DODGING IN COVER (RELOADING)
+                  </div>
+                )}
+
+                {/* Score and Stage */}
+                <div className="flex flex-col gap-1 items-center p-2 rounded bg-black/60 border border-neon-blue/30 text-neon-blue shadow-[0_0_8px_rgba(0,240,255,0.15)]">
+                  <div className="font-bold">STAGE: {stage} / 5</div>
+                  <div>SCORE: {score.toLocaleString()}</div>
+                </div>
+
+                {/* Ammo indicator */}
+                <div className="flex flex-col gap-1 items-end p-2 rounded bg-black/60 border border-neon-blue/30 text-neon-blue shadow-[0_0_8px_rgba(0,240,255,0.15)]">
+                  <div className="font-bold">MAG: {ammo} / {maxAmmo}</div>
+                  <div className="w-20 bg-[#071b2d] h-1.5 rounded overflow-hidden flex justify-end">
+                    <div className="bg-neon-blue h-full" style={{ width: `${(ammo / maxAmmo) * 100}%` }} />
+                  </div>
+                </div>
+
               </div>
             )}
           </div>
-        </div>
 
-        {/* CRT Arcade Cabinet Screen */}
-        <div 
-          ref={cabinetRef}
-          className={`relative bg-black transition-all duration-300 ${
-            isFullscreen 
-              ? 'fixed inset-0 w-screen h-screen z-50 border-0 rounded-none' 
-              : 'w-full max-w-xl aspect-[4/3] border-4 border-neon-pink rounded-xl overflow-hidden shadow-[0_0_30px_rgba(255,0,255,0.3)]'
-          }`}
-        >
-          {isFullscreen && (
-            <button
-              onClick={toggleFullscreen}
-              className="absolute top-4 right-4 z-40 text-xs font-mono font-bold tracking-widest px-3 py-1.5 bg-black/80 border border-neon-pink text-neon-pink hover:bg-neon-pink/20 hover:text-white rounded transition-all duration-300"
-            >
-              EXIT FULLSCREEN [ESC]
-            </button>
-          )}
-          <div className="absolute inset-0 scanlines pointer-events-none z-10 opacity-30"></div>
-          <div className="absolute inset-0 bg-radial-crt pointer-events-none z-15"></div>
-
-          {!isPlaying && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-20">
-              {gameOver && <h3 className="text-4xl text-neon-pink font-extrabold mb-4 neon animate-pulse">GAME OVER</h3>}
-              <button
-                onClick={startGame}
-                className="neon-button text-2xl px-8 py-3 bg-neon-pink/30 hover:bg-neon-pink/50 transition border border-neon-pink rounded-lg"
-              >
-                {gameOver ? 'RETRY' : 'START GAME'}
-              </button>
-            </div>
-          )}
-
-          {game.isExternal ? (
-            isPlaying ? (
-              <iframe
-                src={game.embedUrl}
-                className="w-full h-full border-none bg-black"
-                allow="autoplay; gamepad; keyboard"
-                sandbox="allow-scripts allow-same-origin allow-popups"
-              />
+          {/* How to play Cheatsheet */}
+          <div className="cyber-card p-6 mt-8 w-full text-text-secondary">
+            <h3 className="text-lg font-bold text-white mb-3 tracking-wider uppercase font-sans border-b border-white/10 pb-2">
+              👾 TRANSMISSION PARAMETERS & CONTROLS
+            </h3>
+            {gameId === 'captn-ghost' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">AIMING / ROTATION</strong>: Move your mouse around the grid screen. The camera and scopes will sway smoothly.</li>
+                <li><strong className="text-neon-blue">FIRE LASER GUN</strong>: Left click anywhere on the target screen. Recoils gun and consumes ammo.</li>
+                <li><strong className="text-neon-pink">TAKE COVER / RELOAD</strong>: Hold the <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd>. Translates the camera down, shields you from laser fire, and reloads your ammunition clip.</li>
+                <li><strong className="text-neon-pink">MANUAL RELOAD</strong>: Press <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">R</kbd> keys.</li>
+              </ul>
             ) : (
-              <div className="w-full h-full bg-[#0a000f] flex items-center justify-center text-text-secondary">
-                <div className="text-center p-4">
-                  <p className="text-lg font-semibold text-neon-blue mb-2">Preparing External Subgrid...</p>
-                  <p className="text-xs text-slate-500">Connect to open-source game host via iframe tunnel</p>
+              <p className="text-xs font-mono">{game.description || 'Access open-source game. Enjoy!'}</p>
+            )}
+          </div>
+
+          {/* Review comments thread */}
+          <div className="cyber-card p-6 mt-8 w-full text-text-secondary flex flex-col gap-6">
+            <h3 className="text-lg font-bold text-white tracking-wider uppercase font-sans border-b border-white/10 pb-2">
+              📝 DRIFTER COMMS CENTER (REVIEWS)
+            </h3>
+
+            {/* Form */}
+            <form onSubmit={handlePostReview} className="flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold font-mono text-neon-blue">POST TELEMETRY TRANSMISSION:</span>
+                
+                {/* Rating selection */}
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-mono">STARS:</span>
+                  <div className="flex bg-black/40 rounded p-1 border border-white/5">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        className={`w-6 h-6 text-xs transition-all ${
+                          reviewRating >= star ? 'text-yellow-400' : 'text-gray-600'
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            )
-          ) : gameId === '2048' ? (
-            <div className="w-full h-full flex items-center justify-center bg-[#150a21]">
-              <div className="grid grid-cols-4 gap-3 p-4 bg-[#231238] rounded-xl w-[320px] h-[320px]">
-                {grid2048.map((row, rIdx) =>
-                  row.map((val, cIdx) => (
-                    <div
-                      key={`${rIdx}-${cIdx}`}
-                      className="flex items-center justify-center font-bold text-2xl rounded-lg transition duration-150"
-                      style={{
-                        background: val === 0 ? '#1b0e2b' : `hsl(${(Math.log2(val) * 35) % 360}, 80%, 45%)`,
-                        boxShadow: val > 0 ? `0 0 12px hsl(${(Math.log2(val) * 35) % 360}, 80%, 45%)` : 'none',
-                        color: val === 0 ? 'transparent' : '#fff'
-                      }}
-                    >
-                      {val > 0 ? val : ''}
+
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Write your game review or report telemetry data..."
+                rows={3}
+                required
+                className="w-full bg-[#150a21]/60 border border-neon-pink/30 rounded-lg px-4 py-2.5 text-white placeholder-gray-600 font-mono text-xs focus:outline-none focus:border-neon-pink focus:shadow-[0_0_8px_rgba(255,0,255,0.2)] resize-none"
+              />
+
+              <button
+                type="submit"
+                className="neon-button self-end font-bold tracking-widest text-xs py-2 px-6 uppercase"
+              >
+                BROADCAST REVIEW
+              </button>
+            </form>
+
+            {/* Comments list */}
+            <div className="flex flex-col gap-3.5 mt-2 max-h-80 overflow-y-auto pr-2 scrollbar-none">
+              {(comments[gameId] || []).length > 0 ? (
+                (comments[gameId] || []).map((comm: GameComment) => (
+                  <div key={comm.id} className="p-3 bg-black/40 border border-white/5 rounded-lg flex flex-col gap-2 transition-all hover:border-neon-blue/10">
+                    <div className="flex justify-between items-center text-[10px] font-mono">
+                      <span className="text-neon-blue font-bold">{comm.username}</span>
+                      <span className="text-gray-600">{comm.date}</span>
                     </div>
-                  ))
-                )}
-              </div>
+                    <div className="flex text-yellow-400 text-[10px]">
+                      {Array.from({ length: comm.rating }).map((_, i) => <span key={i}>★</span>)}
+                    </div>
+                    <p className="text-xs text-text-secondary leading-relaxed font-sans">{comm.text}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center font-mono text-xs text-gray-500 py-6">
+                  No transmissions found. Be the first to broadcast telemetry for this node.
+                </div>
+              )}
             </div>
-          ) : (
-            <canvas
-              ref={canvasRef}
-              width={400}
-              height={400}
-              className="w-full h-full object-contain block bg-[#0a000f]"
-            />
-          )}
+          </div>
+
         </div>
 
-        {/* Controls Overlay info */}
-        <div className="cyber-card p-6 mt-8 w-full max-w-xl text-text-secondary">
-          <h3 className="text-xl font-semibold text-white mb-3 neon">HOW TO PLAY</h3>
-          {game.isExternal && <p className="text-lg">{game.description || 'Use the game-specific controls or keyboard keys to play this open-source game. Enjoy!'}</p>}
-          {gameId === 'snake' && <p className="text-lg">Use the Arrow Keys (▲ ▼ ◀ ▶) on your keyboard to navigate the snake. Eat neon pink apples and do not hit the walls or yourself!</p>}
-          {gameId === 'tetris' && <p className="text-lg">Use Arrow Left/Right (◀ ▶) to move, Arrow Down (▼) to drop, and Arrow Up (▲) to rotate the falling block pieces. Clear complete rows to score!</p>}
-          {gameId === 'space-invaders' && <p className="text-lg">Use Arrow Left/Right (◀ ▶) to move your spaceship. Press Spacebar to shoot lasers. Eliminate all alien invaders before they reach your spaceship line!</p>}
-          {gameId === 'retro-racer' && <p className="text-lg">Use Arrow Left/Right (◀ ▶) to steer your car. Avoid crashing into the purple obstacle vehicles spawning on the highway!</p>}
-          {gameId === 'pixel-platformer' && <p className="text-lg">Press Arrow Up (▲) or Spacebar to jump over incoming purple spike obstacles. Timing is critical to get a high score!</p>}
-          {gameId === '2048' && <p className="text-lg">Use Arrow Keys (▲ ▼ ◀ ▶) to slide the tiles. When two tiles with the same number touch, they merge into one! Reach the 2048 tile to win!</p>}
-        </div>
+        {/* Sidebar recommendations widget */}
+        {!isTheaterMode && (
+          <div className="w-full lg:w-[30%] flex flex-col gap-6 flex-shrink-0">
+            <h3 className="text-base font-bold text-white tracking-widest font-mono border-b border-neon-blue/20 pb-2 uppercase pl-1">
+              ⚡ SIMILAR UPLINKS
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+              {relatedGames.map(game => (
+                <div key={game.id} className="aspect-[4/5] w-full">
+                  <InteractiveGameCard game={game} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <Link href="/" className="mt-6 text-neon-blue hover:underline">
-          ◀ Back to Arcade Lobby
-        </Link>
       </div>
     </div>
   );
