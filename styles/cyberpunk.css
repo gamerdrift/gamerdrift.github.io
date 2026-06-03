@@ -161,11 +161,11 @@ html:not(.dark) .bg-cyber-grid {
 
 /* Crafted Metallic Embossed Tabs */
 .metallic-tab {
-  background: linear-gradient(135deg, #22222b 0%, #111116 100%);
-  border: 1px solid rgba(200, 200, 200, 0.2);
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  border: none;
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 4px 10px rgba(0, 0, 0, 0.7);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 4px 10px rgba(0, 0, 0, 0.6);
   color: #c0c4cc; /* silver grey */
   font-family: var(--font-main);
   font-weight: 700;
@@ -178,16 +178,16 @@ html:not(.dark) .bg-cyber-grid {
 }
 
 .metallic-tab:hover {
-  background: linear-gradient(135deg, #2a2a35 0%, #15151c 100%);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  opacity: 0.95;
   color: #ffffff;
   text-shadow: 
     -1px -1px 1px rgba(0, 0, 0, 0.95), 
     1px 1px 2px rgba(255, 255, 255, 0.75);
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    0 0 12px rgba(255, 255, 255, 0.15),
-    0 6px 14px rgba(0, 0, 0, 0.85);
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 0 15px var(--neon-pink), 
+    0 0 20px var(--neon-blue);
   transform: translateY(-1px);
 }
 
