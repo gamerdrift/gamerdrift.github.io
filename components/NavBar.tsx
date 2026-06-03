@@ -8,7 +8,7 @@ export default function NavBar() {
   return (
     <nav className="w-full h-20 bg-card-bg border-b border-neon-pink/20 px-8 flex justify-between items-center backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
       <div className="flex space-x-12 items-center">
-        <Link href="/" className="metallic-tab px-4 py-2 text-sm tracking-wide">
+        <Link href="/" className="diamond-tab px-4 py-2 text-sm tracking-wide">
           GAMERDRIFT
         </Link>
         <div className="flex space-x-12 items-center">

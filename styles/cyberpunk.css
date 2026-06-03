@@ -198,4 +198,48 @@ html:not(.dark) .bg-cyber-grid {
     0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Crafted Diamond Embossed Tabs */
+.diamond-tab {
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  border: none;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 4px 10px rgba(0, 0, 0, 0.6);
+  color: #ffffff; /* Diamond White */
+  font-family: var(--font-main);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-shadow: 
+    0 0 2px #ffffff,
+    0 0 6px #ffffff,
+    0 0 12px #90e0ef, /* ice blue diamond glitter */
+    0 0 20px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 8px;
+}
+
+.diamond-tab:hover {
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  opacity: 0.95;
+  color: #ffffff;
+  text-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px #ffffff,
+    0 0 16px #00f0ff, /* intense diamond neon blue */
+    0 0 26px #ffffff;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 18px var(--neon-pink), 
+    0 0 22px var(--neon-blue);
+  transform: translateY(-1px);
+}
+
+.diamond-tab:active {
+  transform: translateY(1px);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+
 
