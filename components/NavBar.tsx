@@ -12,16 +12,16 @@ export default function NavBar() {
           GAMERDRIFT
         </Link>
         <div className="flex space-x-12 items-center">
-          <Link href="/" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+          <Link href="/" className="metallic-tab px-4 py-2 text-sm tracking-wide">
             Home
           </Link>
-          <Link href="/games" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+          <Link href="/games" className="metallic-tab px-4 py-2 text-sm tracking-wide">
             Games
           </Link>
-          <Link href="/leaderboard" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+          <Link href="/leaderboard" className="metallic-tab px-4 py-2 text-sm tracking-wide">
             Leaderboard
           </Link>
-          <Link href="/contact" className="neon-button px-4 py-2 rounded text-sm font-semibold tracking-wide">
+          <Link href="/contact" className="metallic-tab px-4 py-2 text-sm tracking-wide">
             Contact
           </Link>
         </div>
