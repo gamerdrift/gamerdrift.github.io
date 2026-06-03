@@ -11,7 +11,7 @@ export default function NavBar() {
         <Link href="/" className="text-xl font-extrabold text-white tracking-widest neon-text">
           GAMERDRIFT
         </Link>
-        <div className="flex space-x-4">
+        <div className="flex space-x-8">
           <Link href="/" className="text-text-primary hover:text-neon-blue font-medium transition-colors duration-200">Home</Link>
           <Link href="/games" className="text-text-primary hover:text-neon-blue font-medium transition-colors duration-200">Games</Link>
           <Link href="/leaderboard" className="text-text-primary hover:text-neon-blue font-medium transition-colors duration-200">Leaderboard</Link>
