@@ -13,7 +13,7 @@ export default function AuthButton() {
   return (
     <button
       onClick={handleAuth}
-      className="neon-button px-4 py-2 bg-neon bg-opacity-20 rounded"
+      className="metallic-tab px-4 py-2 text-sm tracking-wide"
     >
       Sign In / Register
     </button>
