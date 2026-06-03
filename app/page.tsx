@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import GameCard from '../components/GameCard';
 import GlassCarousel from '../components/GlassCarousel';
-import AuthButton from '../components/AuthButton';
+import GamerDriftLogo from '../components/GamerDriftLogo';
 import { games } from '../data/games';
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
                 className="h-[120px] w-[400px] object-fill hover:scale-105 transition-transform duration-300"
               />
             </h1>
-            <AuthButton />
+            <GamerDriftLogo />
           </div>
           
           {/* Futuristic 3D Glass Carousel Selector */}
