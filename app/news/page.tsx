@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 
+import initialArticlesRaw from '../../data/newsData.json';
+
 interface Article {
   id: string;
   title: string;
-  category: 'Gaming News' | 'Technology News' | 'AI News' | 'Hardware Reviews' | 'Esports' | 'Game Updates' | 'Community Events';
+  category: string;
   date: string;
   summary: string;
   content: string;
@@ -13,58 +15,7 @@ interface Article {
   readTime: string;
 }
 
-const initialArticles: Article[] = [
-  {
-    id: 'news-1',
-    title: 'CunningCats Nitro Patch 1.4: Desert Storm Combat Racing Balance Update',
-    category: 'Game Updates',
-    date: '2026-06-03',
-    summary: 'The latest balancing patch tunes heavy vehicle armor values and upgrades weapon pickup drop rates in the Sandbath circuit.',
-    content: 'Drifters, GamerDrift Command has dispatched Patch 1.4 for the CunningCats battle racers. Heavy vehicle armor has been increased by 12% to protect against heat-seeking fish bone missiles, while Nitro boost decay rates have been optimized. A brand new sandstorm weather effects engine has been introduced to the Sandbath Arena, creating visual hazards and tactical shielding opportunities. Global matchmaking lobbies are now updated to prioritize lower-latency nodes.',
-    imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
-    readTime: '3 min read'
-  },
-  {
-    id: 'news-2',
-    title: 'RogueGhost Secret Intel: Inside the Sandbath Rescue Operation',
-    category: 'Gaming News',
-    date: '2026-06-02',
-    summary: 'Strategic dispatch details for the hostage rescue campaign in Sandbath, detailing target locations and stealth grids.',
-    content: 'Incoming tactical analysis from RogueGhost Command details the newly added Sandbath mission sector. Infiltrators must bypass the outer detection grids using low-frequency signal dampers. Hostage scientists are detained in the secondary hangar vault. Enemy AI units utilize adaptive search paths; we recommend utilizing shadow cover and avoiding open sand tiles. Progression unlocks include the silenced carbon rifle.',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
-    readTime: '5 min read'
-  },
-  {
-    id: 'news-3',
-    title: 'Review: RTX 5080 Tactical Gaming Edition - Worth the Credits?',
-    category: 'Hardware Reviews',
-    date: '2026-05-30',
-    summary: 'A deep-dive benchmark review of the latest GPU architecture running 4K real-time ray-traced gaming arrays.',
-    content: 'We benchmarked the brand new RTX 5080 Tactical edition on our GamerDrift simulator arrays. Clocking a solid 144fps in extreme sandstorm storm cycles on CunningCats at 4K resolution, the card runs relatively cool at 68C. Frame generation algorithms have been optimized to bypass standard rendering latency, shaving off 8ms of input delay. Our verdict: it is an essential core processor for competitive esports setups.',
-    imageUrl: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=800&q=80',
-    readTime: '6 min read'
-  },
-  {
-    id: 'news-4',
-    title: 'AI in Esports: Adaptive Enemies in RogueGhost Set New Benchmark',
-    category: 'AI News',
-    date: '2026-05-28',
-    summary: 'How neural network behavioral algorithms are reshaping tactical gameplay and NPC strategic intelligence.',
-    content: 'The developers behind RogueGhost have published their neural network agent logs. NPCs in the Forestfun and Snowblow maps no longer follow preset patrol paths. Instead, they dynamically share target coordinates and adjust search grids based on sounds detected. This neural system pushes the limits of modern tactical action shooters, creating authentic, unpredictable combat missions.',
-    imageUrl: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80',
-    readTime: '4 min read'
-  },
-  {
-    id: 'news-5',
-    title: 'GamerDrift Global Tournaments: Clan Wars Registration Open',
-    category: 'Esports',
-    date: '2026-05-25',
-    summary: 'Drifters, register your clans for the upcoming tactical championship. Command credits and exclusive badges await.',
-    content: 'Registration portals are open for the GamerDrift Season 2 Championship. Teams of 4 will compete across both CunningCats racing speeds and RogueGhost extraction grids. The winning squad takes home a total of 15,000 Command credits, a customized metallic badge on their drifter files, and hardware gear sponsorships.',
-    imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
-    readTime: '2 min read'
-  }
-];
+const initialArticles = initialArticlesRaw as Article[];
 
 export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');

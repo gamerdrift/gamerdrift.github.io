@@ -5,6 +5,53 @@ import Link from 'next/link';
 import { useUser } from '../lib/state/UserContext';
 import { useGames } from '../lib/state/GameContext';
 import TacticalRadar3D from '../components/TacticalRadar3D';
+import initialArticlesRaw from '../data/newsData.json';
+
+interface Article {
+  id: string;
+  title: string;
+  category: string;
+  date: string;
+  summary: string;
+  content: string;
+  imageUrl: string;
+  readTime: string;
+}
+
+const displayArticles = initialArticlesRaw && initialArticlesRaw.length > 0 
+  ? (initialArticlesRaw as Article[]).slice(0, 3)
+  : [
+      {
+        id: "patch-1.4",
+        title: "CUNNING_CATS NITRO balance patches 1.4 deployed",
+        category: "CunningCats Updates",
+        date: "2026-06-04",
+        summary: "",
+        content: "",
+        imageUrl: "",
+        readTime: ""
+      },
+      {
+        id: "stealth-maps",
+        title: "SANDBATH mission stealth maps coordinates released",
+        category: "RogueGhost tactics",
+        date: "2026-06-03",
+        summary: "",
+        content: "",
+        imageUrl: "",
+        readTime: ""
+      },
+      {
+        id: "rtx-5080",
+        title: "RTX 5080 Tactical ray-tracing latency benchmark",
+        category: "Hardware Reviews",
+        date: "2026-06-03",
+        summary: "",
+        content: "",
+        imageUrl: "",
+        readTime: ""
+      }
+    ];
 
 export default function Home() {
   const { user } = useUser();
@@ -199,24 +246,25 @@ export default function Home() {
             </div>
             
             <div className="space-y-3.5">
-              <div className="border-b border-slate-900/60 pb-3">
-                <span className="text-[8px] text-[#ff9f00] font-bold block uppercase">CunningCats Updates</span>
-                <Link href="/news" className="text-white hover:text-[#00f0ff] font-bold uppercase block mt-1 leading-snug">
-                  CUNNING_CATS NITRO balance patches 1.4 deployed
-                </Link>
-              </div>
-              <div className="border-b border-slate-900/60 pb-3">
-                <span className="text-[8px] text-[#00f0ff] font-bold block uppercase">RogueGhost tactics</span>
-                <Link href="/news" className="text-white hover:text-[#00f0ff] font-bold uppercase block mt-1 leading-snug">
-                  SANDBATH mission stealth maps coordinates released
-                </Link>
-              </div>
-              <div>
-                <span className="text-[8px] text-slate-500 font-bold block uppercase">Hardware Reviews</span>
-                <Link href="/news" className="text-white hover:text-[#00f0ff] font-bold uppercase block mt-1 leading-snug">
-                  RTX 5080 Tactical ray-tracing latency benchmark
-                </Link>
-              </div>
+              {displayArticles.map((art, idx) => (
+                <div 
+                  key={art.id} 
+                  className={idx < displayArticles.length - 1 ? "border-b border-slate-900/60 pb-3" : ""}
+                >
+                  <span className={`text-[8px] font-bold block uppercase ${
+                    art.category.toLowerCase().includes('cats') || art.category.toLowerCase().includes('gaming')
+                      ? 'text-[#ff9f00]'
+                      : art.category.toLowerCase().includes('ghost') || art.category.toLowerCase().includes('technology') || art.category.toLowerCase().includes('ai')
+                      ? 'text-[#00f0ff]'
+                      : 'text-slate-500'
+                  }`}>
+                    {art.category}
+                  </span>
+                  <Link href="/news" className="text-white hover:text-[#00f0ff] font-bold uppercase block mt-1 leading-snug line-clamp-2">
+                    {art.title}
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
 
