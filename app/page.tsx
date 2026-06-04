@@ -70,16 +70,23 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 relative z-10 space-y-12">
         
         {/* Welcome Telemetry link HUD */}
-        {user && (
-          <div className="w-full bg-[#0c0f16]/90 border border-[#00f0ff]/20 px-4 py-2.5 flex justify-between items-center text-[10px] shadow-[inset_0_0_8px_rgba(0,240,255,0.05)]">
-            <span className="text-[#00f0ff] font-bold tracking-wider animate-pulse">
-              🛰️ DRIFTER_LINK: ONLINE // ACCESS_GRANTED: {user.username.toUpperCase()}
-            </span>
-            <span className="text-slate-400 hidden sm:inline">
-              COGNITIVE_SYNC: <span className="text-[#ff9f00] font-bold">LVL {user.level}</span> // SECURE_UPLINK
-            </span>
-          </div>
-        )}
+        <div className="w-full bg-[#0c0f16]/90 border border-[#00f0ff]/20 px-4 py-2.5 flex justify-between items-center text-[10px] shadow-[inset_0_0_8px_rgba(0,240,255,0.05)]">
+          <span className="text-[#00f0ff] font-bold tracking-wider animate-pulse">
+            🛰️ DRIFTER_LINK: ONLINE // ACCESS_GRANTED: {user ? user.username.toUpperCase() : "AGENT_3"}
+          </span>
+          <span className="text-slate-400 hidden sm:inline">
+            COGNITIVE_SYNC: <span className="text-[#ff9f00] font-bold">LVL {user ? user.level : 3}</span> // SECURE_UPLINK
+          </span>
+        </div>
+
+        {/* LOGO */}
+        <div className="w-full flex justify-start -mb-6">
+          <img 
+            src="/Mylogo_CyberpunkStyle.png" 
+            alt="GamerDrift Cyberpunk Logo" 
+            className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
+          />
+        </div>
 
         {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border-b border-slate-900 pb-12">
