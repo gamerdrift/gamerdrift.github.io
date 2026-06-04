@@ -14,8 +14,11 @@
     "firebase:deploy": "firebase deploy"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.107.0",
     "@types/three": "^0.184.1",
     "firebase": "^12.14.0",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.17.0",
     "next": "16.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

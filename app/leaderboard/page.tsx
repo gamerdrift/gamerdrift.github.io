@@ -2,142 +2,206 @@
 
 import React, { useState } from 'react';
 
-export default function LeaderboardPage() {
-  const [timeframe, setTimeframe] = useState('ALL-TIME');
+interface Entry {
+  rank: number;
+  name: string;
+  score: string;
+  subText: string;
+  metric: string;
+}
 
-  // Extended mock leaderboard database with cyberpunk details
-  const leaderboardData: Record<string, typeof allTimeUsers> = {
-    'ALL-TIME': [
-      { rank: 1, name: 'Hex_Netrunner', xp: 98, score: '482,900 pts', node: 'TOKYO_GATE', avatar: 'H' },
-      { rank: 2, name: 'NeonSamurai', xp: 82, score: '412,400 pts', node: 'NEO_OSAKA', avatar: 'N' },
-      { rank: 3, name: 'Drift_Spectre', xp: 75, score: '389,100 pts', node: 'SEOUL_CORE', avatar: 'D' },
-      { rank: 4, name: 'GlitchWeaver', xp: 61, score: '320,500 pts', node: 'BERLIN_SYS', avatar: 'G' },
-      { rank: 5, name: 'Vortex_Rider', xp: 54, score: '298,700 pts', node: 'SF_GRID', avatar: 'V' },
-      { rank: 6, name: 'Bit_Crusher', xp: 48, score: '254,200 pts', node: 'LON_CENTRAL', avatar: 'B' },
-      { rank: 7, name: 'CipherZero', xp: 42, score: '221,900 pts', node: 'MUMBAI_UP', avatar: 'C' }
-    ],
-    'WEEKLY': [
-      { rank: 1, name: 'Drift_Spectre', xp: 75, score: '98,200 pts', node: 'SEOUL_CORE', avatar: 'D' },
-      { rank: 2, name: 'Hex_Netrunner', xp: 98, score: '94,500 pts', node: 'TOKYO_GATE', avatar: 'H' },
-      { rank: 3, name: 'GlitchWeaver', xp: 61, score: '88,100 pts', node: 'BERLIN_SYS', avatar: 'G' },
-      { rank: 4, name: 'ZeroCool', xp: 37, score: '76,300 pts', node: 'NYC_SUB', avatar: 'Z' },
-      { rank: 5, name: 'NeonSamurai', xp: 82, score: '72,100 pts', node: 'NEO_OSAKA', avatar: 'N' }
-    ]
+const racerData: Record<string, Entry[]> = {
+  'ALL-TIME': [
+    { rank: 1, name: 'Hex_Netrunner', score: '98,400 pts', subText: 'CAPTAIN WHISKERS // SPEED_VORTEX', metric: 'SPEED: 280mph' },
+    { rank: 2, name: 'Desert_Fox', score: '88,100 pts', subText: 'LT. PURR // AMBER_SHIELD', metric: 'SPEED: 245mph' },
+    { rank: 3, name: 'ClawSlayer', score: '79,300 pts', subText: 'SERGEANT CLAW // DRIFT_PRO', metric: 'SPEED: 235mph' }
+  ],
+  'WEEKLY': [
+    { rank: 1, name: 'Desert_Fox', score: '24,500 pts', subText: 'LT. PURR // AMBER_SHIELD', metric: 'SPEED: 250mph' },
+    { rank: 2, name: 'Hex_Netrunner', score: '22,100 pts', subText: 'CAPTAIN WHISKERS // SPEED_VORTEX', metric: 'SPEED: 275mph' }
+  ],
+  'MONTHLY': [
+    { rank: 1, name: 'Hex_Netrunner', score: '82,400 pts', subText: 'CAPTAIN WHISKERS // SPEED_VORTEX', metric: 'SPEED: 280mph' },
+    { rank: 2, name: 'Desert_Fox', score: '74,900 pts', subText: 'LT. PURR // AMBER_SHIELD', metric: 'SPEED: 245mph' }
+  ]
+};
+
+const operatorData: Record<string, Entry[]> = {
+  'ALL-TIME': [
+    { rank: 1, name: 'GhostInGrid', score: '142,500 pts', subText: 'SNOWBLOW EXTRACTION // SILENT', metric: 'HOSTAGES: 12/12' },
+    { rank: 2, name: 'ViperTactical', score: '124,000 pts', subText: 'CARGOLOGY PURGE // COMBAT', metric: 'HOSTAGES: 10/12' },
+    { rank: 3, name: 'Hex_Netrunner', score: '118,200 pts', subText: 'SANDBATH RECOVERY // STEALTH', metric: 'HOSTAGES: 9/12' }
+  ],
+  'WEEKLY': [
+    { rank: 1, name: 'Hex_Netrunner', score: '38,500 pts', subText: 'SANDBATH RECOVERY // STEALTH', metric: 'HOSTAGES: 3/3' },
+    { rank: 2, name: 'GhostInGrid', score: '36,200 pts', subText: 'SNOWBLOW EXTRACTION // SILENT', metric: 'HOSTAGES: 3/3' }
+  ],
+  'MONTHLY': [
+    { rank: 1, name: 'GhostInGrid', score: '125,000 pts', subText: 'SNOWBLOW EXTRACTION // SILENT', metric: 'HOSTAGES: 9/9' },
+    { rank: 2, name: 'ViperTactical', score: '108,200 pts', subText: 'CARGOLOGY PURGE // COMBAT', metric: 'HOSTAGES: 8/9' }
+  ]
+};
+
+const clanData: Record<string, Entry[]> = {
+  'ALL-TIME': [
+    { rank: 1, name: 'Ghost Squad Tactical', score: 'GST', subText: '42 MEMBERS // LVL 15', metric: 'WAR_CREDITS: 52,000' },
+    { rank: 2, name: 'Desert Cat Racers', score: 'DCR', subText: '38 MEMBERS // LVL 14', metric: 'WAR_CREDITS: 46,500' },
+    { rank: 3, name: 'Cyber Intel Syndicate', score: 'CIS', subText: '29 MEMBERS // LVL 12', metric: 'WAR_CREDITS: 32,000' }
+  ],
+  'WEEKLY': [
+    { rank: 1, name: 'Desert Cat Racers', score: 'DCR', subText: '38 MEMBERS // LVL 14', metric: 'WAR_CREDITS: 12,000' },
+    { rank: 2, name: 'Ghost Squad Tactical', score: 'GST', subText: '42 MEMBERS // LVL 15', metric: 'WAR_CREDITS: 11,500' }
+  ],
+  'MONTHLY': [
+    { rank: 1, name: 'Ghost Squad Tactical', score: 'GST', subText: '42 MEMBERS // LVL 15', metric: 'WAR_CREDITS: 42,000' },
+    { rank: 2, name: 'Desert Cat Racers', score: 'DCR', subText: '38 MEMBERS // LVL 14', metric: 'WAR_CREDITS: 38,900' }
+  ]
+};
+
+export default function LeaderboardPage() {
+  const [timeframe, setTimeframe] = useState<'ALL-TIME' | 'WEEKLY' | 'MONTHLY'>('ALL-TIME');
+  const [category, setCategory] = useState<'racers' | 'operators' | 'clans'>('racers');
+
+  const getActiveData = (): Entry[] => {
+    const db = category === 'racers' 
+      ? racerData 
+      : category === 'operators' 
+      ? operatorData 
+      : clanData;
+    return db[timeframe] || [];
   };
 
-  const currentLeaderboard = leaderboardData[timeframe] || leaderboardData['ALL-TIME'];
+  const activeEntries = getActiveData();
 
   return (
-    <div className="w-full min-h-screen py-12 px-4 md:px-8 bg-cyber-grid flex flex-col items-center">
-      <div className="w-full max-w-4xl flex flex-col items-center">
-        {/* Page Header */}
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-widest text-center neon-text">
-          RANK REGISTRY
-        </h1>
-        <p className="text-text-secondary text-sm md:text-base mb-8 text-center font-medium">
-          Decentralized global high scores. Syncing node metadata in real-time.
-        </p>
-
-        {/* Timeframe selector tabs */}
-        <div className="flex bg-[#150a21]/80 p-1.5 rounded-lg border border-neon-pink/20 mb-8 w-64 justify-between">
-          {['ALL-TIME', 'WEEKLY'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setTimeframe(tab)}
-              className={`w-[48%] py-1.5 rounded text-xs font-bold tracking-wider transition-all duration-300 ${
-                timeframe === tab
-                  ? 'bg-neon-pink/20 text-white border border-neon-pink/40 shadow-[0_0_10px_rgba(255,0,255,0.3)]'
-                  : 'text-text-secondary hover:text-white'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+    <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-black relative font-mono text-xs text-slate-300">
+      <div className="absolute inset-0 bg-tactical-grid opacity-10 pointer-events-none"></div>
+      
+      <div className="max-w-4xl mx-auto relative z-10">
+        
+        {/* Header */}
+        <div className="border-b border-[#00f0ff]/20 pb-4 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+          <div>
+            <span className="text-[10px] text-[#ff9f00] tracking-[0.3em] block mb-1">GLOBAL SCORE REGISTRY</span>
+            <h1 className="text-3xl font-extrabold text-white tracking-widest uppercase">LEADERBOARDS</h1>
+          </div>
+          <span className="text-[9px] border border-[#00f0ff]/20 bg-[#00f0ff]/5 px-3 py-1 text-[#00f0ff]">
+            RECORD_INTEGRITY: SECURE // ZERO_LATENCY
+          </span>
         </div>
 
-        {/* Leaderboard registry listing */}
-        <div className="w-full flex flex-col gap-4">
-          {currentLeaderboard.map((user, idx) => {
-            const isFirst = user.rank === 1;
-            const isSecond = user.rank === 2;
-            const isThird = user.rank === 3;
+        {/* Filters Panel */}
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-8">
+          
+          {/* Category Tabs */}
+          <div className="flex border border-slate-900 bg-black/40 p-1">
+            {[
+              { id: 'racers', label: 'TOP_RACERS' },
+              { id: 'operators', label: 'TOP_OPERATORS' },
+              { id: 'clans', label: 'CLAN_RANKINGS' }
+            ].map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setCategory(cat.id as any)}
+                className={`px-3 py-1.5 font-bold uppercase transition-all ${
+                  category === cat.id
+                    ? 'bg-[#00f0ff]/10 text-[#00f0ff]'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
 
-            let glowClass = 'border-neon-pink/20 hover:border-neon-pink/50';
-            let rankBadge = 'text-text-secondary border-text-secondary/30';
-            let rankGlowText = 'text-white';
+          {/* Timeframe Selectors */}
+          <div className="flex border border-slate-900 bg-black/40 p-1">
+            {['ALL-TIME', 'WEEKLY', 'MONTHLY'].map(t => (
+              <button
+                key={t}
+                onClick={() => setTimeframe(t as any)}
+                className={`px-3 py-1.5 font-bold uppercase transition-all ${
+                  timeframe === t
+                    ? 'bg-[#ff9f00]/10 text-[#ff9f00]'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Leaderboard Table List */}
+        <div className="flex flex-col gap-4">
+          {activeEntries.map(entry => {
+            const isFirst = entry.rank === 1;
+            const isSecond = entry.rank === 2;
+            const isThird = entry.rank === 3;
+
+            let borderGlow = 'border-slate-900';
+            let rankGlow = 'text-slate-400 border-slate-800';
+            let titleColor = 'text-white';
 
             if (isFirst) {
-              glowClass = 'border-[#ffd700]/40 shadow-[0_0_15px_rgba(255,215,0,0.15)] hover:border-[#ffd700]';
-              rankBadge = 'bg-[#ffd700]/20 border-[#ffd700] text-[#ffd700] shadow-[0_0_8px_rgba(255,215,0,0.4)]';
-              rankGlowText = 'text-[#ffd700] font-extrabold';
+              borderGlow = 'border-[#ff9f00]/50 shadow-[0_0_12px_rgba(255,159,0,0.15)]';
+              rankGlow = 'bg-[#ff9f00]/10 border-[#ff9f00]/40 text-[#ff9f00]';
+              titleColor = 'text-[#ff9f00] font-extrabold';
             } else if (isSecond) {
-              glowClass = 'border-neon-blue/40 shadow-[0_0_15px_rgba(0,240,255,0.15)] hover:border-neon-blue';
-              rankBadge = 'bg-neon-blue/20 border-neon-blue text-neon-blue shadow-[0_0_8px_rgba(0,240,255,0.4)]';
-              rankGlowText = 'text-neon-blue font-bold';
+              borderGlow = 'border-[#00f0ff]/40 shadow-[0_0_12px_rgba(0,240,255,0.15)]';
+              rankGlow = 'bg-[#00f0ff]/10 border-[#00f0ff]/30 text-[#00f0ff]';
+              titleColor = 'text-[#00f0ff]';
             } else if (isThird) {
-              glowClass = 'border-neon-pink/40 shadow-[0_0_15px_rgba(255,0,255,0.15)] hover:border-neon-pink';
-              rankBadge = 'bg-neon-pink/20 border-neon-pink text-neon-pink shadow-[0_0_8px_rgba(255,0,255,0.4)]';
-              rankGlowText = 'text-neon-pink font-bold';
+              borderGlow = 'border-[#39ff14]/30';
+              rankGlow = 'bg-[#39ff14]/10 border-[#39ff14]/20 text-[#39ff14]';
+              titleColor = 'text-[#39ff14]';
             }
 
             return (
-              <div
-                key={user.name}
-                className={`cyber-card flex flex-col md:flex-row items-center justify-between p-4 md:p-5 border gap-4 transition-all duration-300 ${glowClass}`}
+              <div 
+                key={entry.name}
+                className={`hud-panel p-4 flex flex-col sm:flex-row justify-between items-center gap-4 ${borderGlow}`}
               >
-                {/* User Info Group */}
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                  {/* Rank Badge */}
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-mono border text-lg font-bold flex-shrink-0 ${rankBadge}`}>
-                    #{user.rank}
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  
+                  {/* Rank circle */}
+                  <div className={`w-8 h-8 border flex items-center justify-center font-bold font-sans text-xs ${rankGlow}`}>
+                    #{entry.rank}
                   </div>
 
-                  {/* Profile Avatar / Logo */}
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-neon-pink/30 to-neon-blue/30 border border-white/10 flex items-center justify-center font-bold text-white tracking-wider flex-shrink-0">
-                    {user.avatar}
-                  </div>
-
-                  {/* Profile Username & Sub-Node */}
+                  {/* Name and SubText */}
                   <div className="flex flex-col">
-                    <span className={`text-base font-bold tracking-wide ${rankGlowText}`}>
-                      {user.name}
-                    </span>
-                    <span className="text-[10px] text-text-secondary font-mono tracking-wider">
-                      UPLINK: {user.node}
-                    </span>
+                    <span className={`text-sm font-bold uppercase tracking-wide ${titleColor}`}>{entry.name}</span>
+                    <span className="text-[9px] text-slate-500 uppercase mt-0.5">{entry.subText}</span>
+                  </div>
+
+                </div>
+
+                {/* Metric and highscore values */}
+                <div className="flex justify-between sm:justify-end items-center gap-6 w-full sm:w-auto border-t sm:border-t-0 border-slate-900 pt-3.5 sm:pt-0">
+                  <div className="text-left sm:text-right">
+                    <span className="text-slate-600 block text-[8px] uppercase">OPERATIONAL_METRIC</span>
+                    <span className="text-slate-400 font-bold uppercase">{entry.metric}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-600 block text-[8px] uppercase">SCORE_VALUE</span>
+                    <span className="text-white font-extrabold text-sm tracking-wider">{entry.score}</span>
                   </div>
                 </div>
 
-                {/* Level / XP Progress visualizer */}
-                <div className="flex flex-col w-full md:w-56 gap-1">
-                  <div className="flex justify-between text-[11px] font-mono text-text-secondary">
-                    <span>NEURAL SYNC_LVL: {Math.floor(user.xp / 10) + 1}</span>
-                    <span>{user.xp % 10 * 10}%</span>
-                  </div>
-                  <div className="w-full bg-[#150a21] h-2 rounded-full overflow-hidden border border-white/5">
-                    <div 
-                      className="bg-gradient-to-r from-neon-pink to-neon-blue h-full rounded-full"
-                      style={{ width: `${(user.xp % 10) * 10 || 10}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* High Score Panel */}
-                <div className="flex flex-col items-center md:items-end w-full md:w-auto">
-                  <span className="text-xs text-text-secondary font-mono uppercase tracking-widest mb-0.5">SCORE_REFS</span>
-                  <span className="text-xl font-extrabold text-white font-mono tracking-wider text-shadow">
-                    {user.score}
-                  </span>
-                </div>
               </div>
             );
           })}
+
+          {activeEntries.length === 0 && (
+            <div className="text-center py-10 border border-slate-900 text-slate-600">
+              NO COMPILATION LOGS AVAILABLE FOR THIS TIMEFRAME CORE.
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   );
 }
-
-const allTimeUsers = [
-  { rank: 1, name: 'Hex_Netrunner', xp: 98, score: '482,900 pts', node: 'TOKYO_GATE', avatar: 'H' }
-];

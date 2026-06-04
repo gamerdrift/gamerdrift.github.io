@@ -1,0 +1,29 @@
+{
+  "name": "GamerDrift Gaming Deck",
+  "short_name": "GamerDrift",
+  "description": "A world-class tactical gaming command center and AAA studio hub.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070a",
+  "theme_color": "#00f0ff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "CunningCats",
+      "url": "/cunningcats",
+      "description": "Launch CunningCats Combat Racing"
+    },
+    {
+      "name": "RogueGhost",
+      "url": "/rogueghost",
+      "description": "Launch RogueGhost Tactical Action Shooter"
+    }
+  ]
+}

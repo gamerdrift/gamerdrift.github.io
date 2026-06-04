@@ -1,7 +1,7 @@
-@import "tailwindcss";
-/* Vanilla CSS design system for premium gaming hub */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 @import "../styles/cyberpunk.css";
+@import "tailwindcss";
+/* Vanilla CSS design system for premium gaming hub */
 
 :root {
   /* Color palette */

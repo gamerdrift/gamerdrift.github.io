@@ -59,7 +59,7 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
   return (
     <div className="w-full mt-10">
       {/* Filtering and Sorting HUD */}
-      <div className="w-full flex flex-col lg:flex-row gap-5 justify-between items-center bg-[#0d071b]/60 border border-neon-blue/20 rounded-xl p-4 md:p-6 mb-8 backdrop-blur-md">
+      <div className="w-full flex flex-col lg:flex-row gap-5 justify-between items-center bg-[#0c0f16]/90 border border-[#00f0ff]/20 rounded-lg p-4 md:p-6 mb-8 backdrop-blur-md">
         
         {/* Categories filters tabs */}
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start flex-grow">
@@ -67,10 +67,10 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`text-[10px] md:text-xs font-bold font-mono tracking-wider px-3 py-1.5 rounded transition-all duration-300 border ${
+              className={`text-[10px] font-mono tracking-wider px-3 py-1.5 border transition-all duration-200 ${
                 selectedCategory === cat
-                  ? 'bg-neon-pink/20 border-neon-pink text-white shadow-[0_0_10px_rgba(255,0,255,0.2)]'
-                  : 'bg-transparent border-white/5 text-text-secondary hover:border-neon-blue/40 hover:text-white'
+                  ? 'border-[#ff9f00] bg-[#ff9f00]/10 text-white shadow-[0_0_10px_rgba(255,159,0,0.15)]'
+                  : 'bg-transparent border-slate-900 text-slate-400 hover:border-[#00f0ff]/30 hover:text-white'
               }`}
             >
               {cat.toUpperCase()}
@@ -80,8 +80,8 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
 
         {/* Sorting selection Dropdown */}
         <div className="flex items-center space-x-3 flex-shrink-0">
-          <span className="text-[10px] font-bold font-mono text-neon-blue tracking-widest">SORT_BY:</span>
-          <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
+          <span className="text-[10px] font-bold font-mono text-[#00f0ff] tracking-widest">SORT_BY:</span>
+          <div className="flex bg-black/40 rounded-lg p-1 border border-slate-900">
             {[
               { id: 'plays', label: '🔥 POPULAR' },
               { id: 'rating', label: '⭐️ RATED' },
@@ -92,8 +92,8 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
                 onClick={() => setSortBy(item.id as any)}
                 className={`text-[9px] font-bold font-mono px-3 py-1 rounded transition-all ${
                   sortBy === item.id 
-                    ? 'bg-neon-blue/20 text-white border border-neon-blue/30 shadow-[0_0_8px_rgba(0,240,255,0.2)]' 
-                    : 'text-text-secondary hover:text-white'
+                    ? 'bg-[#00f0ff]/10 text-white border border-[#00f0ff]/30 shadow-[0_0_8px_rgba(0,240,255,0.15)]' 
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 {item.label}
@@ -112,10 +112,10 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
           ))}
         </div>
       ) : (
-        <div className="w-full py-16 flex flex-col items-center justify-center border border-neon-pink/20 bg-card-bg rounded-xl max-w-xl mx-auto text-center">
-          <div className="text-neon-pink text-3xl mb-3 animate-pulse">⚠️</div>
+        <div className="w-full py-16 flex flex-col items-center justify-center border border-[#ff9f00]/30 bg-[#0c0f16] max-w-xl mx-auto text-center">
+          <div className="text-[#ff9f00] text-3xl mb-3 animate-pulse">⚠️</div>
           <h3 className="text-lg font-bold text-white mb-1">GRID NODE OFFLINE</h3>
-          <p className="text-text-secondary text-xs font-mono">
+          <p className="text-slate-500 text-xs font-mono">
             No approved terminal packets found for {selectedCategory.toUpperCase()} category.
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
           {Array.from({ length: 6 }).map((_, idx) => (
             <div 
               key={idx} 
-              className="w-full aspect-[4/5] rounded-xl bg-[#1b0d2d]/30 border border-white/5 animate-pulse flex items-center justify-center text-[10px] font-mono text-gray-700"
+              className="w-full aspect-[4/5] bg-slate-950 border border-slate-900 animate-pulse flex items-center justify-center text-[10px] font-mono text-slate-700"
             >
               BUFF_GRID_NODE...
             </div>
@@ -137,3 +137,4 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
     </div>
   );
 }
+
