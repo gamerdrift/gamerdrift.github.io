@@ -1,0 +1,107 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1v1r3d"]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StartButton" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 500.0
+offset_top = 400.0
+offset_right = 650.0
+offset_bottom = 440.0
+text = "DISPATCH"
+
+[node name="RacerVBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 250.0
+offset_bottom = 500.0
+
+[node name="Female_0" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Nyx Viper"
+
+[node name="Female_1" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Sahara Fang"
+
+[node name="Female_2" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Raven Claw"
+
+[node name="Female_3" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Blaze Mirage"
+
+[node name="Male_0" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Titan Paw"
+
+[node name="Male_1" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Dust Reaper"
+
+[node name="Male_2" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Iron Fang"
+
+[node name="Male_3" type="Button" parent="Panel/RacerVBox"]
+layout_mode = 2
+text = "Ghost Claw"
+
+[node name="SelectionVBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 100.0
+offset_right = 700.0
+offset_bottom = 350.0
+
+[node name="RacerDetails" type="VBoxContainer" parent="Panel/SelectionVBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="Panel/SelectionVBox/RacerDetails"]
+layout_mode = 2
+text = "Name"
+
+[node name="BioLabel" type="Label" parent="Panel/SelectionVBox/RacerDetails"]
+layout_mode = 2
+text = "Bio"
+
+[node name="EquipmentLabel" type="Label" parent="Panel/SelectionVBox/RacerDetails"]
+layout_mode = 2
+text = "Equipment"
+
+[node name="ClassSelector" type="VBoxContainer" parent="Panel/SelectionVBox"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/SelectionVBox/ClassSelector"]
+layout_mode = 2
+
+[node name="LightBtn" type="CheckBox" parent="Panel/SelectionVBox/ClassSelector/HBoxContainer"]
+layout_mode = 2
+text = "Light"
+
+[node name="MediumBtn" type="CheckBox" parent="Panel/SelectionVBox/ClassSelector/HBoxContainer"]
+layout_mode = 2
+text = "Medium"
+
+[node name="HeavyBtn" type="CheckBox" parent="Panel/SelectionVBox/ClassSelector/HBoxContainer"]
+layout_mode = 2
+text = "Heavy"

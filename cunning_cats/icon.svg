@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#05070a" stroke="#00f0ff" stroke-width="4" rx="16"/>
+  <path d="M30 40 L64 15 L98 40 L90 90 L38 90 Z" fill="none" stroke="#ff9f00" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="64" cy="55" r="12" fill="none" stroke="#00f0ff" stroke-width="3"/>
+  <path d="M45 40 L55 55 M83 40 L73 55" stroke="#00f0ff" stroke-width="3"/>
+  <text x="64" y="112" font-family="monospace" font-size="14" fill="#00f0ff" font-weight="bold" text-anchor="middle">C_CATS</text>
+</svg>
