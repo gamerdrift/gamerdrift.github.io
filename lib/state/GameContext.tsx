@@ -54,7 +54,31 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     let loadedGames: GameSubmission[] = [];
 
     if (storedGames) {
-      loadedGames = JSON.parse(storedGames);
+      const parsedGames: GameSubmission[] = JSON.parse(storedGames);
+      // Synchronize localStorage games list with data/games.ts static list.
+      // 1. Keep custom submissions (their IDs start with 'submitted-game-')
+      const customSubmissions = parsedGames.filter(g => g.id.startsWith('submitted-game-'));
+      
+      // 2. Keep static games only if they are present in the current data/games.ts array,
+      // and update their metadata to match initialGames in case we corrected IDs/urls/descriptions.
+      const initialGamesMap = new Map(initialGames.map(g => [g.id, g]));
+      const existingStaticGames = parsedGames.filter(g => initialGamesMap.has(g.id));
+      
+      const updatedStaticGames = initialGames.map(ig => {
+        const existing = existingStaticGames.find(eg => eg.id === ig.id);
+        return {
+          ...ig,
+          approved: true,
+          submittedBy: existing?.submittedBy || 'System',
+          submittedAt: existing?.submittedAt || new Date('2026-05-01').toISOString(),
+          plays: existing?.plays ?? (Math.floor(Math.random() * 5000) + 1200),
+          rating: existing?.rating ?? Number((4.0 + Math.random() * 0.9).toFixed(1)),
+          ratingsCount: existing?.ratingsCount ?? (Math.floor(Math.random() * 200) + 45)
+        };
+      });
+
+      loadedGames = [...updatedStaticGames, ...customSubmissions];
+      localStorage.setItem('gamerdrift_games', JSON.stringify(loadedGames));
     } else {
       // Map static games to extend play count, ratings, and approved status
       loadedGames = initialGames.map(g => ({

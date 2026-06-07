@@ -61,83 +61,16 @@ export const games: Game[] = [
   { id: "tetris", title: "Block Tetris", thumbnail: "/tetris_thumb.png", url: "/play/tetris/", category: "Puzzle", description: "Standard block puzzle game. Rotate falling tetromino shapes and clear rows." },
   { id: "2048", title: "2048 Puzzle", thumbnail: "/game_2048_thumb.png", url: "/play/2048/", category: "Puzzle", description: "Merge tiles of identical numbers to double their value. Reach the 2048 tile." },
 
-  // --- HTML5 Classics & Arcade on GitHub Pages (24) ---
+  // --- HTML5 Classics & Arcade on GitHub Pages (11) ---
   { id: "hextris", title: "Hextris Hexagon", thumbnail: getUnsplashUrl("photo-1585647347483-22b66260dfff"), url: "/play/hextris/", isExternal: true, embedUrl: "https://hextris.github.io/hextris/", category: "Puzzle", description: "Rotate the hexagon to stack falling colored blocks in matching rows of three." },
   { id: "clumsy-bird", title: "Clumsy Bird", thumbnail: getUnsplashUrl("photo-1555680202-c86f0e12f086"), url: "/play/clumsy-bird/", isExternal: true, embedUrl: "https://ellisonleao.github.io/clumsy-bird/", category: "Casual", description: "Flap your wings, dodge the wooden obstacles, and achieve a high score." },
   { id: "pacman-html5", title: "Pacman Classic", thumbnail: getUnsplashUrl("photo-1612287230202-1bf1d85d1bdf"), url: "/play/pacman-html5/", isExternal: true, embedUrl: "https://macek.github.io/google_pacman/", category: "Arcade", description: "Navigate the grid, devour pac-dots, and evade Clyde, Inky, Pinky, and Blinky." },
   { id: "asteroids-js", title: "Asteroids 2D", thumbnail: getUnsplashUrl("photo-1506703719100-a0f3a48c0f86"), url: "/play/asteroids-js/", isExternal: true, embedUrl: "https://dmcinnes.github.io/HTML5-Asteroids/", category: "Shooting", description: "Control a ship in deep space, blast incoming space debris and evade alien saucers." },
   { id: "canvas-pinball", title: "Cyber Pinball", thumbnail: getUnsplashUrl("photo-1548685913-fe6574340a63"), url: "/play/canvas-pinball/", isExternal: true, embedUrl: "https://leereilly.github.io/canvas-pinball/", category: "Arcade", description: "Classic retro arcade pinball simulation made with HTML5 Canvas physics." },
   { id: "tower-blocks", title: "Tower Blocks", thumbnail: getUnsplashUrl("photo-1518131398979-883be7e12be2"), url: "/play/tower-blocks/", isExternal: true, embedUrl: "https://clintbellanger.github.io/tower_blocks/", category: "Casual", description: "Release and stack moving blocks to construct the tallest skyscraper possible." },
-  { id: "a-dark-room", title: "A Dark Room", thumbnail: getUnsplashUrl("photo-1580234810907-b40315b76418"), url: "/play/a-dark-room/", isExternal: true, embedUrl: "https://hextris.github.io/hextris/", category: "Retro", description: "Rotate the hexagon to stack blocks in the Dark Room subgrid." },
-  { id: "hex-gl", title: "HexGL Sci-Fi Racer", thumbnail: getUnsplashUrl("photo-1605899435973-ca2d1a8861cf"), url: "/play/hex-gl/", isExternal: true, embedUrl: "https://jakesgordon.github.io/javascript-racer/", category: "Action", description: "A high-speed 3D futuristic hover-racer built in WebGL." },
+  { id: "javascript-racer", title: "Javascript Racer", thumbnail: getUnsplashUrl("photo-1605899435973-ca2d1a8861cf"), url: "/play/javascript-racer/", isExternal: true, embedUrl: "https://jakesgordon.github.io/javascript-racer/", category: "Action", description: "A high-speed retro OutRun-style racing game built in HTML5 canvas." },
   { id: "duck-hunt", title: "Duck Hunt HTML5", thumbnail: getUnsplashUrl("photo-1568890686150-64af65720e69"), url: "/play/duck-hunt/", isExternal: true, embedUrl: "https://duckhunt.js.org/", category: "Shooting", description: "Shoot down flying ducks launched by your retriever dog in this retro classic." },
   { id: "minesweeper-js", title: "Minesweeper Classic", thumbnail: getUnsplashUrl("photo-1526304640581-d334cdbbf45e"), url: "/play/minesweeper-js/", isExternal: true, embedUrl: "https://minesweeper.github.io/", category: "Puzzle", description: "Uncover a grid of tiles while avoiding hidden mines using numeric cues." },
   { id: "lichess-chess", title: "Lichess Chess", thumbnail: getUnsplashUrl("photo-1627856013091-fed6e4e30025"), url: "/play/lichess-chess/", isExternal: true, embedUrl: "https://lichess.org/embed/export/fen/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR?theme=auto&bg=auto", category: "Puzzle", description: "Play standard chess matches against AI or local players using Lichess servers." },
-  { id: "tictactoe-js", title: "Tic-Tac-Toe Neo", thumbnail: getUnsplashUrl("photo-1614850523459-c2f4c699c52e"), url: "/play/tictactoe-js/", isExternal: true, embedUrl: "https://minesweeper.github.io/", category: "Puzzle", description: "Clear grid blocks in minesweeper board system." },
-  { id: "solitaire-classic", title: "Solitaire Classic", thumbnail: getUnsplashUrl("photo-1606144042614-b2417e99c4e3"), url: "/play/solitaire-classic/", isExternal: true, embedUrl: "https://solitaire.github.io/", category: "Puzzle", description: "Arrange cards in chronological order from King to Ace on piles." },
-  { id: "hextris-2", title: "Hexa Stack", thumbnail: getUnsplashUrl("photo-1585647347483-22b66260dfff"), url: "/play/hextris-2/", isExternal: true, embedUrl: "https://hextris.github.io/hextris/", category: "Puzzle", description: "High-octane hexagonal blocks stack matching matching game." },
-  { id: "clumsy-bird-2", title: "Flappy Retro", thumbnail: getUnsplashUrl("photo-1555680202-c86f0e12f086"), url: "/play/clumsy-bird-2/", isExternal: true, embedUrl: "https://ellisonleao.github.io/clumsy-bird/", category: "Casual", description: "Lead the clumsy bird through the tubes safely in this flap runner." },
-  { id: "tower-blocks-2", title: "Tower Builder Pro", thumbnail: getUnsplashUrl("photo-1518131398979-883be7e12be2"), url: "/play/tower-blocks-2/", isExternal: true, embedUrl: "https://solitaire.github.io/", category: "Casual", description: "Stack cards chronologically to construct solitaire piles." },
-  { id: "pacman-classic-2", title: "Arcade Pacman", thumbnail: getUnsplashUrl("photo-1612287230202-1bf1d85d1bdf"), url: "/play/pacman-classic-2/", isExternal: true, embedUrl: "https://macek.github.io/google_pacman/", category: "Arcade", description: "Classic yellow dot devourer in its retro 1980 arcade maze format." },
-  { id: "asteroids-js-2", title: "Space Blaster", thumbnail: getUnsplashUrl("photo-1506703719100-a0f3a48c0f86"), url: "/play/asteroids-js-2/", isExternal: true, embedUrl: "https://dmcinnes.github.io/HTML5-Asteroids/", category: "Shooting", description: "Avoid space rocks and alien laser fire in deep cosmic sectors." },
-  { id: "minesweeper-js-2", title: "Mine Detector", thumbnail: getUnsplashUrl("photo-1526304640581-d334cdbbf45e"), url: "/play/minesweeper-js-2/", isExternal: true, embedUrl: "https://minesweeper.github.io/", category: "Puzzle", description: "Clear the minefield without stepping on explosives." },
-  { id: "lichess-chess-2", title: "Chess Terminal", thumbnail: getUnsplashUrl("photo-1627856013091-fed6e4e30025"), url: "/play/lichess-chess-2/", isExternal: true, embedUrl: "https://lichess.org/embed/export/fen/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR?theme=auto&bg=auto", category: "Puzzle", description: "Classic strategy chess game. Plan your openings and take down the opponent." },
-  { id: "tictactoe-js-2", title: "X vs O Arena", thumbnail: getUnsplashUrl("photo-1614850523459-c2f4c699c52e"), url: "/play/tictactoe-js-2/", isExternal: true, embedUrl: "https://hextris.github.io/hextris/", category: "Puzzle", description: "Dodge your opponent's blockers and align three marks on the hexagon walls." },
-  { id: "solitaire-classic-2", title: "Klondike Solitaire", thumbnail: getUnsplashUrl("photo-1606144042614-b2417e99c4e3"), url: "/play/solitaire-classic-2/", isExternal: true, embedUrl: "https://solitaire.github.io/", category: "Puzzle", description: "Sort deck cards chronologically to win this classic solo challenge." },
-  { id: "hex-gl-2", title: "HexGL Racer Pro", thumbnail: getUnsplashUrl("photo-1605899435973-ca2d1a8861cf"), url: "/play/hex-gl-2/", isExternal: true, embedUrl: "https://jakesgordon.github.io/javascript-racer/", category: "Action", description: "Speed through futuristic hover tracks in record time." },
-  { id: "duck-hunt-2", title: "Duck Gunner", thumbnail: getUnsplashUrl("photo-1568890686150-64af65720e69"), url: "/play/duck-hunt-2/", isExternal: true, embedUrl: "https://dmcinnes.github.io/HTML5-Asteroids/", category: "Shooting", description: "Practice your marksmanship on space asteroids in deep cosmos." },
-
-  // --- Procedural / Curated Arcade Portals (70 games to reach 100+) ---
-  ...Array.from({ length: 70 }, (_, i) => {
-    const gameIdNum = i + 1;
-    const isPuzzle = gameIdNum % 5 === 0;
-    const isShooting = gameIdNum % 5 === 1;
-    const isCasual = gameIdNum % 5 === 2;
-    const isAction = gameIdNum % 5 === 3;
-    const isArcade = gameIdNum % 5 === 4;
-
-    let title = `Node Grid #${100 + gameIdNum}`;
-    let category: 'Arcade' | 'Puzzle' | 'Shooting' | 'Casual' | 'Action' | 'Retro' = 'Arcade';
-    let embedUrl = "https://hextris.github.io/hextris/";
-    let photoId = gamePhotoIds[gameIdNum % gamePhotoIds.length];
-    let description = `Jack into gaming subgrid block #${200 + gameIdNum} and access external game files.`;
-
-    if (isPuzzle) {
-      title = `Hex Grid Pro #${gameIdNum}`;
-      category = 'Puzzle';
-      embedUrl = "https://hextris.github.io/hextris/";
-      description = `Align matching colored blocks on the hexagon walls in sector #${gameIdNum}.`;
-    } else if (isShooting) {
-      title = `Comet Shooter #${gameIdNum}`;
-      category = 'Shooting';
-      embedUrl = "https://dmcinnes.github.io/HTML5-Asteroids/";
-      description = `Blast incoming asteroids and alien saucers in quadrant #${gameIdNum}.`;
-    } else if (isCasual) {
-      title = `Flap Runner #${gameIdNum}`;
-      category = 'Casual';
-      embedUrl = "https://ellisonleao.github.io/clumsy-bird/";
-      description = `Guide the glider safely through standard obstacles in grid sector #${gameIdNum}.`;
-    } else if (isAction) {
-      title = `Hover Racer #${gameIdNum}`;
-      category = 'Action';
-      embedUrl = "https://jakesgordon.github.io/javascript-racer/";
-      description = `Steer futuristic speed gliders on advanced cyber tracks in zone #${gameIdNum}.`;
-    } else if (isArcade) {
-      title = `Dot Devourer #${gameIdNum}`;
-      category = 'Arcade';
-      embedUrl = "https://macek.github.io/google_pacman/";
-      description = `Devour pac-dots inside the classic retro arcade grid system #${gameIdNum}.`;
-    }
-
-    return {
-      id: `generated-game-${gameIdNum}`,
-      title,
-      thumbnail: getUnsplashUrl(photoId),
-      url: `/play/generated-game-${gameIdNum}/`,
-      isExternal: true,
-      embedUrl,
-      category,
-      description
-    };
-  })
+  { id: "solitaire-classic", title: "Solitaire Classic", thumbnail: getUnsplashUrl("photo-1606144042614-b2417e99c4e3"), url: "/play/solitaire-classic/", isExternal: true, embedUrl: "https://solitaire.github.io/", category: "Puzzle", description: "Arrange cards in chronological order from King to Ace on piles." }
 ];
