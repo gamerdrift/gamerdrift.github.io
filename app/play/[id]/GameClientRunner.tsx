@@ -28,6 +28,16 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
   const [maxAmmo] = useState(30);
   const [stage, setStage] = useState(1);
   const [inCover, setInCover] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Initialize stage from search parameters on mount
   useEffect(() => {
@@ -88,6 +98,68 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
       addToHistory(gameId);
     }
   }, [isPlaying, gameId]);
+
+  const playSound = (type: 'shoot' | 'explosion' | 'hit' | 'clear' | 'land' | 'gameover') => {
+    if (typeof window === 'undefined') return;
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'shoot') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'hit') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      } else if (type === 'explosion') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(10, audioCtx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+      } else if (type === 'clear') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+      } else if (type === 'land') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      } else if (type === 'gameover') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.8);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      }
+    } catch (e) {
+      console.warn("AudioContext block failed", e);
+    }
+  };
 
   // -------------------------------------------------------------
   // 3D CAPTN.GHOST GAME ENGINE ENGINE
@@ -551,6 +623,699 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     };
   }, [isPlaying, gameId, stage, inCover]);
 
+  // -------------------------------------------------------------
+  // 3D SPACE INVADERS GAME ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== 'space-invaders' || !isPlaying || gameOver || gameWon) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(width, height, false);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050010, 0.02);
+
+    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
+    camera.position.set(0, 8, 15);
+    camera.lookAt(0, 0, -5);
+
+    const starCount = 300;
+    const starGeom = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      starPos[i * 3] = (Math.random() - 0.5) * 60;
+      starPos[i * 3 + 1] = (Math.random() - 0.5) * 40;
+      starPos[i * 3 + 2] = -Math.random() * 80;
+    }
+    starGeom.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, transparent: true, opacity: 0.8 });
+    const stars = new THREE.Points(starGeom, starMat);
+    scene.add(stars);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xff00ff, 0.8);
+    dirLight.position.set(5, 15, 5);
+    scene.add(dirLight);
+
+    const gridHelper = new THREE.GridHelper(30, 30, 0x00f0ff, 0x071b2d);
+    gridHelper.position.set(0, -0.5, -5);
+    scene.add(gridHelper);
+
+    const playerGroup = new THREE.Group();
+    playerGroup.position.set(0, 0, 9);
+    scene.add(playerGroup);
+
+    const shipMaterial = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.2, metalness: 0.8 });
+    const noseGeom = new THREE.ConeGeometry(0.3, 1.2, 4);
+    noseGeom.rotateX(Math.PI / 2);
+    const nose = new THREE.Mesh(noseGeom, shipMaterial);
+    playerGroup.add(nose);
+
+    const wingGeom = new THREE.BoxGeometry(1.6, 0.1, 0.5);
+    const wings = new THREE.Mesh(wingGeom, shipMaterial);
+    wings.position.set(0, -0.1, 0.2);
+    playerGroup.add(wings);
+
+    let targetX = 0;
+    let currentX = 0;
+
+    const keysPressed: { [key: string]: boolean } = {};
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keysPressed[e.code] = true;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        fireLaser();
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keysPressed[e.code] = false;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    interface Laser {
+      mesh: THREE.Mesh;
+      dir: number;
+    }
+    const lasers: Laser[] = [];
+
+    interface Alien {
+      mesh: THREE.Group;
+      type: number;
+      initialX: number;
+      initialZ: number;
+      hp: number;
+    }
+    let aliens: Alien[] = [];
+    let alienDirection = 1;
+    let alienMoveSpeed = 1.0;
+    let alienDescendZ = 0;
+
+    const spawnAlienWave = () => {
+      aliens.forEach(a => scene.remove(a.mesh));
+      aliens = [];
+
+      const rows = 3;
+      const cols = 5;
+      const spacingX = 2.5;
+      const spacingZ = 2.0;
+
+      const colors = [0xff00ff, 0x39ff14, 0xffff00];
+      for (let r = 0; r < rows; r++) {
+        const alienMaterial = new THREE.MeshStandardMaterial({
+          color: colors[r % colors.length],
+          emissive: colors[r % colors.length],
+          emissiveIntensity: 0.3,
+          roughness: 0.4
+        });
+
+        for (let c = 0; c < cols; c++) {
+          const alienGroup = new THREE.Group();
+          const bodyGeom = new THREE.BoxGeometry(0.8, 0.6, 0.8);
+          const body = new THREE.Mesh(bodyGeom, alienMaterial);
+          alienGroup.add(body);
+
+          const wingGeom = new THREE.BoxGeometry(1.2, 0.1, 0.3);
+          const wing = new THREE.Mesh(wingGeom, alienMaterial);
+          wing.position.y = 0.2;
+          alienGroup.add(wing);
+
+          const x = (c - (cols - 1) / 2) * spacingX;
+          const z = -12 + r * spacingZ;
+          alienGroup.position.set(x, 0, z);
+          scene.add(alienGroup);
+
+          aliens.push({
+            mesh: alienGroup,
+            type: r,
+            initialX: x,
+            initialZ: z,
+            hp: 20 + stage * 10
+          });
+        }
+      }
+      alienMoveSpeed = 0.8 + stage * 0.3;
+      alienDescendZ = 0;
+    };
+
+    spawnAlienWave();
+
+    const laserMatPlayer = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+    const laserMatAlien = new THREE.MeshBasicMaterial({ color: 0xff3333 });
+    const laserGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.8, 4);
+    laserGeom.rotateX(Math.PI / 2);
+
+    const fireLaser = () => {
+      const laserMesh = new THREE.Mesh(laserGeom, laserMatPlayer);
+      laserMesh.position.set(playerGroup.position.x, playerGroup.position.y, playerGroup.position.z - 0.8);
+      scene.add(laserMesh);
+      lasers.push({ mesh: laserMesh, dir: -1 });
+      playSound('shoot');
+    };
+
+    const spawnAlienLaser = (alien: Alien) => {
+      const laserMesh = new THREE.Mesh(laserGeom, laserMatAlien);
+      laserMesh.position.set(alien.mesh.position.x, alien.mesh.position.y, alien.mesh.position.z + 0.8);
+      scene.add(laserMesh);
+      lasers.push({ mesh: laserMesh, dir: 1 });
+      playSound('shoot');
+    };
+
+    interface Explosion {
+      points: THREE.Points;
+      age: number;
+      maxAge: number;
+    }
+    const explosions: Explosion[] = [];
+
+    const createExplosion = (pos: THREE.Vector3, color: number) => {
+      const count = 20;
+      const geom = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      const velocities = new Float32Array(count * 3);
+
+      for (let i = 0; i < count; i++) {
+        positions[i * 3] = pos.x;
+        positions[i * 3 + 1] = pos.y;
+        positions[i * 3 + 2] = pos.z;
+
+        velocities[i * 3] = (Math.random() - 0.5) * 8;
+        velocities[i * 3 + 1] = (Math.random() - 0.5) * 6;
+        velocities[i * 3 + 2] = (Math.random() - 0.5) * 8;
+      }
+
+      geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geom.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+
+      const mat = new THREE.PointsMaterial({
+        color: color,
+        size: 0.15,
+        transparent: true,
+        opacity: 0.9
+      });
+
+      const points = new THREE.Points(geom, mat);
+      scene.add(points);
+      explosions.push({ points, age: 0, maxAge: 0.3 });
+    };
+
+    const handleTouchLeft = () => { targetX = Math.max(-7, targetX - 1.2); };
+    const handleTouchRight = () => { targetX = Math.min(7, targetX + 1.2); };
+    const handleTouchFire = () => { fireLaser(); };
+
+    (window as any).driftTouchLeft = handleTouchLeft;
+    (window as any).driftTouchRight = handleTouchRight;
+    (window as any).driftTouchFire = handleTouchFire;
+
+    const clock = new THREE.Clock();
+    let animId: number;
+    let lastAlienFire = 0;
+
+    const gameLoop = () => {
+      animId = requestAnimationFrame(gameLoop);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      if (keysPressed['ArrowLeft'] || keysPressed['KeyA']) {
+        targetX = Math.max(-7, targetX - delta * 12);
+      }
+      if (keysPressed['ArrowRight'] || keysPressed['KeyD']) {
+        targetX = Math.min(7, targetX + delta * 12);
+      }
+
+      currentX += (targetX - currentX) * 0.25;
+      playerGroup.position.x = currentX;
+
+      let hitSide = false;
+      aliens.forEach(a => {
+        a.mesh.position.x += alienDirection * alienMoveSpeed * delta;
+        a.mesh.position.z = a.initialZ + alienDescendZ;
+
+        if (a.mesh.position.x > 7.5 || a.mesh.position.x < -7.5) {
+          hitSide = true;
+        }
+
+        if (a.mesh.position.z >= 8.5) {
+          setGameOver(true);
+          setIsPlaying(false);
+          playSound('gameover');
+        }
+      });
+
+      if (hitSide) {
+        alienDirection *= -1;
+        alienDescendZ += 1.0;
+        aliens.forEach(a => {
+          a.mesh.position.x += alienDirection * alienMoveSpeed * delta;
+        });
+      }
+
+      if (time - lastAlienFire > Math.max(0.5, 2.5 - stage * 0.4)) {
+        if (aliens.length > 0) {
+          const shooter = aliens[Math.floor(Math.random() * aliens.length)];
+          spawnAlienLaser(shooter);
+          lastAlienFire = time;
+        }
+      }
+
+      for (let i = lasers.length - 1; i >= 0; i--) {
+        const l = lasers[i];
+        l.mesh.position.z += l.dir * 18 * delta;
+
+        if (l.dir === -1) {
+          let hit = false;
+          for (let j = aliens.length - 1; j >= 0; j--) {
+            const a = aliens[j];
+            const dist = l.mesh.position.distanceTo(a.mesh.position);
+            if (dist < 1.0) {
+              hit = true;
+              scene.remove(l.mesh);
+              lasers.splice(i, 1);
+
+              a.hp -= 20;
+              if (a.hp <= 0) {
+                createExplosion(a.mesh.position, 0xff00ff);
+                scene.remove(a.mesh);
+                aliens.splice(j, 1);
+                setScore(prev => prev + 150);
+                gainXP(10);
+                playSound('explosion');
+
+                if (aliens.length === 0) {
+                  playSound('clear');
+                  setStage(prev => prev + 1);
+                  spawnAlienWave();
+                }
+              } else {
+                playSound('hit');
+              }
+              break;
+            }
+          }
+          if (hit) continue;
+        }
+
+        if (l.dir === 1) {
+          const dist = l.mesh.position.distanceTo(playerGroup.position);
+          if (dist < 1.0) {
+            scene.remove(l.mesh);
+            lasers.splice(i, 1);
+            playSound('hit');
+
+            setHealth(prev => {
+              const next = prev - 20;
+              if (next <= 0) {
+                setGameOver(true);
+                setIsPlaying(false);
+                playSound('gameover');
+              }
+              return Math.max(0, next);
+            });
+            continue;
+          }
+        }
+
+        if (l.mesh.position.z < -25 || l.mesh.position.z > 25) {
+          scene.remove(l.mesh);
+          lasers.splice(i, 1);
+        }
+      }
+
+      for (let i = explosions.length - 1; i >= 0; i--) {
+        const exp = explosions[i];
+        exp.age += delta;
+        const posAttr = exp.points.geometry.attributes.position as THREE.BufferAttribute;
+        const velAttr = exp.points.geometry.attributes.velocity as THREE.BufferAttribute;
+
+        for (let j = 0; j < posAttr.count; j++) {
+          posAttr.setX(j, posAttr.getX(j) + velAttr.getX(j) * delta);
+          posAttr.setY(j, posAttr.getY(j) + velAttr.getY(j) * delta);
+          posAttr.setZ(j, posAttr.getZ(j) + velAttr.getZ(j) * delta);
+        }
+        posAttr.needsUpdate = true;
+
+        if (exp.age > exp.maxAge) {
+          scene.remove(exp.points);
+          explosions.splice(i, 1);
+        }
+      }
+
+      renderer.render(scene, camera);
+    };
+
+    gameLoop();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      lasers.forEach(l => scene.remove(l.mesh));
+      aliens.forEach(a => scene.remove(a.mesh));
+      explosions.forEach(exp => scene.remove(exp.points));
+      scene.remove(stars);
+      scene.remove(gridHelper);
+      scene.remove(playerGroup);
+      delete (window as any).driftTouchLeft;
+      delete (window as any).driftTouchRight;
+      delete (window as any).driftTouchFire;
+    };
+  }, [isPlaying, gameId, stage]);
+
+  // -------------------------------------------------------------
+  // 3D TETRIS GAME ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== 'tetris' || !isPlaying || gameOver || gameWon) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(width, height, false);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0c001f, 0.015);
+
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+    camera.position.set(0, 0, 18);
+    camera.lookAt(0, 0, 0);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0x00ffff, 0.8);
+    dirLight.position.set(5, 10, 10);
+    scene.add(dirLight);
+
+    const cageGeom = new THREE.BoxGeometry(10, 20, 1);
+    const cageEdges = new THREE.EdgesGeometry(cageGeom);
+    const cageMat = new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 2 });
+    const cage = new THREE.LineSegments(cageEdges, cageMat);
+    scene.add(cage);
+
+    const COLS = 10;
+    const ROWS = 20;
+    const grid: number[][] = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    const blockMeshes: (THREE.Mesh | null)[][] = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+
+    const TETROMINOES: Record<string, { shape: number[][]; color: number }> = {
+      I: { shape: [[1,1,1,1]], color: 0x00ffff },
+      O: { shape: [[1,1],[1,1]], color: 0xffff00 },
+      T: { shape: [[0,1,0],[1,1,1]], color: 0xaa00ff },
+      S: { shape: [[0,1,1],[1,1,0]], color: 0x00ff00 },
+      Z: { shape: [[1,1,0],[0,1,1]], color: 0xff0000 },
+      J: { shape: [[1,0,0],[1,1,1]], color: 0x0000ff },
+      L: { shape: [[0,0,1],[1,1,1]], color: 0xffaa00 }
+    };
+    const keys = Object.keys(TETROMINOES);
+
+    let currentShape: number[][] = [];
+    let currentColor = 0x000000;
+    const currentPieceGroup = new THREE.Group();
+    scene.add(currentPieceGroup);
+
+    let pieceCol = 0;
+    let pieceRow = 0;
+
+    const blockGeom = new THREE.BoxGeometry(0.95, 0.95, 0.95);
+
+    const spawnPiece = () => {
+      const type = keys[Math.floor(Math.random() * keys.length)];
+      currentShape = TETROMINOES[type].shape;
+      currentColor = TETROMINOES[type].color;
+
+      pieceCol = Math.floor((COLS - currentShape[0].length) / 2);
+      pieceRow = 0;
+
+      currentPieceGroup.clear();
+      const material = new THREE.MeshStandardMaterial({
+        color: currentColor,
+        emissive: currentColor,
+        emissiveIntensity: 0.4,
+        roughness: 0.2
+      });
+
+      for (let r = 0; r < currentShape.length; r++) {
+        for (let c = 0; c < currentShape[r].length; c++) {
+          if (currentShape[r][c] !== 0) {
+            const mesh = new THREE.Mesh(blockGeom, material);
+            mesh.position.set(c, -r, 0);
+            currentPieceGroup.add(mesh);
+          }
+        }
+      }
+
+      updatePieceGroupPosition();
+
+      if (checkCollision(pieceCol, pieceRow, currentShape)) {
+        setGameOver(true);
+        setIsPlaying(false);
+        playSound('gameover');
+      }
+    };
+
+    const updatePieceGroupPosition = () => {
+      const x = pieceCol - 4.5;
+      const y = 9.5 - pieceRow;
+      currentPieceGroup.position.set(x, y, 0);
+    };
+
+    const checkCollision = (col: number, row: number, shape: number[][]) => {
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          if (shape[r][c] !== 0) {
+            const nextCol = col + c;
+            const nextRow = row + r;
+
+            if (nextCol < 0 || nextCol >= COLS || nextRow >= ROWS) {
+              return true;
+            }
+
+            if (nextRow >= 0 && grid[nextRow][nextCol] !== 0) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    };
+
+    const rotateShape = (shape: number[][]) => {
+      const rCount = shape.length;
+      const cCount = shape[0].length;
+      const rotated = Array.from({ length: cCount }, () => Array(rCount).fill(0));
+      for (let r = 0; r < rCount; r++) {
+        for (let c = 0; c < cCount; c++) {
+          rotated[c][rCount - 1 - r] = shape[r][c];
+        }
+      }
+      return rotated;
+    };
+
+    const rotatePiece = () => {
+      const nextShape = rotateShape(currentShape);
+      if (!checkCollision(pieceCol, pieceRow, nextShape)) {
+        currentShape = nextShape;
+        currentPieceGroup.clear();
+        const material = new THREE.MeshStandardMaterial({
+          color: currentColor,
+          emissive: currentColor,
+          emissiveIntensity: 0.4,
+          roughness: 0.2
+        });
+        for (let r = 0; r < currentShape.length; r++) {
+          for (let c = 0; c < currentShape[r].length; c++) {
+            if (currentShape[r][c] !== 0) {
+              const mesh = new THREE.Mesh(blockGeom, material);
+              mesh.position.set(c, -r, 0);
+              currentPieceGroup.add(mesh);
+            }
+          }
+        }
+        updatePieceGroupPosition();
+        playSound('land');
+      }
+    };
+
+    const movePiece = (dirCol: number, dirRow: number) => {
+      const nextCol = pieceCol + dirCol;
+      const nextRow = pieceRow + dirRow;
+
+      if (!checkCollision(nextCol, nextRow, currentShape)) {
+        pieceCol = nextCol;
+        pieceRow = nextRow;
+        updatePieceGroupPosition();
+        return true;
+      }
+      return false;
+    };
+
+    const lockPiece = () => {
+      const material = new THREE.MeshStandardMaterial({
+        color: currentColor,
+        roughness: 0.3,
+        metalness: 0.1
+      });
+
+      for (let r = 0; r < currentShape.length; r++) {
+        for (let c = 0; c < currentShape[r].length; c++) {
+          if (currentShape[r][c] !== 0) {
+            const nextCol = pieceCol + c;
+            const nextRow = pieceRow + r;
+
+            if (nextRow >= 0 && nextRow < ROWS && nextCol >= 0 && nextCol < COLS) {
+              grid[nextRow][nextCol] = currentColor;
+
+              const mesh = new THREE.Mesh(blockGeom, material);
+              mesh.position.set(nextCol - 4.5, 9.5 - nextRow, 0);
+              scene.add(mesh);
+              blockMeshes[nextRow][nextCol] = mesh;
+            }
+          }
+        }
+      }
+
+      currentPieceGroup.clear();
+      playSound('land');
+      checkLines();
+      spawnPiece();
+    };
+
+    const checkLines = () => {
+      let linesCleared = 0;
+      for (let r = ROWS - 1; r >= 0; r--) {
+        const isFull = grid[r].every(val => val !== 0);
+        if (isFull) {
+          linesCleared++;
+          for (let c = 0; c < COLS; c++) {
+            const mesh = blockMeshes[r][c];
+            if (mesh) {
+              scene.remove(mesh);
+            }
+            grid[r][c] = 0;
+            blockMeshes[r][c] = null;
+          }
+
+          for (let rShift = r; rShift > 0; rShift--) {
+            grid[rShift] = [...grid[rShift - 1]];
+            blockMeshes[rShift] = [...blockMeshes[rShift - 1]];
+            for (let c = 0; c < COLS; c++) {
+              const mesh = blockMeshes[rShift][c];
+              if (mesh) {
+                mesh.position.y = 9.5 - rShift;
+              }
+            }
+          }
+          grid[0] = Array(COLS).fill(0);
+          blockMeshes[0] = Array(COLS).fill(null);
+          r++;
+        }
+      }
+
+      if (linesCleared > 0) {
+        setScore(prev => prev + linesCleared * 200 * stage);
+        gainXP(linesCleared * 15);
+        playSound('clear');
+        if (Math.random() < 0.3) {
+          setStage(prev => Math.min(10, prev + 1));
+        }
+      }
+    };
+
+    const handleTetrisLeft = () => { movePiece(-1, 0); };
+    const handleTetrisRight = () => { movePiece(1, 0); };
+    const handleTetrisRotate = () => { rotatePiece(); };
+    const handleTetrisDrop = () => {
+      if (!movePiece(0, 1)) {
+        lockPiece();
+      }
+    };
+
+    (window as any).driftTetrisLeft = handleTetrisLeft;
+    (window as any).driftTetrisRight = handleTetrisRight;
+    (window as any).driftTetrisRotate = handleTetrisRotate;
+    (window as any).driftTetrisDrop = handleTetrisDrop;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+        e.preventDefault();
+        movePiece(-1, 0);
+      }
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+        e.preventDefault();
+        movePiece(1, 0);
+      }
+      if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'KeyR') {
+        e.preventDefault();
+        rotatePiece();
+      }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        e.preventDefault();
+        if (!movePiece(0, 1)) {
+          lockPiece();
+        }
+      }
+      if (e.code === 'Space') {
+        e.preventDefault();
+        while (movePiece(0, 1)) {}
+        lockPiece();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    spawnPiece();
+
+    let animId: number;
+    let lastDropTime = 0;
+
+    const gameLoop = () => {
+      animId = requestAnimationFrame(gameLoop);
+      const time = clock.getElapsedTime();
+
+      const dropSpeed = Math.max(0.1, 1.0 - stage * 0.08);
+      if (time - lastDropTime > dropSpeed) {
+        if (!movePiece(0, 1)) {
+          lockPiece();
+        }
+        lastDropTime = time;
+      }
+
+      camera.position.x = Math.sin(time * 0.8) * 1.5;
+      camera.position.y = Math.cos(time * 0.8) * 0.8;
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+    };
+
+    const clock = new THREE.Clock();
+    gameLoop();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', handleKeyDown);
+      scene.remove(cage);
+      scene.remove(currentPieceGroup);
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const mesh = blockMeshes[r][c];
+          if (mesh) scene.remove(mesh);
+        }
+      }
+      delete (window as any).driftTetrisLeft;
+      delete (window as any).driftTetrisRight;
+      delete (window as any).driftTetrisRotate;
+      delete (window as any).driftTetrisDrop;
+    };
+  }, [isPlaying, gameId, stage]);
+
   // Game startup initializer
   const startGame = () => {
     setScore(0);
@@ -645,7 +1410,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
             )}
 
             {/* Dynamic Game Rendering Canvas */}
-            {gameId === 'captn-ghost' ? (
+            {gameId === 'captn-ghost' || gameId === 'space-invaders' || gameId === 'tetris' ? (
               <canvas
                 ref={canvasRef}
                 className="w-full h-full bg-[#05000a] block cursor-crosshair"
@@ -704,6 +1469,98 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
 
               </div>
             )}
+
+            {/* Space Invaders HUD Overlay */}
+            {isPlaying && gameId === 'space-invaders' && (
+              <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between pointer-events-none font-mono text-xs select-none">
+                <div className="flex flex-col gap-1 p-2 rounded bg-black/60 border border-neon-pink/30 text-neon-pink">
+                  <div className="font-bold">SHIP_INTEGRITY: {health}%</div>
+                  <div className="w-24 bg-[#1b0d2d] h-1.5 rounded overflow-hidden">
+                    <div className="bg-neon-pink h-full" style={{ width: `${health}%` }} />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 items-center p-2 rounded bg-black/60 border border-neon-blue/30 text-neon-blue">
+                  <div className="font-bold">STAGE: {stage}</div>
+                  <div>SCORE: {score.toLocaleString()}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Tetris HUD Overlay */}
+            {isPlaying && gameId === 'tetris' && (
+              <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between pointer-events-none font-mono text-xs select-none">
+                <div className="flex flex-col gap-1 p-2 rounded bg-black/60 border border-neon-pink/30 text-neon-pink">
+                  <div className="font-bold">SPEED_MULT: x{stage}</div>
+                </div>
+                <div className="flex flex-col gap-1 items-center p-2 rounded bg-black/60 border border-neon-blue/30 text-neon-blue">
+                  <div className="font-bold">GRID LEVEL: {stage}</div>
+                  <div>SCORE: {score.toLocaleString()}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Touch Controls Overlays */}
+            {isPlaying && isMobile && (gameId === 'space-invaders' || gameId === 'tetris') && (
+              <div className="absolute inset-x-0 bottom-16 z-30 flex justify-center gap-6 px-4 pointer-events-auto">
+                {gameId === 'space-invaders' && (
+                  <div className="flex gap-4 w-full justify-between items-center max-w-sm">
+                    <div className="flex gap-2 animate-glow">
+                      <button
+                        onTouchStart={() => (window as any).driftTouchLeft?.()}
+                        className="w-12 h-12 rounded-full border border-neon-blue bg-black/80 text-neon-blue text-lg font-bold active:bg-neon-blue active:text-black flex items-center justify-center select-none"
+                      >
+                        ◀
+                      </button>
+                      <button
+                        onTouchStart={() => (window as any).driftTouchRight?.()}
+                        className="w-12 h-12 rounded-full border border-neon-blue bg-black/80 text-neon-blue text-lg font-bold active:bg-neon-blue active:text-black flex items-center justify-center select-none"
+                      >
+                        ▶
+                      </button>
+                    </div>
+                    <button
+                      onTouchStart={() => (window as any).driftTouchFire?.()}
+                      className="w-16 h-16 rounded-full border-2 border-neon-pink bg-black/80 text-neon-pink text-xs font-black tracking-widest active:bg-neon-pink active:text-black flex items-center justify-center select-none"
+                    >
+                      FIRE
+                    </button>
+                  </div>
+                )}
+                {gameId === 'tetris' && (
+                  <div className="flex gap-4 w-full justify-between items-center max-w-sm">
+                    <div className="flex gap-2">
+                      <button
+                        onTouchStart={() => (window as any).driftTetrisLeft?.()}
+                        className="w-10 h-10 rounded-full border border-neon-blue bg-black/80 text-neon-blue text-base font-bold active:bg-neon-blue active:text-black flex items-center justify-center select-none"
+                      >
+                        ◀
+                      </button>
+                      <button
+                        onTouchStart={() => (window as any).driftTetrisRight?.()}
+                        className="w-10 h-10 rounded-full border border-neon-blue bg-black/80 text-neon-blue text-base font-bold active:bg-neon-blue active:text-black flex items-center justify-center select-none"
+                      >
+                        ▶
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onTouchStart={() => (window as any).driftTetrisRotate?.()}
+                        className="w-12 h-12 rounded-full border-2 border-neon-purple bg-black/80 text-neon-purple text-xs font-bold active:bg-neon-purple active:text-black flex items-center justify-center select-none"
+                      >
+                        ROT
+                      </button>
+                      <button
+                        onTouchStart={() => (window as any).driftTetrisDrop?.()}
+                        className="w-12 h-12 rounded-full border-2 border-neon-pink bg-black/80 text-neon-pink text-xs font-bold active:bg-neon-pink active:text-black flex items-center justify-center select-none"
+                      >
+                        DROP
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
 
           {/* How to play Cheatsheet */}
@@ -717,6 +1574,20 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
                 <li><strong className="text-neon-blue">FIRE LASER GUN</strong>: Left click anywhere on the target screen. Recoils gun and consumes ammo.</li>
                 <li><strong className="text-neon-pink">TAKE COVER / RELOAD</strong>: Hold the <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd>. Translates the camera down, shields you from laser fire, and reloads your ammunition clip.</li>
                 <li><strong className="text-neon-pink">MANUAL RELOAD</strong>: Press <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">R</kbd> keys.</li>
+              </ul>
+            ) : gameId === 'space-invaders' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">STEER SHIP</strong>: Press <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">A</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">D</kbd> or <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">Left</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">Right</kbd> arrows.</li>
+                <li><strong className="text-neon-blue">FIRE LASER</strong>: Press the <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd> key.</li>
+                <li><strong className="text-neon-pink">MOBILE</strong>: Tap the on-screen Left/Right arrows to move, and the pink FIRE button to shoot.</li>
+              </ul>
+            ) : gameId === 'tetris' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">SLIDE BLOCKS</strong>: Press <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">A</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">D</kbd> or <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">Left</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">Right</kbd> arrows.</li>
+                <li><strong className="text-neon-blue">ROTATE PIECE</strong>: Press <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">W</kbd> or <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">Up</kbd> arrow.</li>
+                <li><strong className="text-neon-pink">SOFT DROP</strong>: Press <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">S</kbd> or <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">Down</kbd> arrow.</li>
+                <li><strong className="text-neon-pink">HARD DROP</strong>: Press the <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd> key.</li>
+                <li><strong className="text-neon-blue">MOBILE</strong>: Use the on-screen direction controls and rotate/drop action pads.</li>
               </ul>
             ) : (
               <p className="text-xs font-mono">{game.description || 'Access open-source game. Enjoy!'}</p>
