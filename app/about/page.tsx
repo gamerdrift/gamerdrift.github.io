@@ -64,8 +64,8 @@ export default function AboutPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="hud-panel p-5 bg-black/40">
-              <span className="text-[9px] text-[#ff9f00] uppercase block">SYSOP / ARCHITECT</span>
-              <span className="text-sm font-extrabold text-white uppercase block mt-1">AXEL_VORTEX</span>
+              <span className="text-[9px] text-[#ff9f00] uppercase block">GySOP / ARCHITECT</span>
+              <span className="text-sm font-extrabold text-white uppercase block mt-1">Eva_Shaikh</span>
               <p className="text-[10px] text-slate-500 mt-2 leading-relaxed uppercase">
                 OVERSEES CORE TELEMETRY SYSTEMS, WEBGL ENGINE COUPLING, AND COMMAND CENTER INTERFACES.
               </p>
@@ -73,15 +73,15 @@ export default function AboutPage() {
             
             <div className="hud-panel p-5 bg-black/40">
               <span className="text-[9px] text-[#00f0ff] uppercase block">TACTICAL DESIGNER</span>
-              <span className="text-sm font-extrabold text-white uppercase block mt-1">LYRA_DRIFT</span>
+              <span className="text-sm font-extrabold text-white uppercase block mt-1">Ayaan_Shaikh</span>
               <p className="text-[10px] text-slate-500 mt-2 leading-relaxed uppercase">
                 CRAFTED THE TACTICAL AMBER HUD GRID SYSTEM, COMPONENT BLUEPRINTS, AND RACING PHYSICS LOOPS.
               </p>
             </div>
 
             <div className="hud-panel p-5 bg-black/40">
-              <span className="text-[9px] text-[#39ff14] uppercase block">AI DEV OPERATIVE</span>
-              <span className="text-sm font-extrabold text-white uppercase block mt-1">GHOST_CODER</span>
+              <span className="text-[9px] text-[#39ff14] uppercase block">DEV OPERATIVE</span>
+              <span className="text-sm font-extrabold text-white uppercase block mt-1">Jafer_Shaikh</span>
               <p className="text-[10px] text-slate-500 mt-2 leading-relaxed uppercase">
                 TRAINED ROGUEGHOST ADAPTIVE Guard AGENTS AND DEVELOPED SECURE DATABASE SHEETS.
               </p>

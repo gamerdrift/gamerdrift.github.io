@@ -45,6 +45,7 @@ export default function Header() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [aboutModalOpen, setAboutModalOpen] = useState(false);
 
   // Refs for click-outside
   const searchRef = useRef<HTMLDivElement>(null);
@@ -97,15 +98,28 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleOpenAbout = () => {
+      setAboutModalOpen(true);
+    };
+    window.addEventListener('open-about-modal', handleOpenAbout);
+    return () => {
+      window.removeEventListener('open-about-modal', handleOpenAbout);
+    };
+  }, []);
+
   return (
     <header className="w-full bg-[#05070a]/90 backdrop-blur-md border-b border-[#00f0ff]/20 px-4 lg:px-8 py-3 flex flex-col md:flex-row justify-between items-center sticky top-0 z-50">
       
       {/* Top row: Brand & Operations panel toggles */}
-      <div className="w-full md:w-auto flex justify-between items-center space-x-6">
-        
-        {/* Futuristic Military Badge Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="relative w-10 h-10 border border-[#00f0ff] flex items-center justify-center bg-black/80 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+      <div className="w-full md:w-auto flex justify-between items-center">
+        {/* Futuristic Military Badge Logo - Interactive About Dossier Trigger */}
+        <button 
+          onClick={() => setAboutModalOpen(true)}
+          className="flex items-center space-x-3 group cursor-pointer border-none bg-transparent p-0 text-left focus:outline-none"
+          title="Open Studio Dossier"
+        >
+          <div className="relative w-10 h-10 border border-[#00f0ff] flex items-center justify-center bg-black/80 shadow-[0_0_15px_rgba(0,240,255,0.25)] group-hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all">
             <div className="absolute inset-0.5 border border-[#00f0ff]/40 bg-gradient-to-br from-black to-[#05070a] flex items-center justify-center">
               <svg className="w-6 h-6 text-[#00f0ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -118,7 +132,7 @@ export default function Header() {
             <span className="text-white font-bold tracking-[0.2em] font-mono text-lg group-hover:text-[#00f0ff] transition-colors leading-none">GAMERDRIFT</span>
             <span className="text-[#ff9f00] text-[9px] font-mono tracking-[0.25em] leading-none uppercase mt-1">COMMAND_ deck v2.6</span>
           </div>
-        </Link>
+        </button>
 
         {/* Mobile controls */}
         <div className="flex items-center space-x-2 md:hidden">
@@ -387,6 +401,117 @@ export default function Header() {
                 <Link href="/auth?tab=register" onClick={() => setMobileMenuOpen(false)} className="w-full py-2 bg-[#ff9f00] border border-[#ff9f00] text-center hover:bg-[#ff9f00]/80 text-black font-bold text-xs uppercase">Join Now</Link>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Global About Modal Overlay */}
+      {aboutModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in">
+          {/* Main Modal Panel */}
+          <div className="hud-panel w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-[#0a0d14]/95 border border-[#00f0ff]/40 shadow-[0_0_35px_rgba(0,240,255,0.3)] flex flex-col p-6 font-mono text-[11px] text-slate-300 relative">
+            
+            {/* Header / Title */}
+            <div className="flex justify-between items-start border-b border-[#00f0ff]/20 pb-3 mb-4">
+              <div>
+                <span className="text-[9px] text-[#ff9f00] tracking-[0.3em] block mb-0.5">STUDIO SPECIFICATIONS DOSSIER</span>
+                <h2 className="text-xl font-extrabold text-white tracking-widest uppercase font-sans">ABOUT_GAMERDRIFT</h2>
+              </div>
+              <button
+                onClick={() => setAboutModalOpen(false)}
+                className="px-2.5 py-1 border border-neon-pink text-neon-pink hover:bg-neon-pink/20 hover:text-white transition-all text-[9px] font-bold tracking-wider font-mono rounded"
+              >
+                [ ✕ DISMISS ]
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="space-y-5 flex-grow pr-1 scrollbar-thin">
+              
+              {/* Mission */}
+              <div className="border border-slate-900 bg-black/40 p-4 rounded space-y-2">
+                <h3 className="text-xs font-black text-[#00f0ff] tracking-widest">// PLATFORM_MISSION</h3>
+                <p className="leading-relaxed text-slate-400 uppercase">
+                  GAMERDRIFT WAS FOUNDED IN 2026 AS AN ELITE EXPERIMENTAL AAA WEB STUDIOS PROJECT. OUR OBJECTIVE IS TO MERGE HIGH-FIDELITY TACTICAL DASHBOARD UX WITH LOW-LATENCY BROWSER GAMING PACKETS.
+                </p>
+                <p className="leading-relaxed text-slate-400 uppercase">
+                  WE STRIVE TO REMOVE BROWSER BOUNDARIES. BY PACKAGING DYNAMIC GRAPHICS, SECURE PERSISTENCE SHEETS, AND ADVANCED CANVAS ALGORITHMS, WE BRING ARCADE CABINET INTENSITY DIRECTLY TO YOUR DESKTOP AND MOBILE NODES.
+                </p>
+              </div>
+
+              {/* Blueprints Grid */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-black text-[#ff9f00] tracking-widest">// COMMAND_CENTER_BLUEPRINTS</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="bg-black/50 border border-slate-900/60 p-3 rounded">
+                    <span className="text-white font-bold block mb-1 uppercase font-sans">CLIENT_NODES</span>
+                    <p className="text-[10px] text-slate-500 leading-relaxed uppercase">
+                      BUILT ON NEXT.JS APP ROUTER, COMPILED VIA TSX ENGINES.
+                    </p>
+                  </div>
+                  <div className="bg-black/50 border border-slate-900/60 p-3 rounded">
+                    <span className="text-white font-bold block mb-1 uppercase font-sans">MOBILE_ADAPTER</span>
+                    <p className="text-[10px] text-slate-500 leading-relaxed uppercase">
+                      PWA CACHE ENGINES PREPARED FOR IOS & ANDROID.
+                    </p>
+                  </div>
+                  <div className="bg-black/50 border border-slate-900/60 p-3 rounded">
+                    <span className="text-white font-bold block mb-1 uppercase font-sans">DATABASE_SHIELD</span>
+                    <p className="text-[10px] text-slate-500 leading-relaxed uppercase">
+                      REAL-TIME SUPABASE POSTGRESQL RECORD SECURING.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Crew Dossier */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-black text-white tracking-widest">// OPERATIONAL_CREW_DOSSIER</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="bg-black/50 border border-slate-900/60 p-3 rounded">
+                    <span className="text-[8px] text-[#ff9f00] uppercase block">GySOP / ARCHITECT</span>
+                    <span className="text-xs font-extrabold text-white uppercase block mt-0.5 font-sans">Eva_Shaikh</span>
+                    <span className="text-[8px] text-slate-500 block mt-1 uppercase font-mono">CORE TELEMETRY SYSTEMS & INTERFACES.</span>
+                  </div>
+                  <div className="bg-black/50 border border-slate-900/60 p-3 rounded">
+                    <span className="text-[8px] text-[#00f0ff] uppercase block">TACTICAL DESIGNER</span>
+                    <span className="text-xs font-extrabold text-white uppercase block mt-0.5 font-sans">Ayaan_Shaikh</span>
+                    <span className="text-[8px] text-slate-500 block mt-1 uppercase font-mono">AMBER HUD SYSTEM & RACING LOOPS.</span>
+                  </div>
+                  <div className="bg-black/50 border border-slate-900/60 p-3 rounded">
+                    <span className="text-[8px] text-[#39ff14] uppercase block">DEV OPERATIVE</span>
+                    <span className="text-xs font-extrabold text-white uppercase block mt-0.5 font-sans">Jafer_Shaikh</span>
+                    <span className="text-[8px] text-slate-500 block mt-1 uppercase font-mono">ROGUEGHOST AI PATROLS & DB SHIELDS.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Development Timeline Logs */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-black text-white tracking-widest">// HISTORICAL_TRANSMISSION_LOGS</h3>
+                <div className="space-y-3 border-l border-[#00f0ff]/20 pl-3 ml-1.5 text-[10px]">
+                  <div>
+                    <span className="text-slate-500 font-bold block">2026.06.04 // CURRENT</span>
+                    <span className="text-white font-bold block uppercase">LAUNCHED COMMAND HUB v2.6</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 font-bold block">2026.05.15</span>
+                    <span className="text-white font-bold block uppercase">COMPLETED ROGUEGHOST AI ENGINES</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 font-bold block">2026.05.01</span>
+                    <span className="text-white font-bold block uppercase">ESTABLISHED PLATFORM ARCHITECTURE</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Bottom Footer Accent */}
+            <div className="border-t border-[#00f0ff]/10 pt-3 mt-4 text-center text-[8px] text-slate-600 tracking-wider">
+              SECURE ACCESS DECK // DRIFTER IDENTITY CONFIRMED // SYNC_OK
+            </div>
+            
           </div>
         </div>
       )}
