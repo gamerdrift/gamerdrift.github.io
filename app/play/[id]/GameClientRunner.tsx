@@ -547,6 +547,16 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      
+      // Auto resize WebGL renderer if container bounds change (e.g. entering/leaving fullscreen)
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w || canvas.height !== h) {
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+
       const delta = clock.getDelta();
 
       // Recoil recovery
@@ -839,6 +849,16 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
 
     const gameLoop = () => {
       animId = requestAnimationFrame(gameLoop);
+      
+      // Auto resize WebGL renderer if container bounds change (e.g. entering/leaving fullscreen)
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w || canvas.height !== h) {
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+
       const delta = clock.getDelta();
       const time = clock.getElapsedTime();
 
@@ -1278,6 +1298,16 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
 
     const gameLoop = () => {
       animId = requestAnimationFrame(gameLoop);
+      
+      // Auto resize WebGL renderer if container bounds change (e.g. entering/leaving fullscreen)
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w || canvas.height !== h) {
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+
       const time = clock.getElapsedTime();
 
       const dropSpeed = Math.max(0.1, 1.0 - stage * 0.08);
@@ -1421,7 +1451,8 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
                 <iframe
                   src={game.embedUrl || 'https://hextris.github.io/hextris/'}
                   className="w-full h-full border-none bg-black"
-                  allow="autoplay; gamepad; keyboard"
+                  allow="autoplay; gamepad; keyboard; fullscreen"
+                  allowFullScreen
                   sandbox="allow-scripts allow-same-origin allow-popups"
                 />
               ) : (
@@ -1675,7 +1706,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
               {relatedGames.map(game => (
-                <div key={game.id} className="aspect-[4/5] w-full">
+                <div key={game.id} className="w-full">
                   <InteractiveGameCard game={game} />
                 </div>
               ))}

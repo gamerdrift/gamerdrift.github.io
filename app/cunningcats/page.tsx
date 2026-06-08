@@ -40,6 +40,32 @@ export default function CunningCatsPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
 
+  // Fullscreen state & ref
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
+
+  const toggleFullscreen = () => {
+    const container = gameContainerRef.current;
+    if (!container) return;
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   // Game Loop Variables
   const playerX = useRef(180);
   const keys = useRef<{ [key: string]: boolean }>({});
@@ -384,15 +410,31 @@ export default function CunningCatsPage() {
     <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-black relative font-mono text-xs text-slate-300">
       <div className="absolute inset-0 bg-tactical-grid opacity-10 pointer-events-none"></div>
       
-      <div className="max-w-4xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8">
+      <div 
+        ref={gameContainerRef}
+        className={`relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 ${
+          isFullscreen 
+            ? 'fixed inset-0 w-screen h-screen z-50 p-8 bg-[#05070a] overflow-y-auto max-w-full' 
+            : 'max-w-4xl mx-auto'
+        }`}
+      >
         
         {/* Setup Selection Deck */}
         <div className="md:col-span-5 flex flex-col gap-5">
           
-          <div className="border-b border-[#ff9f00]/30 pb-3">
-            <span className="text-[9px] text-[#ff9f00] uppercase tracking-wider block">GamerDrift Operations</span>
-            <h1 className="text-2xl font-extrabold text-white tracking-widest uppercase">CUNNING_CATS</h1>
-            <span className="text-[8px] text-slate-500 uppercase mt-0.5 block">COMBAT RACING SYSTEM TERMINAL</span>
+          <div className="border-b border-[#ff9f00]/30 pb-3 flex justify-between items-end">
+            <div className="flex flex-col">
+              <span className="text-[9px] text-[#ff9f00] uppercase tracking-wider block">GamerDrift Operations</span>
+              <h1 className="text-2xl font-extrabold text-white tracking-widest uppercase">CUNNING_CATS</h1>
+              <span className="text-[8px] text-slate-500 uppercase mt-0.5 block">COMBAT RACING SYSTEM TERMINAL</span>
+            </div>
+            
+            <button
+              onClick={toggleFullscreen}
+              className="text-[10px] font-mono font-bold tracking-widest px-3 py-1.5 border border-[#ff9f00] text-[#ff9f00] hover:bg-[#ff9f00]/20 hover:text-white rounded transition-all duration-300 shadow-[0_0_10px_rgba(255,159,0,0.1)]"
+            >
+              {isFullscreen ? '[ ⛶ EXIT ]' : '[ ⛶ FULLSCREEN ]'}
+            </button>
           </div>
 
           {gameState === 'setup' && (
