@@ -156,17 +156,17 @@ export default function Header() {
       </div>
 
       {/* Main Navigation Telemetry Deck */}
-      <nav className="hidden md:flex flex-wrap justify-center items-center gap-1 my-3 md:my-0 lg:max-w-5xl">
+      <nav className="hidden md:flex flex-wrap justify-center items-center gap-2 my-3 md:my-0 lg:max-w-6xl">
         {primaryLinks.map((link) => {
           const isActive = pathname === link.href;
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`px-3 py-1.5 text-[10px] font-mono font-semibold tracking-wider uppercase border border-transparent transition-all duration-200 ${
+              className={`px-4 py-2 text-[11px] md:text-xs font-mono font-bold tracking-wider uppercase border rounded-md transition-all duration-300 ${
                 isActive 
-                  ? 'border-[#00f0ff]/30 bg-[#00f0ff]/10 text-[#00f0ff] shadow-[0_0_8px_rgba(0,240,255,0.15)]' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                  ? 'border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#00f0ff] shadow-[0_0_12px_rgba(0,240,255,0.2)]' 
+                  : 'border-slate-800/80 bg-[#090b11]/60 text-slate-400 hover:text-white hover:border-[#00f0ff]/30 hover:bg-[#00f0ff]/5'
               }`}
             >
               {link.name}
