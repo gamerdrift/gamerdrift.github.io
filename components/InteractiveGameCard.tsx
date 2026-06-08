@@ -1,38 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useGames, GameSubmission } from '../lib/state/GameContext';
-import { useUser } from '../lib/state/UserContext';
+import { GameSubmission } from '../lib/state/GameContext';
 
 export default function InteractiveGameCard({ game }: { game: GameSubmission }) {
-  const { isFavorite, addFavorite, removeFavorite } = useGames();
-  const { user, gainXP } = useUser();
-  const [copied, setCopied] = useState(false);
-
-  const favorited = isFavorite(game.id);
-
-  const toggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (favorited) {
-      removeFavorite(game.id);
-    } else {
-      addFavorite(game.id);
-      if (user) gainXP(10); // Award XP for adding to favorites
-    }
-  };
-
-  const shareGame = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const url = `${window.location.origin}/play/${game.id}/`;
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true);
-      if (user) gainXP(5); // Award XP for sharing
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   return (
     <Link 
@@ -71,31 +43,6 @@ export default function InteractiveGameCard({ game }: { game: GameSubmission }) 
           )}
         </div>
 
-        <div className="absolute top-3 right-3 flex space-x-1.5 z-20">
-          {/* Favorite Button */}
-          <button
-            onClick={toggleFavorite}
-            className={`w-7 h-7 border rounded flex items-center justify-center text-xs transition-all ${
-              favorited 
-                ? 'bg-[#ff9f00]/15 border-[#ff9f00] text-[#ff9f00] shadow-[0_0_10px_rgba(255,159,0,0.3)]' 
-                : 'bg-black/85 border-slate-800 text-white hover:border-[#ff9f00] hover:text-[#ff9f00] hover:scale-105'
-            }`}
-            title={favorited ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            {favorited ? '❤️' : '♡'}
-          </button>
-
-          {/* Share Button */}
-          <button
-            onClick={shareGame}
-            className={`w-7 h-7 border rounded flex items-center justify-center text-[10px] transition-all bg-black/85 border-slate-800 text-white hover:border-[#00f0ff] hover:text-[#00f0ff] hover:scale-105 ${
-              copied ? 'border-[#00f0ff] text-[#00f0ff] shadow-[0_0_10px_rgba(0,240,255,0.3)]' : ''
-            }`}
-            title="Copy Link"
-          >
-            {copied ? '✓' : '🔗'}
-          </button>
-        </div>
       </div>
       
       {/* Bottom Details Panel (Not positioned on top of image, dynamic height) */}
