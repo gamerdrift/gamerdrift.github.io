@@ -81,19 +81,11 @@ export default function Home() {
 
         {/* LOGO */}
         <div className="w-full flex justify-start -mb-6">
-          <button 
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent('open-about-modal'));
-            }}
-            className="border-none bg-transparent p-0 focus:outline-none cursor-pointer"
-            title="Open Studio Dossier"
-          >
-            <img 
-              src="/Mylogo_CyberpunkStyle.png" 
-              alt="GamerDrift Cyberpunk Logo" 
-              className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)] hover:scale-[1.02] transition-transform" 
-            />
-          </button>
+          <img 
+            src="/Mylogo_CyberpunkStyle.png" 
+            alt="GamerDrift Cyberpunk Logo" 
+            className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
+          />
         </div>
 
         {/* HERO SECTION */}
