@@ -37,7 +37,7 @@ export default function InteractiveGameCard({ game }: { game: GameSubmission }) 
   return (
     <Link 
       href={game.url}
-      className="group relative w-full flex flex-col rounded-xl overflow-hidden border border-[#00f0ff]/20 bg-[#0c0f16]/95 hover:border-[#00f0ff] hover:shadow-[0_0_25px_rgba(0,240,255,0.3)] transition-all duration-500 cursor-pointer hover:-translate-y-1.5 hover:scale-[1.02] transform"
+      className="group relative w-full flex flex-col rounded-xl overflow-hidden border border-white/10 bg-[#0d1117] hover:border-[#00f0ff]/60 hover:shadow-[0_0_30px_rgba(0,240,255,0.2)] transition-all duration-500 cursor-pointer hover:-translate-y-2 hover:scale-[1.02] transform"
     >
       {/* Poster Image Container */}
       <div className="relative w-full aspect-square overflow-hidden bg-black/60 border-b border-[#00f0ff]/15">
@@ -48,12 +48,8 @@ export default function InteractiveGameCard({ game }: { game: GameSubmission }) 
           className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700" 
         />
         
-        {/* Cyber Gradient Overlay on image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-
-        {/* Cyber Scanline Grid Overlay */}
-        <div className="absolute inset-0 bg-tactical-grid opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-500"></div>
-        <div className="absolute inset-0 scanlines opacity-5 pointer-events-none group-hover:opacity-15 transition-opacity duration-500"></div>
+        {/* Subtle gradient overlay for depth only - no grid/scanlines */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
 
         {/* Decorative HUD Corner Bracket Marks on Hover */}
         <div className="absolute inset-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
@@ -107,29 +103,29 @@ export default function InteractiveGameCard({ game }: { game: GameSubmission }) 
         
         <div className="flex flex-col gap-1.5">
           {/* Play counts and Ratings stars */}
-          <div className="flex justify-between items-center text-[8px] text-slate-500 font-bold tracking-widest font-mono">
-            <span className="flex items-center gap-1 text-[#ff9f00]">
-              ⭐️ {game.rating > 0 ? game.rating : 'N/A'}
+          <div className="flex justify-between items-center text-[9px] text-slate-500 font-semibold tracking-wide">
+            <span className="flex items-center gap-1 text-amber-400 font-bold">
+              ⭐ {game.rating > 0 ? game.rating : 'N/A'}
             </span>
-            <span className="group-hover:text-slate-400">
-              👁️ {game.plays.toLocaleString()} PLAYS
+            <span className="group-hover:text-slate-300 transition-colors">
+              👁 {game.plays.toLocaleString()}
             </span>
           </div>
 
-          {/* Title - Orbitron / Space Grotesk */}
-          <h3 className="text-xs md:text-sm font-extrabold text-white tracking-widest group-hover:text-[#00f0ff] transition-colors duration-300 uppercase leading-snug font-sans">
+          {/* Title - bold, clear, readable */}
+          <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-[#00f0ff] transition-colors duration-300 leading-snug font-sans">
             {game.title}
           </h3>
           
-          {/* Description - wraps on hover instead of truncating */}
-          <p className="text-[10px] text-slate-500 leading-normal uppercase line-clamp-2 group-hover:line-clamp-none group-hover:text-slate-300 transition-all duration-300">
-            {game.description || 'Access terminal files and download static gameplay frame.'}
+          {/* Description - clean, sentence case, readable */}
+          <p className="text-[10px] text-slate-400 leading-relaxed line-clamp-2 group-hover:line-clamp-none group-hover:text-slate-200 transition-all duration-300">
+            {game.description || 'Click to launch this game.'}
           </p>
         </div>
 
         {/* Play CTA Button */}
-        <div className="w-full mt-2 py-2 bg-[#00f0ff]/5 border border-[#00f0ff]/20 group-hover:bg-[#00f0ff]/15 group-hover:border-[#00f0ff] rounded flex items-center justify-center text-[9px] font-black tracking-widest text-[#00f0ff] uppercase shadow-[inset_0_0_6px_rgba(0,240,255,0.05)] group-hover:shadow-[0_0_12px_rgba(0,240,255,0.25)] transition-all duration-300 font-mono">
-          🚀 INITIALIZE CABINET 🚀
+        <div className="w-full mt-2.5 py-2.5 bg-gradient-to-r from-[#00f0ff]/10 to-[#0066ff]/10 border border-[#00f0ff]/25 group-hover:from-[#00f0ff]/20 group-hover:to-[#0066ff]/20 group-hover:border-[#00f0ff]/70 rounded-lg flex items-center justify-center gap-2 text-[10px] font-bold tracking-widest text-[#00f0ff] uppercase shadow-none group-hover:shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all duration-300 font-sans">
+          <span className="text-sm">▶</span> PLAY NOW
         </div>
       </div>
     </Link>

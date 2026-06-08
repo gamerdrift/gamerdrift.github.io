@@ -11,7 +11,7 @@ export default function GamesPage() {
   const liveGamesCount = games.filter(g => g.approved).length;
 
   return (
-    <div className="w-full min-h-screen py-12 px-4 md:px-8 bg-cyber-grid flex flex-col items-center">
+    <div className="w-full min-h-screen py-12 px-4 md:px-8 bg-[#05070a] flex flex-col items-center">
       <div className="w-full max-w-6xl flex flex-col items-center">
         
         {/* Page Header HUD */}
