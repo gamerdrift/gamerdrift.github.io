@@ -80,56 +80,57 @@ export default function Home() {
         </div>
 
         {/* HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start border-b border-slate-900 pb-12">
-          {/* Hero Left Side */}
-          <div className="lg:col-span-6 space-y-6">
-            {/* LOGO */}
-            <div className="w-full flex justify-start -mb-2">
-              <img 
-                src="/Mylogo_CyberpunkStyle.png" 
-                alt="GamerDrift Cyberpunk Logo" 
-                className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
-              />
-            </div>
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start border-b border-slate-900 pb-12">
+          
+          {/* Hero Left Side: Logo */}
+          <div className="lg:col-span-3 w-full flex justify-start">
+            <img 
+              src="/Mylogo_CyberpunkStyle.png" 
+              alt="GamerDrift Cyberpunk Logo" 
+              className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
+            />
+          </div>
 
-            <div className="space-y-2">
-              <span className="text-[10px] text-[#ff9f00] tracking-[0.35em] uppercase font-bold block">TACTICAL MULTIPLAYER INTERFACE</span>
-              <h1 className="text-4xl md:text-6xl font-black text-white tracking-widest font-sans uppercase leading-none">
+          {/* Hero Middle Side: Information block (placed between Logo and Map tile) */}
+          <div className="lg:col-span-3 flex flex-col justify-start space-y-4">
+            <div className="space-y-1.5">
+              <span className="text-[8.5px] text-[#ff9f00] tracking-[0.25em] uppercase font-bold block">TACTICAL MULTIPLAYER INTERFACE</span>
+              <h1 className="text-2xl md:text-3xl font-black text-white tracking-widest font-sans uppercase leading-none">
                 ENTER THE <span className="text-[#00f0ff] hologram-text">DRIFT</span>
               </h1>
-              <p className="text-slate-400 text-xs md:text-sm font-sans uppercase leading-relaxed max-w-lg mt-3">
+              <p className="text-slate-400 text-[10px] font-sans uppercase leading-relaxed max-w-[260px] mt-2">
                 Race. Fight. Conquer. Experience the next generation of competitive gaming networks with GamerDrift. Secure tactical command slots now.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-wrap gap-2 pt-1">
               <Link 
                 href="/games" 
-                className="px-6 py-3.5 bg-[#00f0ff] hover:bg-[#00f0ff]/80 text-black font-sans font-bold tracking-widest text-xs uppercase shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all"
+                className="px-4 py-2.5 bg-[#00f0ff] hover:bg-[#00f0ff]/80 text-black font-sans font-bold tracking-widest text-[9px] uppercase shadow-[0_0_10px_rgba(0,240,255,0.25)] transition-all"
               >
                 PLAY NOW
               </Link>
               <Link 
                 href="/community" 
-                className="px-6 py-3.5 bg-transparent border border-slate-700 hover:border-[#ff9f00] hover:text-[#ff9f00] text-slate-400 font-sans font-bold tracking-widest text-xs uppercase transition-all"
+                className="px-4 py-2.5 bg-transparent border border-slate-700 hover:border-[#ff9f00] hover:text-[#ff9f00] text-slate-400 font-sans font-bold tracking-widest text-[9px] uppercase transition-all"
               >
                 JOIN COMMUNITY
               </Link>
             </div>
 
             {/* Quick Metrics display */}
-            <div className="grid grid-cols-3 gap-4 border-t border-slate-900 pt-6 max-w-md">
+            <div className="grid grid-cols-3 gap-2 border-t border-slate-900 pt-4 max-w-[260px]">
               <div>
-                <span className="text-slate-600 block text-[9px] uppercase">OPERATIONAL_NODES</span>
-                <span className="text-white text-base font-extrabold">{activeGamesCount}+ ONLINE</span>
+                <span className="text-slate-600 block text-[8px] uppercase">NODES</span>
+                <span className="text-white text-xs font-extrabold">{activeGamesCount}+ ON</span>
               </div>
               <div>
-                <span className="text-slate-600 block text-[9px] uppercase">MATCH_LATENCY</span>
-                <span className="text-[#39ff14] text-base font-extrabold">&lt; 15ms</span>
+                <span className="text-slate-600 block text-[8px] uppercase">LATENCY</span>
+                <span className="text-[#39ff14] text-xs font-extrabold">&lt; 15ms</span>
               </div>
               <div>
-                <span className="text-slate-600 block text-[9px] uppercase">COMM_ENCRYPT</span>
-                <span className="text-[#ff9f00] text-base font-extrabold">AES-256</span>
+                <span className="text-slate-600 block text-[8px] uppercase">ENCRYPT</span>
+                <span className="text-[#ff9f00] text-xs font-extrabold">AES-255</span>
               </div>
             </div>
           </div>
