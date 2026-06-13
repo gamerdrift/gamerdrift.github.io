@@ -1213,7 +1213,7 @@ export default function TacticalWorldMap() {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-widest text-white text-xs uppercase">GD COMMAND // SATELLITE HUD FEED</span>
+              <span className="font-extrabold tracking-widest text-white text-xs uppercase">GamerDrift // LIVE CHAT-HUB</span>
               <span className="text-[7.5px] bg-[#ff3333]/15 text-[#ff3333] px-1 border border-[#ff3333]/30 font-bold tracking-wider rounded animate-pulse">SECURE FEED</span>
             </div>
             <span className="text-[8.5px] text-slate-500 uppercase tracking-widest">DRIFT_LINK: ONLINE // ENCRYPTION METHOD: SEC-QUANTUM-AES</span>
