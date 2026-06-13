@@ -2,12 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [ping, setPing] = useState(14);
   const [activeNodes, setActiveNodes] = useState(1024);
+
+  if (pathname === '/chat-hub') return null;
 
   useEffect(() => {
     const interval = setInterval(() => {

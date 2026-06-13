@@ -12,6 +12,8 @@ export default function Header() {
   const { games } = useGames();
   const { user, logout } = useUser();
 
+  if (pathname === '/chat-hub') return null;
+
   // Navigation Structure
   const primaryLinks = [
     { name: 'Home', href: '/' },
