@@ -1249,16 +1249,19 @@ export default function TacticalWorldMap() {
             {isFullscreen ? '⏹️ EXIT CMD' : '📺 FULL CONSOLE'}
           </button>
 
-          {/* Chat toggle button */}
+          {/* Open Region ChatRoom Button */}
           <button
             onClick={() => {
               setIsChatOpen(!isChatOpen);
               triggerBeep(900, 0.08);
             }}
-            style={{ borderColor: activeColorHex }}
-            className="px-2 py-1 bg-black/60 border hover:bg-slate-900 text-slate-400 hover:text-white font-bold rounded uppercase flex items-center gap-1 transition-all"
+            style={{ 
+              borderColor: activeColorHex,
+              boxShadow: `0 0 14px ${activeColorHex}50, inset 0 0 8px ${activeColorHex}25`
+            }}
+            className="px-3 py-1 bg-black/90 border-2 text-white font-black uppercase tracking-widest rounded hover:bg-slate-900 transition-all text-[9.5px] cursor-pointer"
           >
-            💬 CHATHUB {isChatOpen ? '[ACTIVE]' : '[UPLINK]'}
+            💬 OPEN REGION CHATROOM [ {activeRoom} ]
           </button>
 
           {/* Audio interface controls */}
@@ -1681,17 +1684,7 @@ export default function TacticalWorldMap() {
               </button>
             </form>
 
-            {/* JOIN CHATHUB BUTTON */}
-            <button
-              onClick={() => {
-                setIsChatOpen(true);
-                triggerBeep(900, 0.08);
-              }}
-              style={{ borderColor: activeColorHex }}
-              className="w-full mt-1 py-1 bg-black/40 hover:bg-slate-900 border text-center text-slate-400 hover:text-white font-bold rounded uppercase transition-all text-[8px] tracking-wider"
-            >
-              💬 OPEN REGION CHATROOM [ {activeRoom} ]
-            </button>
+
 
             <div className="flex gap-1 overflow-x-auto scrollbar-none py-1 border-t border-slate-900/60 mt-1.5">
               {STRATEGIC_LOCATIONS.slice(0, 4).map((loc, idx) => (
