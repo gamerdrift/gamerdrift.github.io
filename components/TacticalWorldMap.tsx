@@ -350,9 +350,9 @@ const RadarCanvas = ({ themeColor }: { themeColor: string }) => {
   }, [themeColor]);
   
   return (
-    <div className="relative p-1 bg-black/40 border border-slate-900 rounded-lg">
-      <canvas ref={canvasRef} width={150} height={150} className="mx-auto block" />
-      <div className="absolute top-1 right-2 text-[7px] text-slate-500 font-mono tracking-widest uppercase">SWEEP: ACTIVE</div>
+    <div className="relative p-0.5 bg-black/40 border border-slate-900 rounded-lg">
+      <canvas ref={canvasRef} width={105} height={105} className="mx-auto block" />
+      <div className="absolute top-0.5 right-1.5 text-[6.5px] text-slate-500 font-mono tracking-widest uppercase">SWEEP: ACTIVE</div>
     </div>
   );
 };
@@ -368,10 +368,10 @@ const TelemetryGraph = ({ themeColor }: { themeColor: string }) => {
     if (!ctx) return;
     
     let animationId: number;
-    const bars = 22;
-    const width = 6;
-    const gap = 2;
-    const heights = Array(bars).fill(0).map(() => Math.random() * 20 + 5);
+    const bars = 20;
+    const width = 5;
+    const gap = 1.5;
+    const heights = Array(bars).fill(0).map(() => Math.random() * 16 + 4);
     
     const draw = () => {
       if (!canvas || !ctx) return;
@@ -379,18 +379,18 @@ const TelemetryGraph = ({ themeColor }: { themeColor: string }) => {
       
       ctx.fillStyle = `${themeColor}bb`;
       for (let i = 0; i < bars; i++) {
-        heights[i] += (Math.random() - 0.5) * 4;
-        if (heights[i] < 3) heights[i] = 3;
-        if (heights[i] > canvas.height - 4) heights[i] = canvas.height - 4;
+        heights[i] += (Math.random() - 0.5) * 3;
+        if (heights[i] < 2) heights[i] = 2;
+        if (heights[i] > canvas.height - 3) heights[i] = canvas.height - 3;
         
-        const x = i * (width + gap) + 6;
+        const x = i * (width + gap) + 4;
         const y = canvas.height - heights[i];
         
         ctx.fillRect(x, y, width, heights[i]);
         
         // draw peak marker
         ctx.fillStyle = themeColor;
-        ctx.fillRect(x, y - 1.5, width, 1);
+        ctx.fillRect(x, y - 1, width, 1);
         ctx.fillStyle = `${themeColor}bb`;
       }
       
@@ -402,7 +402,7 @@ const TelemetryGraph = ({ themeColor }: { themeColor: string }) => {
   }, [themeColor]);
   
   return (
-    <canvas ref={canvasRef} width={180} height={35} className="bg-black/50 border border-slate-900/60 rounded block mx-auto" />
+    <canvas ref={canvasRef} width={135} height={25} className="bg-black/50 border border-slate-900/60 rounded block mx-auto" />
   );
 };
 
@@ -968,7 +968,7 @@ export default function TacticalWorldMap() {
     <div className={`
       ${isFullscreen 
         ? 'fixed inset-0 z-50 bg-[#03060a] p-4 flex flex-col w-screen h-screen font-mono text-[11px] text-slate-300' 
-        : 'w-full flex flex-col bg-black border border-slate-900 font-mono text-[11px] text-slate-300 relative select-none rounded-lg shadow-2xl h-[650px] lg:h-[720px] overflow-hidden'
+        : 'w-full flex flex-col bg-black border border-slate-900 font-mono text-[11px] text-slate-300 relative select-none rounded-lg shadow-2xl h-[680px] lg:h-[760px] overflow-hidden'
       }
       transition-all duration-300 select-none
     `}>
@@ -1153,356 +1153,213 @@ export default function TacticalWorldMap() {
         </div>
       </header>
 
-      {/* CORE GRID SHELL */}
-      <div className={`flex flex-col lg:flex-row flex-grow relative overflow-hidden ${isDegaussing ? 'degauss-effect' : ''}`}>
+      {/* CORE SPLIT SCREEN */}
+      <div className={`flex flex-col flex-grow relative overflow-hidden ${isDegaussing ? 'degauss-effect' : ''}`}>
         
-        {/* LEFT COLUMN: SECTOR TELEMETRY & TARGET MODULES */}
-        <div className="w-full lg:w-[270px] bg-[#05070c] border-b lg:border-b-0 lg:border-r border-slate-900 p-3 flex flex-col justify-between flex-shrink-0 gap-3 overflow-y-auto max-h-[350px] lg:max-h-none">
+        {/* TOP MAIN PORTION: 80% HEIGHT MAP SCREEN */}
+        <div className={`h-[80%] min-h-[340px] lg:min-h-[460px] relative overflow-hidden border-b border-slate-900 theme-map-${mapTheme} ${mapLayerMode === 'satellite' ? 'theme-map-sat' : ''}`}>
           
-          {/* ORBITAL TARGET TRACKING INFO */}
-          <div className="space-y-1.5">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// ORBIT TARGET METRICS</span>
-            
-            <div className="bg-black/50 border border-slate-900 p-2 rounded relative overflow-hidden">
-              {/* Telemetry line decorations */}
-              <div className="absolute top-1 right-2 text-[6.5px] text-[#00f0ff]/50 font-bold tracking-widest">FEED: SECURE</div>
-              
-              <h3 className="font-extrabold text-white text-[11px] truncate uppercase tracking-wide">
-                📍 {targetSector.name}
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-2 mt-2 font-mono text-[9px] text-slate-400">
-                <div>SECTOR ID: <span className="text-white font-bold">{targetSector.code}</span></div>
-                <div>DANGER RATIO: <span className={targetSector.dangerLevel > 70 ? 'text-[#ff3333] font-bold' : targetSector.dangerLevel > 45 ? 'text-[#ff9f00]' : 'text-[#39ff14]'}>{targetSector.dangerLevel}%</span></div>
-                <div>AIR DEFENSE: <span className="text-white font-bold">{targetSector.threatState}</span></div>
-                <div>UPLINK PING: <span className="text-white font-bold">{targetSector.latency}</span></div>
-                <div>SECTOR CORE: <span className="text-white font-bold">{targetSector.popIndex}</span></div>
-                <div>RAD MONITOR: <span className="text-[#39ff14] font-bold">{targetSector.radiation}</span></div>
-              </div>
+          <div ref={mapContainerRef} className="w-full h-full relative z-0" />
 
-              {/* Danger meter bar */}
-              <div className="w-full bg-slate-950 h-1 mt-2.5 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full ${targetSector.dangerLevel > 70 ? 'bg-[#ff3333]' : targetSector.dangerLevel > 45 ? 'bg-[#ff9f00]' : 'bg-[#39ff14]'}`}
-                  style={{ width: `${targetSector.dangerLevel}%`, transition: 'width 1s ease-out' }}
-                />
-              </div>
-
-              {/* Extra details */}
-              <div className="flex justify-between items-center text-[7.5px] text-slate-500 mt-2 border-t border-slate-900/60 pt-1.5">
-                <span>{targetSector.weather}</span>
-                <span>{targetSector.wind}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ACTIVE BEACON DEPLOYMENT COMPONENT */}
-          <div className="space-y-1.5">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// BEACON DEPLOYMENT</span>
-            <div className="bg-black/50 border border-slate-900 p-2 rounded space-y-2">
-              <span className="text-[8px] text-slate-500 uppercase block leading-relaxed">
-                CHOOSE BEACON MODULE TYPE AND CLICK ANYWHERE ON CENTRAL SCREEN MAP MATRIX TO DEPLOY ORBITAL TARGET TRACKERS.
-              </span>
-              
-              <div className="grid grid-cols-2 gap-1.5">
-                {[
-                  { id: 'comms', label: '📡 COMM LINK', border: 'border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff]/10', active: 'bg-[#00f0ff]/20 border-[#00f0ff] text-white' },
-                  { id: 'strike', label: '💥 STRIKE ZONE', border: 'border-[#ff3333]/40 text-[#ff3333] hover:bg-[#ff3333]/10', active: 'bg-[#ff3333]/20 border-[#ff3333] text-white' },
-                  { id: 'supply', label: '📦 SUPPLY DROP', border: 'border-[#39ff14]/40 text-[#39ff14] hover:bg-[#39ff14]/10', active: 'bg-[#39ff14]/20 border-[#39ff14] text-white' },
-                  { id: 'hazard', label: '⚠️ HAZARD TRCE', border: 'border-[#ff9f00]/40 text-[#ff9f00] hover:bg-[#ff9f00]/10', active: 'bg-[#ff9f00]/20 border-[#ff9f00] text-white' },
-                ].map(tool => (
-                  <button
-                    key={tool.id}
-                    onClick={() => {
-                      triggerBeep(650, 0.08);
-                      setActiveBeaconTool(activeBeaconTool === tool.id ? null : (tool.id as BeaconType));
-                    }}
-                    className={`border px-2 py-1.5 text-[8.5px] font-bold rounded flex justify-center items-center gap-1 transition-all ${
-                      activeBeaconTool === tool.id ? tool.active : tool.border
-                    }`}
-                  >
-                    {tool.label}
-                  </button>
-                ))}
-              </div>
-              
-              {activeBeaconTool && (
-                <div className="text-[8px] text-[#ff9f00] animate-pulse text-center font-bold uppercase tracking-wider">
-                  ⚠️ MAP CLICK WILL DEPLOY: {activeBeaconTool.toUpperCase()} BEACON
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ACTIVE BEACONS REGISTRY */}
-          <div className="space-y-1.5 flex-grow flex flex-col justify-start min-h-[100px]">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// SECURE CONSOLE BEACONS ({beacons.length})</span>
-            <div className="bg-black/50 border border-slate-900 rounded p-1.5 flex-grow overflow-y-auto max-h-[140px] scrollbar-none space-y-1">
-              {beacons.map(b => {
-                const color = b.type === 'strike' ? 'text-[#ff3333]' : b.type === 'supply' ? 'text-[#39ff14]' : b.type === 'hazard' ? 'text-[#ff9f00]' : 'text-[#00f0ff]';
-                return (
-                  <div key={b.id} className="flex justify-between items-center bg-slate-950/80 border border-slate-900 px-2 py-1 rounded text-[8px] text-slate-400">
-                    <span className={`font-bold uppercase ${color}`}>{b.name}</span>
-                    <div className="flex items-center gap-2">
-                      <span>[{b.coords[0].toFixed(2)}, {b.coords[1].toFixed(2)}]</span>
-                      <button
-                        onClick={() => decommissionBeacon(b.id)}
-                        className="text-red-500 hover:text-white font-bold hover:underline"
-                      >
-                        [X]
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-              {beacons.length === 0 && (
-                <div className="text-slate-700 italic text-center py-6">NO ACTIVE BEACONS DEPLOYED...</div>
-              )}
-            </div>
-          </div>
-
-          {/* STATS TELEMETRY GRAPHS */}
-          <div className="space-y-1 mt-auto pt-2 border-t border-slate-900">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// COGNITIVE HARMONIC OUTPUT</span>
-            <TelemetryGraph themeColor={activeColorHex} />
-          </div>
-
-        </div>
-
-        {/* MIDDLE SECTION: MAIN TELEMETRY CRT BIG SCREEN */}
-        <div className="flex-grow flex flex-col relative overflow-hidden bg-black">
+          {/* SCREEN DECORATION BEZELS & OVERLAYS */}
+          <div className="absolute inset-0 screen-scanlines pointer-events-none z-10 opacity-30" />
+          <div className="absolute inset-0 screen-glass-overlay pointer-events-none z-10" />
           
-          {/* CRT SCREEN CONTAINER */}
-          <div className="flex-grow relative overflow-hidden min-h-[300px]">
-            
-            {/* SCREEN LAYOUT INNER CONTAINER */}
-            <div className={`w-full h-full relative theme-map-${mapTheme} ${mapLayerMode === 'satellite' ? 'theme-map-sat' : ''}`}>
-              <div ref={mapContainerRef} className="w-full h-full relative z-0" />
-            </div>
+          {/* Screen vignetting */}
+          <div className="absolute inset-0 pointer-events-none z-10" style={{
+            boxShadow: 'inset 0 0 70px rgba(0,0,0,0.85)'
+          }} />
 
-            {/* SCREEN DECORATION BEZELS & OVERLAYS */}
-            <div className="absolute inset-0 screen-scanlines pointer-events-none z-10 opacity-30" />
-            <div className="absolute inset-0 screen-glass-overlay pointer-events-none z-10" />
-            
-            {/* Screen vignetting vignette */}
-            <div className="absolute inset-0 pointer-events-none z-10" style={{
-              boxShadow: 'inset 0 0 70px rgba(0,0,0,0.85)'
+          {/* Global crosshair reticle overlay */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 flex flex-col items-center justify-center opacity-40">
+            <div className="w-14 h-14 border border-dashed rounded-full animate-spin" style={{
+              borderColor: activeColorHex,
+              animationDuration: '18s'
             }} />
-
-            {/* Global crosshair reticle overlay */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 flex flex-col items-center justify-center opacity-40">
-              <div className="w-14 h-14 border border-dashed rounded-full animate-spin" style={{
-                borderColor: activeColorHex,
-                animationDuration: '18s'
-              }} />
-              <div className="w-2.5 h-2.5 rounded-full absolute" style={{
-                backgroundColor: activeColorHex
-              }} />
-              <div className="w-20 h-0.5 absolute" style={{ background: `linear-gradient(90deg, transparent, ${activeColorHex}, transparent)` }} />
-              <div className="w-0.5 h-20 absolute" style={{ background: `linear-gradient(180deg, transparent, ${activeColorHex}, transparent)` }} />
-            </div>
-
-            {/* Radar sweep indicator indicator */}
-            {activeSweep && (
-              <div className="absolute inset-0 pointer-events-none z-15 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse flex items-center justify-center">
-                <div className="text-[11px] font-black uppercase text-[#ff3333] tracking-widest bg-black/85 px-4 py-2 border-2 border-[#ff3333] shadow-[0_0_15px_rgba(255,51,51,0.25)] rounded">
-                  ☣️ SONAR VIEWPORT MATRIX SCANNING...
-                </div>
-              </div>
-            )}
-
-            {/* Map overlays / zoom adjustments HUD controls */}
-            <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
-              <button
-                onClick={() => handleZoom('in')}
-                className="w-8 h-8 bg-black/85 border border-slate-800 hover:border-[#00f0ff] text-white flex items-center justify-center font-bold text-sm rounded shadow-lg hover:text-[#00f0ff] transition-all"
-              >
-                +
-              </button>
-              <button
-                onClick={() => handleZoom('out')}
-                className="w-8 h-8 bg-black/85 border border-slate-800 hover:border-[#00f0ff] text-white flex items-center justify-center font-bold text-sm rounded shadow-lg hover:text-[#00f0ff] transition-all"
-              >
-                -
-              </button>
-            </div>
-
-            {/* Floating screen labels indicators */}
-            <div className="absolute bottom-3 left-3 z-20 bg-black/80 border border-slate-800/80 px-2.5 py-1.5 rounded text-[8.5px] text-slate-400 space-y-0.5 shadow-lg">
-              <div>TARGET COORDS: <span className="text-white font-bold">{coords.lat.toFixed(4)}°N, {coords.lng.toFixed(4)}°E</span></div>
-              <div>MAP RESOLUTION: <span className="text-[#00f0ff] font-bold">GRID_LEVEL {zoomLevel}</span></div>
-            </div>
-
-            {/* Interactive Drawing Cursor Warning */}
-            {activeBeaconTool && (
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-black/85 border border-[#ff9f00]/60 px-4 py-1.5 text-[9px] text-[#ff9f00] uppercase font-bold rounded animate-pulse shadow-lg tracking-wider">
-                🎯 SELECT TARGET ON MAP TO DEPLOY {activeBeaconTool.toUpperCase()} BEACON
-              </div>
-            )}
-
+            <div className="w-2.5 h-2.5 rounded-full absolute" style={{
+              backgroundColor: activeColorHex
+            }} />
+            <div className="w-20 h-0.5 absolute" style={{ background: `linear-gradient(90deg, transparent, ${activeColorHex}, transparent)` }} />
+            <div className="w-0.5 h-20 absolute" style={{ background: `linear-gradient(180deg, transparent, ${activeColorHex}, transparent)` }} />
           </div>
 
-          {/* LOWER INTERACTION DECK FOR LAYERS CONTROLS */}
-          <div className="bg-[#05070a] border-t border-slate-900 px-4 py-2.5 flex flex-wrap justify-between items-center gap-3 relative z-20 flex-shrink-0">
-            
-            {/* Mapping Layers Mode Selection */}
-            <div className="flex items-center gap-2">
-              <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider">// DISPLAY SYSTEM:</span>
-              <div className="flex border border-slate-800 rounded overflow-hidden">
-                <button
-                  onClick={() => { setMapLayerMode('vector'); triggerBeep(900, 0.05); }}
-                  className={`px-3 py-1 text-[8.5px] font-bold uppercase ${
-                    mapLayerMode === 'vector' 
-                      ? 'bg-slate-900 text-[#00f0ff] font-black' 
-                      : 'bg-black/60 text-slate-500 hover:text-white'
-                  }`}
-                >
-                  🟢 CYBER GRID
-                </button>
-                <button
-                  onClick={() => { setMapLayerMode('satellite'); triggerBeep(900, 0.05); }}
-                  className={`px-3 py-1 text-[8.5px] font-bold uppercase ${
-                    mapLayerMode === 'satellite' 
-                      ? 'bg-slate-900 text-[#00f0ff] font-black' 
-                      : 'bg-black/60 text-slate-500 hover:text-white'
-                  }`}
-                >
-                  🛰️ ORBITAL FEED
-                </button>
+          {/* Radar sweep scan scan */}
+          {activeSweep && (
+            <div className="absolute inset-0 pointer-events-none z-15 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse flex items-center justify-center">
+              <div className="text-[11px] font-black uppercase text-[#ff3333] tracking-widest bg-black/85 px-4 py-2 border-2 border-[#ff3333] shadow-[0_0_15px_rgba(255,51,51,0.25)] rounded">
+                ☣️ SONAR VIEWPORT MATRIX SCANNING...
               </div>
             </div>
+          )}
 
-            {/* Labels overlay visibility */}
-            <div className="flex items-center gap-2">
-              <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider">// REFERENCE OVERLAY:</span>
-              <button
-                onClick={() => { setShowLabels(!showLabels); triggerBeep(700, 0.05); }}
-                className={`border rounded px-3 py-1 text-[8.5px] font-bold uppercase transition-all ${
-                  showLabels 
-                    ? 'bg-black border-[#00f0ff] text-[#00f0ff] font-black shadow-[0_0_8px_rgba(0,240,255,0.15)]' 
-                    : 'bg-black/40 border-slate-800 text-slate-500 hover:border-slate-700'
-                }`}
-              >
-                🗺️ COMM NET LABELS: {showLabels ? 'ON' : 'OFF'}
-              </button>
-            </div>
-
-            {/* Active sweep radar trigger */}
-            <div>
-              <button
-                onClick={triggerSonarSweep}
-                disabled={activeSweep}
-                className={`px-4 py-1.5 border rounded font-black tracking-wider uppercase text-[8.5px] transition-all ${
-                  activeSweep 
-                    ? 'bg-red-950/20 border-red-500 text-red-500' 
-                    : 'bg-black/85 border-[#ff3333]/40 text-[#ff3333] hover:bg-[#ff3333]/10 hover:border-[#ff3333] hover:shadow-[0_0_12px_rgba(255,51,51,0.15)]'
-                }`}
-              >
-                ☢️ RUN SONAR SWEEP
-              </button>
-            </div>
-
+          {/* Map floating controls HUD overlay */}
+          <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
+            <button
+              onClick={() => handleZoom('in')}
+              className="w-8 h-8 bg-black/85 border border-slate-800 hover:border-[#00f0ff] text-white flex items-center justify-center font-bold text-sm rounded shadow-lg hover:text-[#00f0ff] transition-all"
+            >
+              +
+            </button>
+            <button
+              onClick={() => handleZoom('out')}
+              className="w-8 h-8 bg-black/85 border border-slate-800 hover:border-[#00f0ff] text-white flex items-center justify-center font-bold text-sm rounded shadow-lg hover:text-[#00f0ff] transition-all"
+            >
+              -
+            </button>
           </div>
+
+          {/* Active beacon placement tip overlay */}
+          {activeBeaconTool && (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-black/85 border border-[#ff9f00]/60 px-4 py-1.5 text-[9px] text-[#ff9f00] uppercase font-bold rounded animate-pulse shadow-lg tracking-wider">
+              🎯 SELECT TARGET ON MAP TO DEPLOY {activeBeaconTool.toUpperCase()} BEACON
+            </div>
+          )}
 
         </div>
 
-        {/* RIGHT COLUMN: RADAR SYSTEMS, SHORTCUT JUMPS, REALTIME LOGS */}
-        <div className="w-full lg:w-[270px] bg-[#05070c] border-t lg:border-t-0 lg:border-l border-slate-900 p-3 flex flex-col justify-between flex-shrink-0 gap-3 overflow-y-auto max-h-[420px] lg:max-h-none">
+        {/* BOTTOM DECK: 20% HEIGHT INFORMATION & SYSTEMS CONTROL BAR */}
+        <div className="h-[20%] min-h-[135px] max-h-[175px] bg-[#040609] p-2.5 z-10 flex flex-row items-center justify-between gap-4 overflow-x-auto scrollbar-none select-none">
           
-          {/* RADAR WIDGET DISPLAY */}
-          <div className="space-y-1.5">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// STRATEGIC RADAR SWEEP</span>
+          {/* PANEL 1: CIRCULAR STRATEGIC RADAR SWEEP */}
+          <div className="flex-shrink-0 flex items-center justify-center border-r border-slate-900/80 pr-4 h-full">
             <RadarCanvas themeColor={activeColorHex} />
           </div>
 
-          {/* SATELLITE TACTICAL INTERCEPT COORDS JUMP */}
-          <div className="space-y-1.5">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// SHORTCUT TACTICAL NETWORKS</span>
-            <div className="grid grid-cols-2 gap-1.5">
-              {STRATEGIC_LOCATIONS.map((loc, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSectorJump(loc)}
-                  className="bg-slate-950 hover:bg-black border border-slate-900 hover:border-[#00f0ff]/50 px-2 py-1.5 text-[8.5px] text-slate-400 hover:text-white rounded truncate transition-all text-left flex items-center gap-1.5"
-                >
-                  <span>📡</span>
-                  <span className="truncate">{loc.name.split(' ')[0]}</span>
-                </button>
-              ))}
+          {/* PANEL 2: ACTIVE TARGET COGNITIVE TELEMETRY */}
+          <div className="flex-shrink-0 w-[240px] border-r border-slate-900/80 pr-4 h-full flex flex-col justify-center gap-1">
+            <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-widest block">// TARGET TELEMETRY</span>
+            <h3 className="font-extrabold text-white text-[10.5px] truncate uppercase tracking-wide">
+              📍 {targetSector.name}
+            </h3>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 font-mono text-[8px] text-slate-400">
+              <div>SEC ID: <span className="text-white font-bold">{targetSector.code}</span></div>
+              <div>DANGER: <span className={targetSector.dangerLevel > 70 ? 'text-[#ff3333] font-bold' : targetSector.dangerLevel > 45 ? 'text-[#ff9f00]' : 'text-[#39ff14]'}>{targetSector.dangerLevel}%</span></div>
+              <div>AIR DEF: <span className="text-white font-bold">{targetSector.threatState}</span></div>
+              <div>PING: <span className="text-white font-bold">{targetSector.latency}</span></div>
+              <div>CORE: <span className="text-white font-bold">{targetSector.popIndex}</span></div>
+              <div>COORD: <span className="text-white font-bold">{coords.lat.toFixed(2)}N / {coords.lng.toFixed(2)}E</span></div>
             </div>
           </div>
 
-          {/* TARGET LOCATOR SEARCH */}
-          <div className="space-y-1.5">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// REGION/CITY LOCATOR</span>
-            <form onSubmit={handleSearch} className="flex gap-1.5">
+          {/* PANEL 3: REGION LOCATOR & SHORTCUT NETWORK COORDS */}
+          <div className="flex-shrink-0 w-[220px] border-r border-slate-900/80 pr-4 h-full flex flex-col justify-center gap-1.5">
+            <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-widest block">// REGION LOCATOR & JUMPS</span>
+            <form onSubmit={handleSearch} className="flex gap-1">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="CITY, COUNTRY, CONTINENT..."
+                placeholder="CITY, COUNTRY..."
                 disabled={searchLoading}
-                className="flex-grow bg-slate-950 border border-slate-900 focus:border-[#00f0ff] rounded px-2 py-1.5 text-white placeholder-slate-700 focus:outline-none text-[9px]"
+                className="flex-grow bg-slate-950 border border-slate-900 focus:border-[#00f0ff] rounded px-1.5 py-0.5 text-white placeholder-slate-700 focus:outline-none text-[8.5px]"
               />
               <button
                 type="submit"
                 disabled={searchLoading}
-                className="px-2.5 bg-black hover:bg-slate-900 border border-slate-900 hover:border-[#00f0ff] text-[#00f0ff] text-[8.5px] font-bold tracking-wider rounded disabled:opacity-40 uppercase"
+                className="px-2 bg-black hover:bg-slate-900 border border-slate-900 hover:border-[#00f0ff] text-[#00f0ff] text-[8px] font-bold tracking-wider rounded disabled:opacity-40 uppercase"
               >
-                {searchLoading ? 'LOCATING...' : 'LOCK'}
+                {searchLoading ? '...' : 'LOCK'}
               </button>
             </form>
-          </div>
-
-          {/* CONFIG FILTER LAYERS */}
-          <div className="space-y-1.5">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// MONITOR PROFILE FILTER</span>
-            <div className="grid grid-cols-4 gap-1">
-              {[
-                { id: 'cyan', label: 'CYAN', color: 'bg-[#00f0ff]' },
-                { id: 'green', label: 'PHOS', color: 'bg-[#39ff14]' },
-                { id: 'amber', label: 'AMBR', color: 'bg-[#ff9f00]' },
-                { id: 'red', label: 'WARN', color: 'bg-[#ff3333]' },
-              ].map(th => (
+            <div className="flex gap-1 overflow-x-auto scrollbar-none py-0.5">
+              {STRATEGIC_LOCATIONS.slice(0, 4).map((loc, idx) => (
                 <button
-                  key={th.id}
-                  onClick={() => {
-                    setMapTheme(th.id as any);
-                    triggerBeep(800, 0.05);
-                    addLog(`SYS: MONITOR PROFILE UPDATED: ${th.label}`);
-                  }}
-                  className={`border py-1 text-[7.5px] font-bold rounded flex flex-col items-center gap-1 transition-all ${
-                    mapTheme === th.id 
-                      ? 'bg-slate-900 border-white text-white font-black' 
-                      : 'bg-black/60 border-slate-900 text-slate-500 hover:border-slate-800'
-                  }`}
+                  key={idx}
+                  onClick={() => handleSectorJump(loc)}
+                  className="bg-slate-950 hover:bg-black border border-slate-900 hover:border-[#00f0ff]/50 px-1 py-0.5 text-[7.5px] text-slate-400 hover:text-white rounded truncate flex-shrink-0"
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${th.color}`} />
-                  {th.label}
+                  📡 {loc.name.split(' ')[0]}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* TERMINAL TELEMETRY READOUT LOGS */}
-          <div className="flex-grow flex flex-col justify-end space-y-1.5 min-h-[90px] pt-1.5 border-t border-slate-900">
-            <span className="text-[8.5px] font-bold text-slate-500 uppercase tracking-widest block">// LOG TELEMETRY OUTPUT</span>
-            <div className="bg-slate-950/80 border border-slate-900 p-2 rounded h-20 overflow-y-auto flex flex-col gap-0.5 select-text scrollbar-none font-mono text-[8px] leading-tight">
+          {/* PANEL 4: BEACON COMMAND DECK */}
+          <div className="flex-shrink-0 w-[240px] border-r border-slate-900/80 pr-4 h-full flex flex-col justify-center gap-1">
+            <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-widest block">// BEACON OPERATIONS</span>
+            <div className="grid grid-cols-4 gap-1">
+              {[
+                { id: 'comms', label: 'COMM', border: 'border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff]/5', active: 'bg-[#00f0ff]/20 border-[#00f0ff] text-white' },
+                { id: 'strike', label: 'STRIKE', border: 'border-[#ff3333]/40 text-[#ff3333] hover:bg-[#ff3333]/5', active: 'bg-[#ff3333]/20 border-[#ff3333] text-white' },
+                { id: 'supply', label: 'SPLY', border: 'border-[#39ff14]/40 text-[#39ff14] hover:bg-[#39ff14]/5', active: 'bg-[#39ff14]/20 border-[#39ff14] text-white' },
+                { id: 'hazard', label: 'HAZD', border: 'border-[#ff9f00]/40 text-[#ff9f00] hover:bg-[#ff9f00]/5', active: 'bg-[#ff9f00]/20 border-[#ff9f00] text-white' },
+              ].map(tool => (
+                <button
+                  key={tool.id}
+                  onClick={() => {
+                    triggerBeep(650, 0.08);
+                    setActiveBeaconTool(activeBeaconTool === tool.id ? null : (tool.id as BeaconType));
+                  }}
+                  className={`border py-1 text-[7.5px] font-bold rounded text-center transition-all ${
+                    activeBeaconTool === tool.id ? tool.active : tool.border
+                  }`}
+                >
+                  {tool.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between items-center text-[7.5px] text-slate-500 mt-1">
+              <span className="truncate">BEACONS DEPLOYED: {beacons.length}</span>
+              {beacons.length > 0 && (
+                <button onClick={() => setBeacons([])} className="text-red-500 hover:text-white font-bold hover:underline">
+                  CLEAR ALL
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* PANEL 5: DISPLAY CONTROLS & MONITOR FILTERS */}
+          <div className="flex-shrink-0 w-[240px] border-r border-slate-900/80 pr-4 h-full flex flex-col justify-center gap-1.5">
+            <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-widest block">// MONITOR CONTROL DECK</span>
+            <div className="flex gap-1 items-center justify-between">
+              <div className="flex border border-slate-800 rounded overflow-hidden">
+                <button
+                  onClick={() => { setMapLayerMode('vector'); triggerBeep(900, 0.05); }}
+                  className={`px-1.5 py-0.5 text-[7.5px] font-bold uppercase ${mapLayerMode === 'vector' ? 'bg-slate-900 text-[#00f0ff]' : 'bg-black/60 text-slate-500'}`}
+                >
+                  CYBER GRID
+                </button>
+                <button
+                  onClick={() => { setMapLayerMode('satellite'); triggerBeep(900, 0.05); }}
+                  className={`px-1.5 py-0.5 text-[7.5px] font-bold uppercase ${mapLayerMode === 'satellite' ? 'bg-slate-900 text-[#00f0ff]' : 'bg-black/60 text-slate-500'}`}
+                >
+                  ORBIT SAT
+                </button>
+              </div>
+              <button
+                onClick={() => { setShowLabels(!showLabels); triggerBeep(700, 0.05); }}
+                className={`border rounded px-1.5 py-0.5 text-[7.5px] font-bold uppercase ${showLabels ? 'border-[#00f0ff] text-[#00f0ff]' : 'border-slate-800 text-slate-500'}`}
+              >
+                LABELS: {showLabels ? 'ON' : 'OFF'}
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-4 gap-0.5">
+              {['cyan', 'green', 'amber', 'red'].map(th => (
+                <button
+                  key={th}
+                  onClick={() => { setMapTheme(th as any); triggerBeep(800, 0.05); }}
+                  className={`border py-0.5 text-[6.5px] font-bold rounded text-center ${mapTheme === th ? 'bg-slate-900 border-white text-white' : 'bg-black/60 border-slate-900 text-slate-500'}`}
+                >
+                  {th.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* PANEL 6: REALTIME INTEL LOG READOUT */}
+          <div className="flex-shrink-0 w-[200px] h-full flex flex-col justify-center gap-1">
+            <span className="text-[7.5px] font-bold text-slate-500 uppercase tracking-widest block">// LOG TELEMETRY OUTPUT</span>
+            <div className="bg-slate-950/80 border border-slate-900 p-1.5 rounded h-[85px] overflow-y-auto flex flex-col gap-0.5 scrollbar-none font-mono text-[7px] leading-tight">
               {logs.map((log, index) => {
                 const isWarn = log.includes('WARNING') || log.includes('ERROR');
-                const isSuccess = log.includes('CALIBRATION') || log.includes('LOCKED') || log.includes('CONNECTED');
                 return (
                   <div key={index} className="text-slate-400 whitespace-pre-wrap">
                     <span className="text-[#00f0ff]/60 font-semibold">{log.slice(0, 10)}</span>
-                    <span className={isWarn ? 'text-red-400 font-bold' : isSuccess ? 'text-green-400' : 'text-slate-400'}>
-                      {log.slice(10)}
-                    </span>
+                    <span className={isWarn ? 'text-red-400 font-bold' : 'text-slate-400'}>{log.slice(10)}</span>
                   </div>
                 );
               })}
-              {logs.length === 0 && (
-                <div className="text-slate-800 italic text-center py-5">FEED DECK LOGS INACTIVE...</div>
-              )}
             </div>
           </div>
 

@@ -79,19 +79,19 @@ export default function Home() {
           </span>
         </div>
 
-        {/* LOGO */}
-        <div className="w-full flex justify-start -mb-6">
-          <img 
-            src="/Mylogo_CyberpunkStyle.png" 
-            alt="GamerDrift Cyberpunk Logo" 
-            className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
-          />
-        </div>
-
         {/* HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border-b border-slate-900 pb-12">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start border-b border-slate-900 pb-12">
           {/* Hero Left Side */}
           <div className="lg:col-span-6 space-y-6">
+            {/* LOGO */}
+            <div className="w-full flex justify-start -mb-2">
+              <img 
+                src="/Mylogo_CyberpunkStyle.png" 
+                alt="GamerDrift Cyberpunk Logo" 
+                className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
+              />
+            </div>
+
             <div className="space-y-2">
               <span className="text-[10px] text-[#ff9f00] tracking-[0.35em] uppercase font-bold block">TACTICAL MULTIPLAYER INTERFACE</span>
               <h1 className="text-4xl md:text-6xl font-black text-white tracking-widest font-sans uppercase leading-none">
@@ -134,8 +134,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Hero Right Side: 3D Showcase */}
-          <div className="lg:col-span-6 w-full">
+          {/* Hero Right Side: Map Tile (placed directly below the Secure Uplink header) */}
+          <div className="lg:col-span-6 w-full lg:mt-0 mt-4">
             <div className="hud-panel p-2">
               <TacticalRadar3D />
             </div>
