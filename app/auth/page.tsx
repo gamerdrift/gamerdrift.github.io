@@ -58,21 +58,23 @@ function AuthTerminal() {
     }
 
     if (activeTab === 'login') {
-      const success = login(trimmed);
-      if (success) {
-        setSuccessMsg('SESSION SECURED. COGNITIVE SYNAPSE ALIGNING...');
-        setTimeout(() => router.push('/profile'), 1000);
-      } else {
-        setErrorMsg('SECURE FAIL: DRIFTER IDENTIFIER NOT REGISTERED IN REGISTRY.');
-      }
+      login(trimmed, password).then((success) => {
+        if (success) {
+          setSuccessMsg('SESSION SECURED. COGNITIVE SYNAPSE ALIGNING...');
+          setTimeout(() => router.push('/profile'), 1000);
+        } else {
+          setErrorMsg('SECURE FAIL: DRIFTER IDENTIFIER NOT REGISTERED OR PASSCODE INVALID.');
+        }
+      });
     } else {
-      const success = register(trimmed, role);
-      if (success) {
-        setSuccessMsg('DRIFTER REGISTERED. INITIALIZING DATA SHEETS...');
-        setTimeout(() => router.push('/profile'), 1000);
-      } else {
-        setErrorMsg('INTEGRITY ERROR: IDENTIFIER ALREADY ASSIGNED TO ANOTHER AGENT.');
-      }
+      register(trimmed, password, email, role).then((success) => {
+        if (success) {
+          setSuccessMsg('DRIFTER REGISTERED. INITIALIZING DATA SHEETS...');
+          setTimeout(() => router.push('/profile'), 1000);
+        } else {
+          setErrorMsg('INTEGRITY ERROR: IDENTIFIER ALREADY ASSIGNED TO ANOTHER AGENT.');
+        }
+      });
     }
   };
 
@@ -81,8 +83,9 @@ function AuthTerminal() {
     // Seed username based on platform
     const mockUser = `Drifter_${platform}_${Math.floor(Math.random() * 900 + 100)}`;
     setTimeout(() => {
-      register(mockUser, 'Drifter');
-      router.push('/profile');
+      register(mockUser, 'password123', `${mockUser.toLowerCase()}@social.com`, 'Drifter').then(() => {
+        router.push('/profile');
+      });
     }, 1200);
   };
 

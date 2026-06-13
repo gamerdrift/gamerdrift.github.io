@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useUser } from '../../lib/state/UserContext';
+import { useChat } from '../../lib/state/ChatContext';
 
 interface Clan {
   name: string;
@@ -53,13 +54,10 @@ const mockChallenges: Challenge[] = [
 
 export default function CommunityPage() {
   const { user } = useUser();
+  const { roomUsers } = useChat();
   const [activeTab, setActiveTab] = useState<'clans' | 'forums' | 'challenges'>('clans');
   const [friendInput, setFriendInput] = useState('');
-  const [friends, setFriends] = useState([
-    { username: 'Hex_Netrunner', status: 'Online', level: 10, playing: 'CunningCats' },
-    { username: 'NeoCreator', status: 'Online', level: 5, playing: 'Developing Node' },
-    { username: 'CipherZero', status: 'Offline', level: 14, playing: 'None' }
-  ]);
+  const [friends, setFriends] = useState<any[]>([]);
 
   const handleAddFriend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,14 +223,14 @@ export default function CommunityPage() {
             
             {/* Friends list */}
             <div className="flex flex-col gap-3.5 max-h-[300px] overflow-y-auto pr-1">
-              {friends.map(friend => (
+              {roomUsers.map(friend => (
                 <div key={friend.username} className="flex justify-between items-center bg-black/40 border border-slate-900 p-2">
                   <div className="flex flex-col">
-                    <span className="font-bold text-white">{friend.username}</span>
+                    <span className="font-bold text-white uppercase">{friend.username}</span>
                     <span className="text-[8px] text-slate-600 uppercase">LEVEL {friend.level} // {friend.playing}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${friend.status === 'Online' ? 'bg-[#39ff14] animate-pulse' : 'bg-slate-700'}`}></span>
+                    <span className={`w-1.5 h-1.5 rounded-full ${friend.status === 'online' ? 'bg-[#39ff14] animate-pulse' : 'bg-slate-700'}`}></span>
                     <span className="text-[9px] text-slate-500 uppercase">{friend.status}</span>
                   </div>
                 </div>
