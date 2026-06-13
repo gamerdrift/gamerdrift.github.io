@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useUser } from '../lib/state/UserContext';
 import { useGames } from '../lib/state/GameContext';
 import TacticalRadar3D from '../components/TacticalRadar3D';
+import GamingHeroTablet from '../components/GamingHeroTablet';
 import initialArticlesRaw from '../data/newsData.json';
 
 interface Article {
@@ -80,62 +81,77 @@ export default function Home() {
         </div>
 
         {/* HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start border-b border-slate-900 pb-12">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start border-b border-slate-900 pb-12">
           
-          {/* Hero Left Side: Logo */}
-          <div className="lg:col-span-3 w-full flex justify-start">
-            <img 
-              src="/Mylogo_CyberpunkStyle.png" 
-              alt="GamerDrift Cyberpunk Logo" 
-              className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
-            />
+          {/* Left Column: Logo, Info & Gaming Tablet (aligned to map height) */}
+          <div className="lg:col-span-6 w-full h-auto lg:h-[528px] flex flex-col justify-between gap-4">
+            
+            {/* Top row: Logo (left) & Info/Metrics (right) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              
+              {/* Logo */}
+              <div className="w-full flex justify-start">
+                <img 
+                  src="/Mylogo_CyberpunkStyle.png" 
+                  alt="GamerDrift Cyberpunk Logo" 
+                  className="w-[300px] h-auto object-contain filter drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" 
+                />
+              </div>
+
+              {/* Info details */}
+              <div className="space-y-3 flex flex-col justify-start">
+                <div className="space-y-1.5">
+                  <span className="text-[8.5px] text-[#ff9f00] tracking-[0.25em] uppercase font-bold block">TACTICAL MULTIPLAYER INTERFACE</span>
+                  <h1 className="text-2xl md:text-3xl font-black text-white tracking-widest font-sans uppercase leading-none">
+                    ENTER THE <span className="text-[#00f0ff] hologram-text">DRIFT</span>
+                  </h1>
+                  <p className="text-slate-400 text-[10px] font-sans uppercase leading-relaxed max-w-[260px] mt-2">
+                    Race. Fight. Conquer. Experience the next generation of competitive gaming networks with GamerDrift. Secure tactical command slots now.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Link 
+                    href="/games" 
+                    className="px-4 py-2.5 bg-[#00f0ff] hover:bg-[#00f0ff]/80 text-black font-sans font-bold tracking-widest text-[9px] uppercase shadow-[0_0_10px_rgba(0,240,255,0.25)] transition-all"
+                  >
+                    PLAY NOW
+                  </Link>
+                  <Link 
+                    href="/community" 
+                    className="px-4 py-2.5 bg-transparent border border-slate-700 hover:border-[#ff9f00] hover:text-[#ff9f00] text-slate-400 font-sans font-bold tracking-widest text-[9px] uppercase transition-all"
+                  >
+                    JOIN COMMUNITY
+                  </Link>
+                </div>
+
+                {/* Quick Metrics display */}
+                <div className="grid grid-cols-3 gap-2 border-t border-slate-900 pt-3 max-w-[260px]">
+                  <div>
+                    <span className="text-slate-600 block text-[8px] uppercase">NODES</span>
+                    <span className="text-white text-xs font-extrabold">{activeGamesCount}+ ON</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 block text-[8px] uppercase">LATENCY</span>
+                    <span className="text-[#39ff14] text-xs font-extrabold">&lt; 15ms</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 block text-[8px] uppercase">ENCRYPT</span>
+                    <span className="text-[#ff9f00] text-xs font-extrabold">AES-255</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Bottom row: The 3D Intel Gaming Tablet */}
+            <div className="flex-grow w-full">
+              <GamingHeroTablet />
+            </div>
+
           </div>
 
-          {/* Hero Middle Side: Information block (placed between Logo and Map tile) */}
-          <div className="lg:col-span-3 flex flex-col justify-start space-y-4">
-            <div className="space-y-1.5">
-              <span className="text-[8.5px] text-[#ff9f00] tracking-[0.25em] uppercase font-bold block">TACTICAL MULTIPLAYER INTERFACE</span>
-              <h1 className="text-2xl md:text-3xl font-black text-white tracking-widest font-sans uppercase leading-none">
-                ENTER THE <span className="text-[#00f0ff] hologram-text">DRIFT</span>
-              </h1>
-              <p className="text-slate-400 text-[10px] font-sans uppercase leading-relaxed max-w-[260px] mt-2">
-                Race. Fight. Conquer. Experience the next generation of competitive gaming networks with GamerDrift. Secure tactical command slots now.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Link 
-                href="/games" 
-                className="px-4 py-2.5 bg-[#00f0ff] hover:bg-[#00f0ff]/80 text-black font-sans font-bold tracking-widest text-[9px] uppercase shadow-[0_0_10px_rgba(0,240,255,0.25)] transition-all"
-              >
-                PLAY NOW
-              </Link>
-              <Link 
-                href="/community" 
-                className="px-4 py-2.5 bg-transparent border border-slate-700 hover:border-[#ff9f00] hover:text-[#ff9f00] text-slate-400 font-sans font-bold tracking-widest text-[9px] uppercase transition-all"
-              >
-                JOIN COMMUNITY
-              </Link>
-            </div>
-
-            {/* Quick Metrics display */}
-            <div className="grid grid-cols-3 gap-2 border-t border-slate-900 pt-4 max-w-[260px]">
-              <div>
-                <span className="text-slate-600 block text-[8px] uppercase">NODES</span>
-                <span className="text-white text-xs font-extrabold">{activeGamesCount}+ ON</span>
-              </div>
-              <div>
-                <span className="text-slate-600 block text-[8px] uppercase">LATENCY</span>
-                <span className="text-[#39ff14] text-xs font-extrabold">&lt; 15ms</span>
-              </div>
-              <div>
-                <span className="text-slate-600 block text-[8px] uppercase">ENCRYPT</span>
-                <span className="text-[#ff9f00] text-xs font-extrabold">AES-255</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Right Side: Map Tile (placed directly below the Secure Uplink header) */}
+          {/* Right Column: Map Tile */}
           <div className="lg:col-span-6 w-full lg:mt-0 mt-4">
             <div className="hud-panel p-2">
               <TacticalRadar3D />
