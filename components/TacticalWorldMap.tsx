@@ -968,7 +968,7 @@ export default function TacticalWorldMap() {
     <div className={`
       ${isFullscreen 
         ? 'fixed inset-0 z-50 bg-[#03060a] p-4 flex flex-col w-screen h-screen font-mono text-[11px] text-slate-300' 
-        : 'w-full flex flex-col bg-black border border-slate-900 font-mono text-[11px] text-slate-300 relative select-none rounded-lg shadow-2xl h-[680px] lg:h-[760px] overflow-hidden'
+        : 'w-full flex flex-col bg-black border border-slate-900 font-mono text-[11px] text-slate-300 relative select-none rounded-lg shadow-2xl h-[460px] lg:h-[510px] overflow-hidden'
       }
       transition-all duration-300 select-none
     `}>
@@ -1157,7 +1157,7 @@ export default function TacticalWorldMap() {
       <div className={`flex flex-col flex-grow relative overflow-hidden ${isDegaussing ? 'degauss-effect' : ''}`}>
         
         {/* TOP MAIN PORTION: 80% HEIGHT MAP SCREEN */}
-        <div className={`h-[80%] min-h-[340px] lg:min-h-[460px] relative overflow-hidden border-b border-slate-900 theme-map-${mapTheme} ${mapLayerMode === 'satellite' ? 'theme-map-sat' : ''}`}>
+        <div className={`flex-grow relative overflow-hidden border-b border-slate-900 theme-map-${mapTheme} ${mapLayerMode === 'satellite' ? 'theme-map-sat' : ''}`}>
           
           <div ref={mapContainerRef} className="w-full h-full relative z-0" />
 
@@ -1218,7 +1218,7 @@ export default function TacticalWorldMap() {
         </div>
 
         {/* BOTTOM DECK: 20% HEIGHT INFORMATION & SYSTEMS CONTROL BAR */}
-        <div className="h-[20%] min-h-[135px] max-h-[175px] bg-[#040609] p-2.5 z-10 flex flex-row items-center justify-between gap-4 overflow-x-auto scrollbar-none select-none">
+        <div className="h-[138px] flex-shrink-0 bg-[#040609] p-2 z-10 flex flex-row items-center justify-between gap-4 overflow-x-auto scrollbar-none select-none">
           
           {/* PANEL 1: CIRCULAR STRATEGIC RADAR SWEEP */}
           <div className="flex-shrink-0 flex items-center justify-center border-r border-slate-900/80 pr-4 h-full">
