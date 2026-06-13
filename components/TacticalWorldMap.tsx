@@ -480,6 +480,82 @@ export default function TacticalWorldMap() {
     setLogs(prev => [`[${time}] ${msg}`, ...prev].slice(0, 16));
   };
 
+  // Web Speech API synthesized tactical readout
+  const speakLocationIntelligence = (locationName: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+    const lowerName = locationName.toLowerCase();
+    let popular = "a strategic localized node in the global network grid";
+    let weatherReport = "simulated telemetry shows stable conditions with standard atmospheric flow";
+    let famousPlaces = "the central administrative sector and local geographic landmarks";
+
+    if (lowerName.includes("tokyo")) {
+      popular = "a high tech metropolis merging quantum technologies and historic shrines";
+      weatherReport = "clear skies with light eastern wind currents";
+      famousPlaces = "the Shibuya Crossing and the ancient Sensoji Temple";
+    } else if (lowerName.includes("paris")) {
+      popular = "the global capital of art, fashion, and gastronomy";
+      weatherReport = "mild temperatures with scattered cloud drifts";
+      famousPlaces = "the Eiffel Tower, the Louvre museum, and Notre Dame cathedral";
+    } else if (lowerName.includes("london")) {
+      popular = "a historic city spanning Roman times to modern finance";
+      weatherReport = "cool atmospheric conditions with standard light drizzle";
+      famousPlaces = "the Tower of London, Big Ben, and the British Museum";
+    } else if (lowerName.includes("new york")) {
+      popular = "a massive cultural and financial center known as the Big Apple";
+      weatherReport = "crisp air with clear visibility across the bay";
+      famousPlaces = "Times Square, Central Park, and the Statue of Liberty";
+    } else if (lowerName.includes("sydney")) {
+      popular = "a harbor metropolis famous for its sailing sails and surf beaches";
+      weatherReport = "temperate sunny climate with clear visibility";
+      famousPlaces = "the Sydney Opera House and Bondi Beach";
+    } else if (lowerName.includes("bangalore") || lowerName.includes("bengaluru") || lowerName.includes("gamerdrift")) {
+      popular = "the Silicon Valley of India, known for its IT parks and green gardens";
+      weatherReport = "perfect spring climate with soft breeze feeds";
+      famousPlaces = "the Lalbagh Botanical Gardens and Bangalore Palace";
+    } else if (lowerName.includes("cairo")) {
+      popular = "an ancient gateway on the Nile, famous for its pharaonic monuments";
+      weatherReport = "arid desert conditions with clear skies";
+      famousPlaces = "the Great Pyramids of Giza and the Egyptian Museum";
+    } else if (lowerName.includes("rome")) {
+      popular = "the eternal city, cradled in Roman history and renaissance architecture";
+      weatherReport = "warm Mediterranean air with clear skies";
+      famousPlaces = "the Colosseum, the Pantheon, and the Vatican Museums";
+    } else if (lowerName.includes("rio")) {
+      popular = "a vibrant beach city famous for carnival and samba rhythms";
+      weatherReport = "tropical humid winds with high sun ratios";
+      famousPlaces = "Christ the Redeemer and Copacabana beach";
+    } else if (lowerName.includes("washington") || lowerName.includes("pentagon")) {
+      popular = "the federal command core of the United States";
+      weatherReport = "standard seasonal temperature with moderate humidity";
+      famousPlaces = "the National Mall and the Lincoln Memorial";
+    } else if (lowerName.includes("gibraltar")) {
+      popular = "a strategic Mediterranean gate rock with historical defense tunnels";
+      weatherReport = "strong sea winds with high cloud caps";
+      famousPlaces = "the Rock of Gibraltar and St. Michael's Cave";
+    } else if (lowerName.includes("chernobyl")) {
+      popular = "a historical exclusion grid housing the decommissioned energy core";
+      weatherReport = "overcast skies with low wind dispersion feeds";
+      famousPlaces = "the Pripyat ghost city and the new safe containment shelter";
+    }
+
+    const reportText = `Satellite reconnaissance report for ${locationName.split(',')[0]}. This region is popular as ${popular}. Current climate readings indicate ${weatherReport}. Recommended tactical insertion targets include ${famousPlaces}.`;
+    
+    // Stop ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(reportText);
+    const voices = window.speechSynthesis.getVoices();
+    const engVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+    if (engVoice) utterance.voice = engVoice;
+    
+    utterance.rate = 1.02; // digital computer speed
+    utterance.pitch = 0.88; // slightly deep/authoritative
+    utterance.volume = isMuted ? 0 : volume;
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
   // Custom tactical map icon builder
   const buildMarkerIcon = (color: string, blinking = true, labelSymbol = "") => {
     return L.divIcon({
@@ -825,6 +901,7 @@ export default function TacticalWorldMap() {
     addLog(`SYS: TRANSLATING CAMERA FOCUS -> ${loc.name}...`);
     mapRef.current.flyTo(loc.coords, 9, { duration: 2.4 });
     updateSectorTelemetry(loc.name, loc.coords[0], loc.coords[1], loc.code);
+    speakLocationIntelligence(loc.name);
   };
 
   // OSM Nominatim Geocoder Search
@@ -854,6 +931,7 @@ export default function TacticalWorldMap() {
         
         // Update details based on search display name
         updateSectorTelemetry(display_name, parsedLat, parsedLon);
+        speakLocationIntelligence(display_name);
 
         // Remove previous search marker
         if (searchMarkerRef.current) {
@@ -1070,6 +1148,19 @@ export default function TacticalWorldMap() {
         .degauss-effect {
           animation: degauss-glitch 1.2s cubic-bezier(0.15, 0.85, 0.3, 1) forwards;
         }
+        @keyframes red-glow-pulse {
+          0% { box-shadow: 0 0 4px rgba(255, 51, 85, 0.45), inset 0 0 2px rgba(255, 51, 85, 0.2); }
+          50% { box-shadow: 0 0 14px rgba(255, 51, 85, 0.95), inset 0 0 5px rgba(255, 51, 85, 0.55); }
+          100% { box-shadow: 0 0 4px rgba(255, 51, 85, 0.45), inset 0 0 2px rgba(255, 51, 85, 0.2); }
+        }
+        .red-neon-glow-pulse {
+          animation: red-glow-pulse 2s infinite ease-in-out;
+          border-color: #ff3355 !important;
+        }
+        .red-neon-glow-pulse:focus {
+          border-color: #ff003c !important;
+          box-shadow: 0 0 16px rgba(255, 0, 60, 1), inset 0 0 6px rgba(255, 0, 60, 0.6) !important;
+        }
       ` }} />
 
       {/* COMMAND CONSOLE HEADER */}
@@ -1251,7 +1342,7 @@ export default function TacticalWorldMap() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="CITY, COUNTRY..."
                 disabled={searchLoading}
-                className="flex-grow bg-slate-950 border border-slate-900 focus:border-[#00f0ff] rounded px-1.5 py-0.5 text-white placeholder-slate-700 focus:outline-none text-[8.5px]"
+                className="flex-grow bg-slate-950 border border-red-500 red-neon-glow-pulse rounded px-1.5 py-0.5 text-white placeholder-slate-700 focus:outline-none text-[8.5px]"
               />
               <button
                 type="submit"
