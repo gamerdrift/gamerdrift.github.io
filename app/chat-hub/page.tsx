@@ -35,7 +35,7 @@ export default function ChatHubPage() {
 
   // Set document title dynamically
   useEffect(() => {
-    document.title = "GamerDrift Chat-Hub";
+    document.title = "GamerDrift | Live Chat-Hub";
     
     // Update system clock
     const updateTime = () => {
@@ -117,9 +117,10 @@ export default function ChatHubPage() {
             <svg className="w-3.5 h-3.5 text-[#00f0ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
+            <title>GamerDrift | Live Chat-Hub</title>
           </div>
           <div className="flex flex-col">
-            <span className="font-black text-white text-[10px] tracking-widest uppercase">GAMERDRIFT // CHATHUB</span>
+            <span className="font-black text-[10px] tracking-widest uppercase flex items-center space-x-0.5"><span className="text-[#39ff14]">G</span><span className="text-[#39ff14]">A</span><span className="text-[#39ff14]">M</span><span className="text-[#00f0ff]">E</span><span className="text-[#00f0ff]">R</span><span className="text-[#00f0ff]">D</span><span className="text-[#00f0ff]">R</span><span className="text-[#00f0ff]">I</span><span className="text-[#00f0ff]">F</span><span className="text-[#ff0099]">T</span><span className="text-[#ff0099]">|</span><span className="text-[#ff3333]">LIVE</span><span className="text-[#ff0099]">|</span><span className="text-[#39ff14]">CHAT</span><span className="text-[#ff9f00]">-HUB</span></span>
             <span className="text-[7px] text-[#ff9f00] uppercase tracking-wider">DRIFT_LINK: ONLINE // SECURE PORTAL</span>
           </div>
         </div>
