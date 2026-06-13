@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://b2v2r3d"]
+
+[ext_resource type="Script" path="res://scripts/guard_ai.gd" id="1_guard"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.5
+height = 2.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
+radius = 0.5
+height = 2.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 4.0
+radius = 6.0
+
+[node name="GuardEnemy" type="CharacterBody3D"]
+script = ExtResource("1_guard")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_1")
+
+[node name="VisionArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.5, -6)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VisionArea"]
+shape = SubResource("CylinderShape3D_1")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+target_position = Vector3(0, 0, -15)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.8, -0.5)
+light_color = Color(1, 1, 0.8, 1)
+light_energy = 5.0
+spot_range = 15.0
+spot_angle = 45.0

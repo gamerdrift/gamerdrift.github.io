@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#020408" stroke="#00f0ff" stroke-width="4" rx="16"/>
+  <!-- Hologram wireframe ghost/hood shape -->
+  <path d="M64 20 C40 20 30 45 30 75 C30 85 35 95 45 95 C52 95 56 88 64 88 C72 88 76 95 83 95 C93 95 98 85 98 75 C98 45 88 20 64 20 Z" fill="none" stroke="#00f0ff" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Visor -->
+  <path d="M45 50 L83 50" stroke="#ff3333" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="64" cy="50" r="2" fill="#ff3333"/>
+  <text x="64" y="112" font-family="monospace" font-size="14" fill="#00f0ff" font-weight="bold" text-anchor="middle">R_GHOST</text>
+</svg>

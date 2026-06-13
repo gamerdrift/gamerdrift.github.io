@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2v2r3d"]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 80.0
+offset_right = 700.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 36
+text = "ROGUE GHOST // TACTICAL DISPATCH"
+
+[node name="StartButton" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 500.0
+offset_top = 500.0
+offset_right = 750.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 24
+text = "DEPLOY OPERATIVE"
+
+[node name="WeaponContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 220.0
+offset_right = 500.0
+offset_bottom = 280.0
+
+[node name="PistolBtn" type="Button" parent="Panel/WeaponContainer"]
+layout_mode = 2
+text = "Silenced Carbine"
+
+[node name="BladeBtn" type="Button" parent="Panel/WeaponContainer"]
+layout_mode = 2
+text = "Combat Blade"
+
+[node name="MissionContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 340.0
+offset_right = 400.0
+offset_bottom = 540.0
+
+[node name="SnowblowBtn" type="Button" parent="Panel/MissionContainer"]
+layout_mode = 2
+text = "Snowblow Extraction Sector"

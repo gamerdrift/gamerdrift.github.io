@@ -1,0 +1,102 @@
+[gd_scene load_steps=8 format=3 uid="uid://b4v4r3d"]
+
+[ext_resource type="Script" path="res://scripts/mission_manager.gd" id="1_manager"]
+[ext_resource type="PackedScene" uid="uid://b1v1r3d" path="res://scenes/player_ghost.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://b2v2r3d" path="res://scenes/guard_enemy.tscn" id="3_guard"]
+[ext_resource type="PackedScene" uid="uid://b3v3r3d" path="res://scenes/hostage_node.tscn" id="4_hostage"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1"]
+radius = 2.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
+top_radius = 2.4
+bottom_radius = 2.4
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.2, 1, 0.2, 0.4)
+transparency = 1
+emission_enabled = true
+emission = Color(0.2, 1, 0.2, 1)
+
+[node name="LevelSnowblow" type="Node3D" node_paths=PackedStringArray("target_exit_zone")]
+script = ExtResource("1_manager")
+target_exit_zone = NodePath("ExitZone")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+light_color = Color(0.8, 0.9, 1, 1)
+light_energy = 0.5
+shadow_enabled = true
+
+[node name="MapLayout" type="CSGCombiner3D" parent="."]
+use_collision = true
+
+[node name="Floor" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+size = Vector3(50, 1, 50)
+
+[node name="NorthWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -25)
+size = Vector3(50, 4, 1)
+
+[node name="SouthWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 25)
+size = Vector3(50, 4, 1)
+
+[node name="WestWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2, 0)
+size = Vector3(1, 4, 50)
+
+[node name="EastWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, 0)
+size = Vector3(1, 4, 50)
+
+[node name="Column1" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -8)
+size = Vector3(4, 4, 4)
+
+[node name="Column2" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -8)
+size = Vector3(4, 4, 4)
+
+[node name="Column3" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, 8)
+size = Vector3(4, 4, 4)
+
+[node name="Column4" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 8)
+size = Vector3(4, 4, 4)
+
+[node name="DividerWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+size = Vector3(20, 4, 2)
+
+[node name="PlayerGhost" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 18)
+
+[node name="GuardEnemy1" parent="." instance=ExtResource("3_guard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -12)
+patrol_points = [Vector3(-12, 1, -12), Vector3(-12, 1, 0), Vector3(-18, 1, -6)]
+
+[node name="GuardEnemy2" parent="." instance=ExtResource("3_guard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 12)
+patrol_points = [Vector3(12, 1, 12), Vector3(12, 1, 0), Vector3(18, 1, 6)]
+
+[node name="Hostage1" parent="." instance=ExtResource("4_hostage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.9, -15)
+hostage_name = "Hostage Scientist Nyx"
+
+[node name="Hostage2" parent="." instance=ExtResource("4_hostage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.9, 15)
+hostage_name = "Hostage Commander Sahara"
+
+[node name="ExitZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitZone"]
+shape = SubResource("SphereShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ExitZone"]
+mesh = SubResource("CylinderMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
