@@ -31,6 +31,7 @@ export interface ChatUser {
   level: number;
   role: string;
   playing: string;
+  roomId?: string;
 }
 
 interface ChatContextType {
@@ -48,34 +49,148 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-// Cyberpunk simulated responses for local sandbox bot chatting
-const MOCK_BOT_RESPONSES: Record<string, string[]> = {
-  general: [
-    "Uplink established. Scanning grid for defect AI anomalies.",
-    "System check complete: Tactical radar sweep is online. Latency is looking good at <15ms.",
-    "Did anyone test the CunningCats Nitro patch 1.4? The speed modifier feels insane.",
-    "Sector command signals are locked. Deploying defensive beacons now.",
-    "Drifter network is operational. Secure tactical command slots.",
-    "Top secret brief: Forestfun sectors are showing high AI patrol density.",
-    "Command core: We need to coordinate the global clan championship rosters.",
-    "Uplink warning: Solar wind flare detected. Uplink signal power at 96%."
+// Cyberpunk bot names partitioned by room (120 unique bots, 20 per room)
+const BOT_NAMES_BY_ROOM: Record<string, string[]> = {
+  GLOBAL_HQ: [
+    'Alpha_Ghost', 'HQ_Overlord', 'Sovereign_Net', 'Spectre_Agent', 'Command_Null',
+    'Global_Slayer', 'Sentinel_Prime', 'Atlas_Grid', 'Drift_Master', 'Intel_Viper',
+    'Nova_Drifter', 'Titan_Core', 'Matrix_Boss', 'Aero_Operator', 'Quantum_Ghost',
+    'Vector_Command', 'Nexus_Zero', 'Grid_Enforcer', 'Apex_HQ', 'Drift_Lord'
   ],
-  dm: [
-    "Message received, Drifter. Grid telemetry looks secure.",
-    "Negative. Comm-line is encrypted via AES-255. Safe to proceed.",
-    "I am currently staging stealth camouflage in Snowblow sector. Catch you soon.",
-    "Uplink speed looks perfect. Meet me in the Tokyo chatroom for coordinates.",
-    "Tactical node locked. Plasma load is ready."
+  TOKYO_GRID: [
+    'Shibuya_Samurai', 'Neo_Geisha', 'Akiba_Hacker', 'Ronin_Zero', 'Neon_Shogun',
+    'Harajuku_Punk', 'Shinjuku_Shadow', 'Chiba_Blade', 'Kyoto_Cipher', 'Osaka_Outlaw',
+    'Fuji_Net', 'Ninja_Cyber', 'Katana_Glow', 'Tokyo_Synth', 'Anime_Matrix',
+    'Sake_Slayer', 'Zen_Glitch', 'Giga_Mecha', 'Ryu_Code', 'Sakura_Byte'
+  ],
+  LONDON_SECTOR: [
+    'Coded_Beefeater', 'Thames_Phantom', 'Cyber_Sherlock', 'Spitfire_Net', 'BigBen_Byte',
+    'Piccadilly_Punk', 'Soho_Slayer', 'Paddington_Net', 'Tower_Ghost', 'London_Fog',
+    'Brit_Netrunner', 'Abbey_Code', 'Hyde_Glitch', 'Chelsea_Cyber', 'Trafalgar_Viper',
+    'Wembley_Winner', 'Camden_Goth', 'Metro_Ghost', 'Crown_Decrypter', 'Royal_Racer'
+  ],
+  USA_WEST_COAST: [
+    'Silicon_Slayer', 'Cali_Drifter', 'Hollywood_Hologram', 'Vegas_Viper', 'Pacific_Ghost',
+    'GoldenGate_Bit', 'Seattle_Rain', 'Portland_Glitch', 'La_Noir', 'Sf_Netrunner',
+    'Desert_Racer', 'Canyon_Coyote', 'Tinsel_Synth', 'Sierras_Peak', 'Sunset_Strip',
+    'Redwood_Byte', 'Ocean_Breeze', 'Mojave_Striker', 'Bay_Area_Boss', 'Alcatraz_Code'
+  ],
+  BERLIN_GATEWAY: [
+    'Brandenburg_Bit', 'Techno_Phantom', 'Gateway_Goth', 'Checkpoint_Byte', 'Alexander_Plot',
+    'Spree_Drifter', 'Kreuzberg_Punk', 'Neukoelln_Hacker', 'Wall_Breaker', 'Berlin_Bass',
+    'Curry_Code', 'Club_Glitch', 'Autobahn_Racer', 'U_Bahn_Ghost', 'Teufelsberg_Intel',
+    'Mitte_Matrix', 'Friedrich_File', 'Kaiser_Viper', 'Spreewald_Net', 'Prussian_Operator'
+  ],
+  SANDBATH_ARENA: [
+    'Apex_Gladiator', 'Desert_Striker', 'Dune_Hacker', 'Scorpion_Net', 'Mirage_Ghost',
+    'Oasis_Blade', 'Onyx_Slayer', 'Dust_Drifter', 'Sandstorm_Viper', 'Basalt_Gladiator',
+    'Bedouin_Code', 'Cactus_Byte', 'Nomad_Netrunner', 'Pyramid_Apex', 'Sirocco_Synth',
+    'Heatwave_Viper', 'Dune_Racer', 'Fossil_Hacker', 'Camel_Operator', 'Quarry_Glitch'
   ]
 };
 
-const MOCK_BOTS: ChatUser[] = [
-  { username: 'Hex_Netrunner', status: 'online', level: 10, role: 'Drifter', playing: 'CunningCats' },
-  { username: 'NeoCreator', status: 'online', level: 5, role: 'Creator', playing: 'Developing Node' },
-  { username: 'CipherZero', status: 'offline', level: 14, role: 'Drifter', playing: 'None' },
-  { username: 'Desert_Fox', status: 'online', level: 8, role: 'Drifter', playing: 'RogueGhost' },
-  { username: 'GhostInGrid', status: 'offline', level: 12, role: 'Admin', playing: 'None' }
-];
+// Map names to full ChatUser objects with randomized initial states
+const MOCK_BOTS: ChatUser[] = [];
+Object.entries(BOT_NAMES_BY_ROOM).forEach(([roomId, names]) => {
+  names.forEach((name, index) => {
+    MOCK_BOTS.push({
+      username: name,
+      status: Math.random() < 0.7 ? 'online' : 'offline',
+      level: Math.floor(Math.random() * 20) + 1,
+      role: index === 1 ? 'Admin' : index % 5 === 0 ? 'Operator' : 'Drifter',
+      playing: Math.random() < 0.4 
+        ? (Math.random() < 0.5 ? 'RogueGhost' : 'CunningCats') 
+        : 'None',
+      roomId: roomId
+    });
+  });
+});
+
+// Interactive keyword-matching chatbot response engine
+function generateResponsiveAnswer(userInput: string, bot: ChatUser): string {
+  const text = userInput.toLowerCase();
+  
+  if (text.includes('ghost') || text.includes('rogue') || text.includes('stealth') || text.includes('hostage') || text.includes('snowblow')) {
+    const replies = [
+      "RogueGhost 3D is fully compiled in Godot. The new low-poly soldier visuals look incredibly sleek.",
+      "Watch out for the Arctic guard vision cones in Snowblow. Crouch with CTRL to decrease your stealth drain.",
+      "The main menu 3D preview model rotates and updates dynamically when you switch loadouts.",
+      "Tip for RogueGhost: Firing weapons drains your stealth index instantly by 35 points.",
+      "Rescue both hostages (Sahara and Nyx) before heading to the Exit Zone in Snowblow."
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+  
+  if (text.includes('cat') || text.includes('cunningcats') || text.includes('race') || text.includes('nitro') || text.includes('car') || text.includes('vehicle')) {
+    const replies = [
+      "Armored cat sand-buggies are hitting top speeds with the new Nitro boost patches.",
+      "I'm custom-tuning my sandstorm chassis with plasma laser upgrades.",
+      "Desert combat racing is active in the Sandbath Arena. Join the queue.",
+      "CunningCats Nitro patches 1.4 are active on the main grid nodes."
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+  
+  if (text.includes('casino') || text.includes('slot') || text.includes('blackjack') || text.includes('roulette') || text.includes('bet') || text.includes('money') || text.includes('credit')) {
+    const replies = [
+      "We just spun a triple-diamond jackpot on Cyber Slots! 100x payout is real.",
+      "Drift Roulette is drawing visual physics decelerations on the canvas overlay.",
+      "Blackjack terminals are online. Double down or split your hand to maximize credits.",
+      "Your Drifter credits balance is stored locally at $5,000 to start."
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+  
+  if (text.includes('tetris') || text.includes('block') || text.includes('captn') || text.includes('shadow') || text.includes('muzzle') || text.includes('glass')) {
+    const replies = [
+      "Block Tetris looks premium now with physical glass refraction materials.",
+      "AAA raycasting and soft shadow mapping in Captn.Ghost run buttery smooth at 60fps.",
+      "Muzzle flash point light coordinates are synced for real-time shadow projection."
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+
+  if (text.includes('status') || text.includes('ping') || text.includes('latency') || text.includes('server') || text.includes('network') || text.includes('connection')) {
+    return "GRID_STATUS: ALL SYSTEMS NOMINAL // LATENCY: 11ms // COMM_DECK ENCRYPTION: AES-255-GCM // DRIFTER_LINK: SECURED";
+  }
+  
+  if (text.includes('where') || text.includes('location') || text.includes('city') || text.includes('station') || text.includes('sector') || text.includes('room')) {
+    switch (bot.roomId) {
+      case 'GLOBAL_HQ':
+        return "We are currently inside the GLOBAL_HQ station, coordinates 0,0,0. Secure operations and satellite links are active.";
+      case 'TOKYO_GRID':
+        return "Uplink matching Shibuya-Akihabara node. Tokyo Grid lighting is peaking. Watch out for Ronin AI grids.";
+      case 'LONDON_SECTOR':
+        return "London Sector terminal is online near Thames channel. High density fiber networks running zero-latency tunnels.";
+      case 'USA_WEST_COAST':
+        return "Cali-Silicon grid check complete. Sunset strip synthwave tracks are broadcasting.";
+      case 'BERLIN_GATEWAY':
+        return "Checkpoint Gateway illuminated. Berlin techno clubs are sync'd. Gateway goth filters running.";
+      case 'SANDBATH_ARENA':
+        return "Desert Arena operational. Dune desert storms are gathering. Standby for arena deployment.";
+      default:
+        return "Unknown sector. Re-routing signals.";
+    }
+  }
+
+  if (text.includes('hello') || text.includes('hi') || text.includes('hey') || text.includes('yo') || text.includes('welcome') || text.includes('howdy')) {
+    const replies = [
+      `Uplink match confirmed. Greetings, Drifter. ${bot.username} at your service.`,
+      "Affirmative. How can I assist you on the GamerDrift tactical grid today?",
+      "Connection matched. State your query, agent."
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+
+  const quotes = [
+    "Decentralized operations are active. Guard your cognitive uplinks.",
+    "Zero-latency gateway shields are holding. All scans are clean.",
+    "Drifter files indicate high activity on the CunningCats patch servers.",
+    "System check complete: Tactical radar sweep is online. AES key fully loaded.",
+    "Solar wind flares are projecting grid anomalies. Keep comm shields high."
+  ];
+  return quotes[Math.floor(Math.random() * quotes.length)];
+}
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
@@ -320,17 +435,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
       // Trigger bot simulator response after 2 seconds
       setTimeout(() => {
-        const onlineBots = roomUsers.filter(u => u.status === 'online' && u.username.toLowerCase() !== user.username.toLowerCase());
-        if (onlineBots.length > 0) {
-          const randomBot = onlineBots[Math.floor(Math.random() * onlineBots.length)];
-          const responses = MOCK_BOT_RESPONSES.general;
-          const randomText = responses[Math.floor(Math.random() * responses.length)];
+        const activeRoomBots = roomUsers.filter(u => (!u.roomId || u.roomId === activeRoom) && u.status === 'online' && u.username.toLowerCase() !== user.username.toLowerCase());
+        if (activeRoomBots.length > 0) {
+          const randomBot = activeRoomBots[Math.floor(Math.random() * activeRoomBots.length)];
+          const botResponse = generateResponsiveAnswer(cleanText, randomBot);
 
           const botMsg: ChatMessage = {
             id: `msg-bot-${Date.now()}`,
             roomId: activeRoom,
             sender: randomBot.username,
-            text: randomText,
+            text: botResponse,
             timestamp: new Date().toLocaleTimeString()
           };
 
@@ -384,8 +498,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const isBot = MOCK_BOTS.some(b => b.username.toLowerCase() === recipient.toLowerCase());
       if (isBot) {
         setTimeout(() => {
-          const botReplies = MOCK_BOT_RESPONSES.dm;
-          const replyText = botReplies[Math.floor(Math.random() * botReplies.length)];
+          const targetBot = MOCK_BOTS.find(b => b.username.toLowerCase() === recipient.toLowerCase());
+          const replyText = generateResponsiveAnswer(cleanText, targetBot || { username: recipient, roomId: activeRoom } as any);
 
           const botMsg: ChatMessage = {
             id: `pm-bot-${Date.now()}`,
@@ -427,7 +541,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     <ChatContext.Provider value={{
       activeRoom,
       messages,
-      roomUsers,
+      roomUsers: roomUsers.filter(u => !u.roomId || u.roomId === activeRoom),
       activePmRecipient,
       pmMessages,
       joinRoom,
