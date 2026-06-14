@@ -1,4 +1,6 @@
-import React from 'react';
+export const unstable_instant = { prefetch: 'static' };
+
+import React, { Suspense } from 'react';
 import { games } from '../../../data/games';
 import GameClientRunner from './GameClientRunner';
 
@@ -9,7 +11,15 @@ export async function generateStaticParams() {
 }
 
 export default async function PlayPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params;
-  const gameId = resolvedParams.id;
-  return <GameClientRunner gameId={gameId} />;
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center font-mono text-xs text-[#00f0ff]">
+        <div className="animate-pulse tracking-[0.2em] uppercase">UPLINK_ESTABLISHED // CACHE_INIT...</div>
+      </div>
+    }>
+      {params.then(({ id }) => (
+        <GameClientRunner gameId={id} />
+      ))}
+    </Suspense>
+  );
 }
