@@ -252,7 +252,7 @@ export default function Home() {
                 href="/rogueghost" 
                 className="w-full bg-[#00f0ff] text-black font-sans font-bold text-center py-3 uppercase tracking-widest text-[10px] hover:bg-[#00f0ff]/80 shadow-[0_0_12px_rgba(0,240,255,0.15)] mt-auto"
               >
-                DISPATCH_TO_ROGUEGHOST &gt;&gt;
+                DEPLOY_MISSION_ROGUEGHOST &gt;&gt;
               </Link>
             </div>
 
