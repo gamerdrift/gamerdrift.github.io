@@ -92,7 +92,7 @@ export default function CasinoPage() {
     } catch (e) {}
   };
 
-  // Sync balance with LocalStorage
+  // Sync balance with LocalStorage and check query parameter for active tab
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('gamerdrift_casino_balance');
@@ -100,6 +100,12 @@ export default function CasinoPage() {
         setBalance(parseInt(stored, 10));
       } else {
         localStorage.setItem('gamerdrift_casino_balance', '5000');
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'slots' || tabParam === 'blackjack' || tabParam === 'roulette') {
+        setActiveTab(tabParam);
       }
     }
   }, []);

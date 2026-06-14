@@ -6,7 +6,7 @@ export interface Game {
   isExternal?: boolean;
   embedUrl?: string;
   description?: string;
-  category: 'Arcade' | 'Puzzle' | 'Shooting' | 'Casual' | 'Action' | 'Retro';
+  category: 'Arcade' | 'Puzzle' | 'Shooting' | 'Casual' | 'Action' | 'Retro' | 'Casino';
 }
 
 const gamePhotoIds = [
@@ -73,5 +73,8 @@ export const games: Game[] = [
   { id: "minesweeper-js", title: "Minesweeper Classic", thumbnail: getUnsplashUrl("photo-1526304640581-d334cdbbf45e"), url: "/play/minesweeper-js/", isExternal: true, embedUrl: "https://minesweeper.github.io/", category: "Puzzle", description: "Uncover a grid of tiles while avoiding hidden mines using numeric cues." },
   { id: "lichess-chess", title: "Lichess Chess", thumbnail: getUnsplashUrl("photo-1627856013091-fed6e4e30025"), url: "/play/lichess-chess/", isExternal: true, embedUrl: "https://lichess.org/embed/export/fen/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR?theme=auto&bg=auto", category: "Puzzle", description: "Play standard chess matches against AI or local players using Lichess servers." },
   { id: "solitaire-classic", title: "Solitaire Classic", thumbnail: getUnsplashUrl("photo-1606144042614-b2417e99c4e3"), url: "/play/solitaire-classic/", isExternal: true, embedUrl: "https://solitaire.github.io/", category: "Puzzle", description: "Arrange cards in chronological order from King to Ace on piles." },
-  { id: "rogue-ghost", title: "Rogue Ghost 3D", thumbnail: "/rogue_ghost_character.png", url: "/play/rogue-ghost/", isExternal: true, embedUrl: "/games/rogueghost/index.html", category: "Action", description: "3D Third-Person Tactical Infiltration / Stealth Action game. Infiltrate secure vaults, avoid patrol guards, rescue hostages and extract." }
+  { id: "rogue-ghost", title: "Rogue Ghost 3D", thumbnail: "/rogue_ghost_character.png", url: "/play/rogue-ghost/", isExternal: true, embedUrl: "/games/rogueghost/index.html", category: "Action", description: "3D Third-Person Tactical Infiltration / Stealth Action game. Infiltrate secure vaults, avoid patrol guards, rescue hostages and extract." },
+  { id: "slots", title: "Cyber Slots", thumbnail: getUnsplashUrl("photo-1607604276583-eef5d076aa5f"), url: "/casino?tab=slots", category: "Casino", description: "Spin the cyberpunk matrices, check decryptions, and hit the legendary GamerDrift badges." },
+  { id: "blackjack", title: "Neon Blackjack", thumbnail: getUnsplashUrl("photo-1511512578047-dfb367046420"), url: "/casino?tab=blackjack", category: "Casino", description: "Test your score synchronization against dealer AI in neon deck terminals." },
+  { id: "roulette", title: "Drift Roulette", thumbnail: getUnsplashUrl("photo-1548685913-fe6574340a63"), url: "/casino?tab=roulette", category: "Casino", description: "Decelerate the canvas grid spin wheel and decode Red/Black numbers payout grid." }
 ];

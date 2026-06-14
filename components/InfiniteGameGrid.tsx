@@ -11,7 +11,7 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
   
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const categories = ['All', 'Action', 'Shooting', 'Racing', 'Casual', 'Puzzle', 'Retro', 'Multiplayer', 'Arcade'];
+  const categories = ['All', 'Action', 'Shooting', 'Racing', 'Casual', 'Puzzle', 'Retro', 'Multiplayer', 'Arcade', 'Casino'];
 
   // Filter games based on category
   const filteredGames = games.filter(g => {
