@@ -20,6 +20,7 @@ export default function Header() {
     { name: 'Games', href: '/games' },
     { name: 'CunningCats', href: '/cunningcats' },
     { name: 'RogueGhost', href: '/rogueghost' },
+    { name: 'AI Agents', href: '/agents' },
     { name: 'News', href: '/news' },
     { name: 'Community', href: '/community' },
     { name: 'Store', href: '/store' },
