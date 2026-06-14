@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1v1r3d"]
+[gd_scene load_steps=18 format=3 uid="uid://b1v1r3d"]
 
 [ext_resource type="Script" path="res://scripts/player_ghost.gd" id="1_player"]
 
@@ -6,12 +6,73 @@
 radius = 0.5
 height = 2.0
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
-radius = 0.5
-height = 2.0
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_camo"]
+albedo_color = Color(0.18, 0.32, 0.18, 1)
+roughness = 0.8
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(0.6, 0.2, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_torso"]
+material = SubResource("StandardMaterial3D_camo")
+size = Vector3(0.5, 0.7, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vest"]
+albedo_color = Color(0.12, 0.12, 0.14, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_vest"]
+material = SubResource("StandardMaterial3D_vest")
+size = Vector3(0.53, 0.55, 0.33)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_balaclava"]
+albedo_color = Color(0.08, 0.08, 0.08, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = SubResource("StandardMaterial3D_balaclava")
+radius = 0.18
+height = 0.36
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_steel"]
+albedo_color = Color(0.2, 0.22, 0.2, 1)
+roughness = 0.6
+metallic = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_helmet"]
+material = SubResource("StandardMaterial3D_steel")
+top_radius = 0.18
+bottom_radius = 0.2
+height = 0.12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goggles"]
+albedo_color = Color(0, 0.8, 1, 1)
+emission_enabled = true
+emission = Color(0, 0.8, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_goggles"]
+material = SubResource("StandardMaterial3D_goggles")
+size = Vector3(0.24, 0.07, 0.14)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_arm"]
+material = SubResource("StandardMaterial3D_camo")
+radius = 0.08
+height = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pants"]
+albedo_color = Color(0.15, 0.15, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_leg"]
+material = SubResource("StandardMaterial3D_pants")
+radius = 0.1
+height = 0.75
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_weapon"]
+albedo_color = Color(0.1, 0.1, 0.12, 1)
+roughness = 0.5
+metallic = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_rifle"]
+material = SubResource("StandardMaterial3D_weapon")
+size = Vector3(0.08, 0.12, 0.7)
 
 [node name="PlayerGhost" type="CharacterBody3D"]
 script = ExtResource("1_player")
@@ -19,12 +80,46 @@ script = ExtResource("1_player")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_1")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("CapsuleMesh_1")
+[node name="Visuals" type="Node3D" parent="."]
 
-[node name="GogglesMesh" type="MeshInstance3D" parent="MeshInstance3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -0.4)
-mesh = SubResource("BoxMesh_1")
+[node name="Torso" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("BoxMesh_torso")
+
+[node name="TacticalVest" type="MeshInstance3D" parent="Visuals/Torso"]
+mesh = SubResource("BoxMesh_vest")
+
+[node name="Head" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.02)
+mesh = SubResource("SphereMesh_head")
+
+[node name="Helmet" type="MeshInstance3D" parent="Visuals/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0.02)
+mesh = SubResource("CylinderMesh_helmet")
+
+[node name="Goggles" type="MeshInstance3D" parent="Visuals/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.13)
+mesh = SubResource("BoxMesh_goggles")
+
+[node name="LeftArm" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.2, 0)
+mesh = SubResource("CapsuleMesh_arm")
+
+[node name="RightArm" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0.35, 0.2, -0.1)
+mesh = SubResource("CapsuleMesh_arm")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, -0.4, 0)
+mesh = SubResource("CapsuleMesh_leg")
+
+[node name="RightLeg" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, -0.4, 0)
+mesh = SubResource("CapsuleMesh_leg")
+
+[node name="CarbineRifle" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.2, -0.4)
+mesh = SubResource("BoxMesh_rifle")
 
 [node name="CameraPivot" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
