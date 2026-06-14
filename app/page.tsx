@@ -118,6 +118,12 @@ export default function Home() {
                     PLAY NOW
                   </Link>
                   <Link 
+                    href="/more-games" 
+                    className="px-4 py-2.5 bg-[#a855f7]/10 border border-[#a855f7]/50 hover:bg-[#a855f7]/20 hover:border-[#a855f7] text-[#a855f7] font-sans font-bold tracking-widest text-[9px] uppercase transition-all shadow-[0_0_8px_rgba(168,85,247,0.1)] hover:shadow-[0_0_15px_rgba(168,85,247,0.25)]"
+                  >
+                    🎮 MORE GAMES
+                  </Link>
+                  <Link 
                     href="/community" 
                     className="px-4 py-2.5 bg-transparent border border-slate-700 hover:border-[#ff9f00] hover:text-[#ff9f00] text-slate-400 font-sans font-bold tracking-widest text-[9px] uppercase transition-all"
                   >
