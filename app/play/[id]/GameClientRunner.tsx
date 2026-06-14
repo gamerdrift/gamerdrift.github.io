@@ -254,8 +254,12 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
-    // Point Light for Muzzle Flash
-    const flashLight = new THREE.PointLight(0xffaa00, 0, 10);
+    // Point Light for Muzzle Flash with realistic shadow mapping
+    const flashLight = new THREE.PointLight(0xffaa00, 0, 15);
+    flashLight.castShadow = true;
+    flashLight.shadow.bias = -0.002;
+    flashLight.shadow.mapSize.width = 512;
+    flashLight.shadow.mapSize.height = 512;
     camera.add(flashLight);
     flashLight.position.set(0.3, -0.2, -1);
 
@@ -270,11 +274,15 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     const steelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 });
     const barrel = new THREE.Mesh(barrelGeom, steelMaterial);
     barrel.position.set(0, 0, -0.2);
+    barrel.castShadow = true;
+    barrel.receiveShadow = true;
     weaponGroup.add(barrel);
 
     // Gun body
     const bodyGeom = new THREE.BoxGeometry(0.04, 0.06, 0.3);
     const gunBody = new THREE.Mesh(bodyGeom, steelMaterial);
+    gunBody.castShadow = true;
+    gunBody.receiveShadow = true;
     weaponGroup.add(gunBody);
 
     // Scope
@@ -282,6 +290,8 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     scopeGeom.rotateX(Math.PI / 2);
     const scope = new THREE.Mesh(scopeGeom, steelMaterial);
     scope.position.set(0, 0.04, 0);
+    scope.castShadow = true;
+    scope.receiveShadow = true;
     weaponGroup.add(scope);
 
     // Staging Level Geometry Nodes
@@ -370,6 +380,8 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
         const droneGeom = new THREE.SphereGeometry(0.3, 12, 12);
         const droneMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, emissive: 0x00f0ff });
         const drone = new THREE.Mesh(droneGeom, droneMat);
+        drone.castShadow = true;
+        drone.receiveShadow = true;
         enemyGroup.add(drone);
         enemyGroup.position.set((Math.random() - 0.5) * 10, 3 + Math.random() * 2, cameraGroup.position.z - 15);
         scene.add(enemyGroup);
@@ -382,18 +394,24 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
         const headGeom = new THREE.SphereGeometry(0.18, 10, 10);
         const head = new THREE.Mesh(headGeom, soldierMat);
         head.position.y = 0.9;
+        head.castShadow = true;
+        head.receiveShadow = true;
         enemyGroup.add(head);
 
         // Helmet
         const helmetGeom = new THREE.SphereGeometry(0.2, 10, 10, 0, Math.PI * 2, 0, Math.PI / 2);
         const helmet = new THREE.Mesh(helmetGeom, steelMaterial);
         helmet.position.y = 0.92;
+        helmet.castShadow = true;
+        helmet.receiveShadow = true;
         enemyGroup.add(helmet);
 
         // Torso
         const torsoGeom = new THREE.CylinderGeometry(0.22, 0.15, 0.7);
         const torso = new THREE.Mesh(torsoGeom, soldierMat);
         torso.position.y = 0.4;
+        torso.castShadow = true;
+        torso.receiveShadow = true;
         enemyGroup.add(torso);
 
         enemyGroup.position.set((Math.random() - 0.5) * 12, 0.5, cameraGroup.position.z - 15 - Math.random() * 5);
@@ -1076,11 +1094,19 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
       pieceRow = 0;
 
       currentPieceGroup.clear();
-      const material = new THREE.MeshStandardMaterial({
+      const material = new THREE.MeshPhysicalMaterial({
         color: currentColor,
         emissive: currentColor,
-        emissiveIntensity: 0.4,
-        roughness: 0.2
+        emissiveIntensity: 0.2,
+        roughness: 0.1,
+        metalness: 0.1,
+        transmission: 0.65,
+        thickness: 0.8,
+        ior: 1.5,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
+        transparent: true,
+        opacity: 0.95
       });
 
       for (let r = 0; r < currentShape.length; r++) {
@@ -1145,11 +1171,19 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
       if (!checkCollision(pieceCol, pieceRow, nextShape)) {
         currentShape = nextShape;
         currentPieceGroup.clear();
-        const material = new THREE.MeshStandardMaterial({
+        const material = new THREE.MeshPhysicalMaterial({
           color: currentColor,
           emissive: currentColor,
-          emissiveIntensity: 0.4,
-          roughness: 0.2
+          emissiveIntensity: 0.2,
+          roughness: 0.1,
+          metalness: 0.1,
+          transmission: 0.65,
+          thickness: 0.8,
+          ior: 1.5,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.1,
+          transparent: true,
+          opacity: 0.95
         });
         for (let r = 0; r < currentShape.length; r++) {
           for (let c = 0; c < currentShape[r].length; c++) {
@@ -1179,10 +1213,19 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     };
 
     const lockPiece = () => {
-      const material = new THREE.MeshStandardMaterial({
+      const material = new THREE.MeshPhysicalMaterial({
         color: currentColor,
-        roughness: 0.3,
-        metalness: 0.1
+        emissive: currentColor,
+        emissiveIntensity: 0.1,
+        roughness: 0.1,
+        metalness: 0.1,
+        transmission: 0.65,
+        thickness: 0.8,
+        ior: 1.5,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
+        transparent: true,
+        opacity: 0.95
       });
 
       for (let r = 0; r < currentShape.length; r++) {
@@ -1346,6 +1389,934 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     };
   }, [isPlaying, gameId, stage]);
 
+  // -------------------------------------------------------------
+  // NEON SNAKE GAME ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== 'snake' || !isPlaying || gameOver || gameWon) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let gridWidth = 20;
+    let gridHeight = 20;
+    let snakeList = [
+      { x: 10, y: 10 },
+      { x: 10, y: 11 },
+      { x: 10, y: 12 }
+    ];
+    let dir = { x: 0, y: -1 };
+    let nextDir = { x: 0, y: -1 };
+    let food = { x: 5, y: 5 };
+    let particlesList: { x: number; y: number; vx: number; vy: number; life: number; color: string }[] = [];
+
+    const spawnFood = () => {
+      let fx = Math.floor(Math.random() * gridWidth);
+      let fy = Math.floor(Math.random() * gridHeight);
+      while (snakeList.some(s => s.x === fx && s.y === fy)) {
+        fx = Math.floor(Math.random() * gridWidth);
+        fy = Math.floor(Math.random() * gridHeight);
+      }
+      food = { x: fx, y: fy };
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && dir.y === 0) {
+        e.preventDefault();
+        nextDir = { x: 0, y: -1 };
+      }
+      if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && dir.y === 0) {
+        e.preventDefault();
+        nextDir = { x: 0, y: 1 };
+      }
+      if ((e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') && dir.x === 0) {
+        e.preventDefault();
+        nextDir = { x: -1, y: 0 };
+      }
+      if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && dir.x === 0) {
+        e.preventDefault();
+        nextDir = { x: 1, y: 0 };
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    (window as any).driftSnakeUp = () => { if (dir.y === 0) nextDir = { x: 0, y: -1 }; };
+    (window as any).driftSnakeDown = () => { if (dir.y === 0) nextDir = { x: 0, y: 1 }; };
+    (window as any).driftSnakeLeft = () => { if (dir.x === 0) nextDir = { x: -1, y: 0 }; };
+    (window as any).driftSnakeRight = () => { if (dir.x === 0) nextDir = { x: 1, y: 0 }; };
+
+    let lastTick = 0;
+    let animId: number;
+
+    const gameLoop = (timestamp: number) => {
+      animId = requestAnimationFrame(gameLoop);
+
+      ctx.fillStyle = '#05000a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+      ctx.lineWidth = 1;
+      let cellW = canvas.width / gridWidth;
+      let cellH = canvas.height / gridHeight;
+      for (let i = 0; i <= gridWidth; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * cellW, 0);
+        ctx.lineTo(i * cellW, canvas.height);
+        ctx.stroke();
+      }
+      for (let j = 0; j <= gridHeight; j++) {
+        ctx.beginPath();
+        ctx.moveTo(0, j * cellH);
+        ctx.lineTo(canvas.width, j * cellH);
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#ff00ff';
+      ctx.fillStyle = '#ff00ff';
+      ctx.beginPath();
+      ctx.arc(food.x * cellW + cellW / 2, food.y * cellH + cellH / 2, cellW / 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      let tickRate = Math.max(50, 150 - stage * 10);
+      if (timestamp - lastTick > tickRate) {
+        lastTick = timestamp;
+        dir = nextDir;
+
+        let head = { x: snakeList[0].x + dir.x, y: snakeList[0].y + dir.y };
+
+        if (head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight) {
+          setGameOver(true);
+          setIsPlaying(false);
+          playSound('gameover');
+          return;
+        }
+
+        if (snakeList.some(s => s.x === head.x && s.y === head.y)) {
+          setGameOver(true);
+          setIsPlaying(false);
+          playSound('gameover');
+          return;
+        }
+
+        snakeList.unshift(head);
+
+        if (head.x === food.x && head.y === food.y) {
+          setScore(prev => prev + 100);
+          gainXP(10);
+          playSound('clear');
+          spawnFood();
+
+          for (let p = 0; p < 12; p++) {
+            particlesList.push({
+              x: head.x * cellW + cellW / 2,
+              y: head.y * cellH + cellH / 2,
+              vx: (Math.random() - 0.5) * 6,
+              vy: (Math.random() - 0.5) * 6,
+              life: 1.0,
+              color: '#ff00ff'
+            });
+          }
+
+          if (snakeList.length % 5 === 0) {
+            setStage(prev => prev + 1);
+          }
+        } else {
+          snakeList.pop();
+        }
+      }
+
+      ctx.save();
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#00f0ff';
+      snakeList.forEach((s, idx) => {
+        let alpha = 1.0 - (idx / snakeList.length) * 0.5;
+        ctx.fillStyle = idx === 0 ? '#00f0ff' : `rgba(0, 100, 255, ${alpha})`;
+        ctx.fillRect(s.x * cellW + 1, s.y * cellH + 1, cellW - 2, cellH - 2);
+      });
+      ctx.restore();
+
+      particlesList.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.04;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, Math.max(1, 3 * p.life), Math.max(1, 3 * p.life));
+        if (p.life <= 0) particlesList.splice(idx, 1);
+      });
+    };
+
+    animId = requestAnimationFrame(gameLoop);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', handleKeyDown);
+      delete (window as any).driftSnakeUp;
+      delete (window as any).driftSnakeDown;
+      delete (window as any).driftSnakeLeft;
+      delete (window as any).driftSnakeRight;
+    };
+  }, [isPlaying, gameId, stage]);
+
+  // -------------------------------------------------------------
+  // RETRO RACER PSEUDO-3D HIGHWAY ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== 'retro-racer' || !isPlaying || gameOver || gameWon) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let carX = 0;
+    let speed = 0;
+    let maxSpeed = 300;
+    let accel = 4;
+    let decel = -2;
+    let trackLength = 10000;
+    let distanceTraveled = 0;
+    let timeElapsed = 0;
+
+    let keysPressed: { [key: string]: boolean } = {};
+
+    interface TrafficCar {
+      z: number;
+      lane: number;
+      speed: number;
+      color: string;
+    }
+    let traffic: TrafficCar[] = [];
+    const spawnTraffic = () => {
+      traffic = [];
+      for (let i = 0; i < 20; i++) {
+        traffic.push({
+          z: 300 + i * 400 + Math.random() * 200,
+          lane: Math.floor(Math.random() * 3) - 1,
+          speed: 80 + Math.random() * 40,
+          color: Math.random() > 0.5 ? '#ff3333' : '#ff9f00'
+        });
+      }
+    };
+    spawnTraffic();
+
+    interface SmokeParticle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      opacity: number;
+      color: string;
+    }
+    let smoke: SmokeParticle[] = [];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keysPressed[e.code] = true;
+      if (['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS', 'Space'].includes(e.code)) {
+        e.preventDefault();
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      keysPressed[e.code] = false;
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    (window as any).driftRacerLeft = () => { carX = Math.max(-1.5, carX - 0.15); };
+    (window as any).driftRacerRight = () => { carX = Math.min(1.5, carX + 0.15); };
+    (window as any).driftRacerAccelerate = () => { speed = Math.min(maxSpeed * 1.5, speed + 15); };
+
+    let animId: number;
+    let clock = new THREE.Clock();
+
+    const gameLoop = () => {
+      animId = requestAnimationFrame(gameLoop);
+      const delta = clock.getDelta();
+      timeElapsed += delta;
+
+      let isAccelerating = keysPressed['ArrowUp'] || keysPressed['KeyW'];
+      let isBraking = keysPressed['ArrowDown'] || keysPressed['KeyS'];
+      let isBoosting = keysPressed['Space'];
+
+      if (isBoosting) {
+        speed = Math.min(maxSpeed * 1.6, speed + accel * 2);
+      } else if (isAccelerating) {
+        speed = Math.min(maxSpeed, speed + accel);
+      } else if (isBraking) {
+        speed = Math.max(0, speed + decel * 4);
+      } else {
+        speed = Math.max(0, speed + decel);
+      }
+
+      if (keysPressed['ArrowLeft'] || keysPressed['KeyA']) {
+        carX -= delta * 2.0 * (speed / maxSpeed + 0.2);
+        if (speed > 10 && Math.random() < 0.6) {
+          smoke.push({
+            x: canvas.width / 2 + (carX * 180) - 20,
+            y: canvas.height - 40,
+            vx: (Math.random() - 1) * 3,
+            vy: -Math.random() * 2,
+            size: Math.random() * 6 + 4,
+            opacity: 0.6,
+            color: isBoosting ? '#00f0ff' : '#aaaaaa'
+          });
+        }
+      }
+      if (keysPressed['ArrowRight'] || keysPressed['KeyD']) {
+        carX += delta * 2.0 * (speed / maxSpeed + 0.2);
+        if (speed > 10 && Math.random() < 0.6) {
+          smoke.push({
+            x: canvas.width / 2 + (carX * 180) + 20,
+            y: canvas.height - 40,
+            vx: Math.random() * 3,
+            vy: -Math.random() * 2,
+            size: Math.random() * 6 + 4,
+            opacity: 0.6,
+            color: isBoosting ? '#00f0ff' : '#aaaaaa'
+          });
+        }
+      }
+
+      carX = Math.max(-2, Math.min(2, carX));
+      distanceTraveled += speed * delta * 1.5;
+      setScore(Math.floor(distanceTraveled / 10));
+
+      if (distanceTraveled >= trackLength * stage) {
+        playSound('clear');
+        setStage(prev => prev + 1);
+        distanceTraveled = 0;
+        spawnTraffic();
+      }
+
+      ctx.fillStyle = '#090312';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#110325';
+      ctx.fillRect(0, 0, canvas.width, canvas.height / 2);
+      ctx.strokeStyle = '#ff00ff';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= canvas.width; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(i, canvas.height / 2);
+        ctx.lineTo(i - (canvas.width / 2 - i) * 1.5, 0);
+        ctx.stroke();
+      }
+
+      let centerY = canvas.height / 2;
+      let curveAmount = Math.sin(timeElapsed * 0.8) * 80;
+
+      for (let y = canvas.height; y > centerY; y -= 4) {
+        let percent = (y - centerY) / (canvas.height - centerY);
+        let roadWidth = 240 * percent;
+        let roadCenter = canvas.width / 2 + (1.0 - percent) * curveAmount - (carX * 180 * percent);
+
+        ctx.fillStyle = (Math.floor(distanceTraveled / 30) % 2 === 0) ? '#08001a' : '#14002e';
+        ctx.fillRect(0, y - 4, canvas.width, 4);
+
+        ctx.fillStyle = (Math.floor(distanceTraveled / 30) % 2 === 0) ? '#ff00ff' : '#00f0ff';
+        ctx.fillRect(roadCenter - roadWidth / 2 - 12 * percent, y - 4, 12 * percent, 4);
+        ctx.fillRect(roadCenter + roadWidth / 2, y - 4, 12 * percent, 4);
+
+        ctx.fillStyle = '#080512';
+        ctx.fillRect(roadCenter - roadWidth / 2, y - 4, roadWidth, 4);
+
+        if (Math.floor((distanceTraveled - (1.0 - percent) * 800) / 40) % 2 === 0) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(roadCenter - 1.5, y - 4, 3, 4);
+        }
+      }
+
+      traffic.forEach((enemy, idx) => {
+        enemy.z -= speed * delta * 2;
+        if (enemy.z < 0) {
+          enemy.z = 1200 + Math.random() * 300;
+          enemy.lane = Math.floor(Math.random() * 3) - 1;
+        }
+
+        if (enemy.z > 0 && enemy.z < 1500) {
+          let percent = 100 / (enemy.z + 100);
+          let ey = centerY + (canvas.height - centerY) * percent;
+          let rx = canvas.width / 2 + (1.0 - percent) * curveAmount - (carX * 180 * percent);
+          let ex = rx + enemy.lane * 90 * percent;
+          let size = 60 * percent;
+
+          if (ey >= centerY && ey <= canvas.height) {
+            ctx.fillStyle = enemy.color;
+            ctx.fillRect(ex - size / 2, ey - size, size, size / 1.5);
+            ctx.fillStyle = '#111';
+            ctx.fillRect(ex - size / 2.2, ey - size / 4, size / 5, size / 4);
+            ctx.fillRect(ex + size / 2.2 - size / 5, ey - size / 4, size / 5, size / 4);
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(ex - size / 2.2, ey - size / 1.2, size / 8, size / 8);
+            ctx.fillRect(ex + size / 2.2 - size / 8, ey - size / 1.2, size / 8, size / 8);
+
+            if (enemy.z < 15 && Math.abs(enemy.lane - carX * 2.0) < 0.5) {
+              playSound('hit');
+              speed = Math.max(20, speed - 100);
+              enemy.z = 1200 + Math.random() * 300;
+              setHealth(prev => {
+                const next = prev - 20;
+                if (next <= 0) {
+                  setGameOver(true);
+                  setIsPlaying(false);
+                  playSound('gameover');
+                }
+                return Math.max(0, next);
+              });
+            }
+          }
+        }
+      });
+
+      smoke.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.size *= 0.96;
+        p.opacity -= delta * 1.5;
+        ctx.fillStyle = p.color;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        if (p.opacity <= 0 || p.size < 0.5) smoke.splice(idx, 1);
+      });
+
+      ctx.save();
+      let px = canvas.width / 2;
+      let py = canvas.height - 40;
+      let size = 64;
+
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = isBoosting ? '#00f0ff' : '#ff00ff';
+      ctx.fillStyle = isBoosting ? '#00ffff' : '#d000ff';
+      ctx.fillRect(px - size / 2, py - size / 1.8, size, size / 2);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(px - size / 2.5, py - size / 2, size / 1.3, size / 4);
+      ctx.fillStyle = '#ff00ff';
+      ctx.fillRect(px - size / 1.8, py - size / 1.3, size * 1.1, size / 12);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(px - size / 2, py - size / 1.3 + size / 12, size / 8, size / 4);
+      ctx.fillRect(px + size / 2.5, py - size / 1.3 + size / 12, size / 8, size / 4);
+      ctx.fillStyle = '#ffff00';
+      ctx.fillRect(px - size / 2.2, py - size / 3, size / 7, size / 10);
+      ctx.fillRect(px + size / 2.2 - size / 7, py - size / 3, size / 7, size / 10);
+      ctx.restore();
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(5, 5, 120, 48);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeRect(5, 5, 120, 48);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '8px monospace';
+      ctx.fillText(`SPEED: ${Math.floor(speed)} MPH`, 10, 16);
+      ctx.fillText(`NITRO: ${isBoosting ? 'BOOSTING!' : 'SPACEBAR'}`, 10, 28);
+      ctx.fillText(`DIST: ${Math.floor(distanceTraveled)}m / ${trackLength * stage}m`, 10, 40);
+    };
+
+    gameLoop();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      delete (window as any).driftRacerLeft;
+      delete (window as any).driftRacerRight;
+      delete (window as any).driftRacerAccelerate;
+    };
+  }, [isPlaying, gameId, stage]);
+
+  // -------------------------------------------------------------
+  // PIXEL PLATFORMER NEON RUNNER ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== 'pixel-platformer' || !isPlaying || gameOver || gameWon) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let playerY = 0;
+    let playerVelocityY = 0;
+    let gravity = 0.5;
+    let jumpForce = -9.0;
+    let jumpCount = 0;
+    let runDistance = 0;
+
+    interface Hazard {
+      x: number;
+      width: number;
+      height: number;
+      color: string;
+    }
+    let obstaclesList: Hazard[] = [];
+    let obstacleTimer = 0;
+
+    interface Coin {
+      x: number;
+      y: number;
+      radius: number;
+      collected: boolean;
+    }
+    let coinsList: Coin[] = [];
+    let coinTimer = 0;
+
+    interface RunParticle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      color: string;
+    }
+    let particlesList: RunParticle[] = [];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+        e.preventDefault();
+        triggerJump();
+      }
+    };
+
+    const triggerJump = () => {
+      if (jumpCount < 2) {
+        playerVelocityY = jumpForce;
+        jumpCount++;
+        playSound('shoot');
+
+        for (let i = 0; i < 8; i++) {
+          particlesList.push({
+            x: 60,
+            y: canvas.height - 50 - playerY,
+            vx: -2 - Math.random() * 2,
+            vy: (Math.random() - 0.5) * 4,
+            life: 1.0,
+            color: '#00f0ff'
+          });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    (window as any).driftPlatformerJump = () => { triggerJump(); };
+
+    let animId: number;
+    let scrollSpeed = 5;
+
+    const gameLoop = () => {
+      animId = requestAnimationFrame(gameLoop);
+      scrollSpeed = 5 + stage * 0.8;
+
+      playerVelocityY += gravity;
+      playerY -= playerVelocityY;
+
+      if (playerY <= 0) {
+        playerY = 0;
+        playerVelocityY = 0;
+        jumpCount = 0;
+      }
+
+      runDistance += scrollSpeed * 0.1;
+      setScore(Math.floor(runDistance * 10));
+
+      if (playerY === 0 && Math.random() < 0.3) {
+        particlesList.push({
+          x: 50,
+          y: canvas.height - 50,
+          vx: -scrollSpeed * 0.5 - Math.random() * 2,
+          vy: -Math.random() * 2,
+          life: 0.8,
+          color: '#ff00ff'
+        });
+      }
+
+      obstacleTimer++;
+      if (obstacleTimer > Math.max(50, 100 - stage * 8)) {
+        obstacleTimer = 0;
+        let size = 20 + Math.random() * 30;
+        obstaclesList.push({
+          x: canvas.width + 50,
+          width: 15,
+          height: size,
+          color: '#ff3333'
+        });
+      }
+
+      coinTimer++;
+      if (coinTimer > 60) {
+        coinTimer = 0;
+        coinsList.push({
+          x: canvas.width + 50,
+          y: canvas.height - 100 - Math.random() * 85,
+          radius: 6,
+          collected: false
+        });
+      }
+
+      ctx.fillStyle = '#040010';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#0d041e';
+      for (let i = 0; i < 6; i++) {
+        let bx = (i * 100 - runDistance * 0.5) % (canvas.width + 100);
+        ctx.fillRect(bx, canvas.height - 180, 80, 130);
+      }
+      ctx.fillStyle = '#180735';
+      for (let i = 0; i < 8; i++) {
+        let bx = (i * 80 - runDistance * 1.5) % (canvas.width + 80);
+        ctx.fillRect(bx, canvas.height - 140, 60, 90);
+      }
+
+      ctx.fillStyle = '#0b001a';
+      ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+      ctx.strokeStyle = '#ff00ff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height - 50);
+      ctx.lineTo(canvas.width, canvas.height - 50);
+      ctx.stroke();
+
+      obstaclesList.forEach((obs, idx) => {
+        obs.x -= scrollSpeed;
+        ctx.save();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = obs.color;
+        ctx.fillStyle = obs.color;
+        ctx.fillRect(obs.x, canvas.height - 50 - obs.height, obs.width, obs.height);
+        ctx.restore();
+
+        if (obs.x < -50) obstaclesList.splice(idx, 1);
+
+        let px = 50;
+        let py = canvas.height - 50 - playerY;
+        if (px + 15 > obs.x && px < obs.x + obs.width && py > canvas.height - 50 - obs.height) {
+          setGameOver(true);
+          setIsPlaying(false);
+          playSound('gameover');
+        }
+      });
+
+      coinsList.forEach((coin, idx) => {
+        coin.x -= scrollSpeed;
+        if (!coin.collected) {
+          ctx.save();
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = '#ffff00';
+          ctx.fillStyle = '#ffff00';
+          ctx.beginPath();
+          ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          let px = 50;
+          let py = canvas.height - 50 - playerY;
+          let dist = Math.hypot(px + 7.5 - coin.x, py - 10 - coin.y);
+          if (dist < 20) {
+            coin.collected = true;
+            setScore(prev => prev + 150);
+            gainXP(5);
+            playSound('clear');
+
+            for (let i = 0; i < 6; i++) {
+              particlesList.push({
+                x: coin.x,
+                y: coin.y,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.5) * 5,
+                life: 0.8,
+                color: '#ffff00'
+              });
+            }
+          }
+        }
+
+        if (coin.x < -50) coinsList.splice(idx, 1);
+      });
+
+      particlesList.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.05;
+        ctx.fillStyle = p.color;
+        ctx.save();
+        ctx.globalAlpha = p.life;
+        ctx.fillRect(p.x, p.y, Math.max(1, 4 * p.life), Math.max(1, 4 * p.life));
+        ctx.restore();
+        if (p.life <= 0) particlesList.splice(idx, 1);
+      });
+
+      ctx.save();
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = '#00f0ff';
+      ctx.fillStyle = '#00f0ff';
+      let px = 50;
+      let py = canvas.height - 50 - playerY - 20;
+      ctx.beginPath();
+      ctx.arc(px + 8, py - 5, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(px + 5, py, 6, 12);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2.5;
+      let angle = Math.sin(runDistance * 0.8) * 0.6;
+      ctx.beginPath();
+      ctx.moveTo(px + 8, py + 12);
+      ctx.lineTo(px + 8 + Math.sin(angle) * 10, py + 22);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(px + 8, py + 12);
+      ctx.lineTo(px + 8 - Math.sin(angle) * 10, py + 22);
+      ctx.stroke();
+      ctx.restore();
+
+      if (runDistance > stage * 200) {
+        playSound('clear');
+        setStage(prev => prev + 1);
+      }
+    };
+
+    gameLoop();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', handleKeyDown);
+      delete (window as any).driftPlatformerJump;
+    };
+  }, [isPlaying, gameId, stage]);
+
+  // -------------------------------------------------------------
+  // 2048 PUZZLE NEON GRID ENGINE
+  // -------------------------------------------------------------
+  useEffect(() => {
+    if (gameId !== '2048' || !isPlaying || gameOver || gameWon) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let board: number[][] = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ];
+
+    const addTile = () => {
+      let empty: { r: number; c: number }[] = [];
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (board[r][c] === 0) empty.push({ r, c });
+        }
+      }
+      if (empty.length > 0) {
+        let spot = empty[Math.floor(Math.random() * empty.length)];
+        board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
+      }
+    };
+
+    addTile();
+    addTile();
+
+    const slide = (row: number[]) => {
+      let filtered = row.filter(val => val !== 0);
+      let missing = 4 - filtered.length;
+      let zeros = Array(missing).fill(0);
+      return zeros.concat(filtered);
+    };
+
+    const merge = (row: number[]) => {
+      for (let i = 3; i > 0; i--) {
+        if (row[i] !== 0 && row[i] === row[i - 1]) {
+          row[i] *= 2;
+          setScore(prev => prev + row[i]);
+          gainXP(Math.floor(row[i] / 10));
+          playSound('clear');
+          row[i - 1] = 0;
+        }
+      }
+      return row;
+    };
+
+    const rotateBoard = () => {
+      let temp = Array.from({ length: 4 }, () => Array(4).fill(0));
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          temp[c][3 - r] = board[r][c];
+        }
+      }
+      board = temp;
+    };
+
+    const checkGameOver = () => {
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (board[r][c] === 0) return false;
+          if (r < 3 && board[r][c] === board[r + 1][c]) return false;
+          if (c < 3 && board[r][c] === board[r][c + 1]) return false;
+        }
+      }
+      return true;
+    };
+
+    const moveRight = () => {
+      let changed = false;
+      for (let r = 0; r < 4; r++) {
+        let original = [...board[r]];
+        let slid = slide(board[r]);
+        let merged = merge(slid);
+        let finalRow = slide(merged);
+        board[r] = finalRow;
+        if (original.some((val, idx) => val !== finalRow[idx])) changed = true;
+      }
+      return changed;
+    };
+
+    const handleMove = (direction: 'LEFT' | 'RIGHT' | 'UP' | 'DOWN') => {
+      let moved = false;
+      if (direction === 'RIGHT') {
+        moved = moveRight();
+      } else if (direction === 'LEFT') {
+        rotateBoard();
+        rotateBoard();
+        moved = moveRight();
+        rotateBoard();
+        rotateBoard();
+      } else if (direction === 'UP') {
+        rotateBoard();
+        rotateBoard();
+        rotateBoard();
+        moved = moveRight();
+        rotateBoard();
+      } else if (direction === 'DOWN') {
+        rotateBoard();
+        moved = moveRight();
+        rotateBoard();
+        rotateBoard();
+        rotateBoard();
+      }
+
+      if (moved) {
+        playSound('land');
+        addTile();
+        if (checkGameOver()) {
+          setGameOver(true);
+          setIsPlaying(false);
+          playSound('gameover');
+        }
+        let maxVal = 0;
+        for (let r = 0; r < 4; r++) {
+          for (let c = 0; c < 4; c++) {
+            if (board[r][c] > maxVal) maxVal = board[r][c];
+          }
+        }
+        if (maxVal >= 2048) {
+          setGameWon(true);
+          setIsPlaying(false);
+          playSound('clear');
+        } else {
+          setStage(Math.max(1, Math.floor(Math.log2(maxVal) - 1)));
+        }
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') { e.preventDefault(); handleMove('RIGHT'); }
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') { e.preventDefault(); handleMove('LEFT'); }
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); handleMove('UP'); }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') { e.preventDefault(); handleMove('DOWN'); }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    (window as any).drift2048Up = () => handleMove('UP');
+    (window as any).drift2048Down = () => handleMove('DOWN');
+    (window as any).drift2048Left = () => handleMove('LEFT');
+    (window as any).drift2048Right = () => handleMove('RIGHT');
+
+    let animId: number;
+
+    const colors: Record<number, string> = {
+      2: '#00f0ff',
+      4: '#00c3ff',
+      8: '#0084ff',
+      16: '#0048ff',
+      32: '#6200ff',
+      64: '#aa00ff',
+      128: '#ff00ff',
+      256: '#ff00aa',
+      512: '#ff0055',
+      1024: '#ff3300',
+      2048: '#ffff00'
+    };
+
+    const drawGrid = () => {
+      animId = requestAnimationFrame(drawGrid);
+
+      ctx.fillStyle = '#06010f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      let gridSide = Math.min(canvas.width, canvas.height) - 40;
+      let padding = 12;
+      let size = (gridSide - padding * 5) / 4;
+      let offsetStartX = (canvas.width - gridSide) / 2;
+      let offsetStartY = (canvas.height - gridSide) / 2;
+
+      ctx.fillStyle = '#110526';
+      ctx.strokeStyle = '#ff00ff';
+      ctx.lineWidth = 1;
+      ctx.fillRect(offsetStartX, offsetStartY, gridSide, gridSide);
+      ctx.strokeRect(offsetStartX, offsetStartY, gridSide, gridSide);
+
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          let tx = offsetStartX + padding + c * (size + padding);
+          let ty = offsetStartY + padding + r * (size + padding);
+
+          let val = board[r][c];
+
+          if (val === 0) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.fillRect(tx, ty, size, size);
+          } else {
+            ctx.save();
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = colors[val] || '#ff00ff';
+            ctx.fillStyle = colors[val] || '#ff00ff';
+            ctx.fillRect(tx, ty, size, size);
+            ctx.restore();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size / 2.8}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(val.toString(), tx + size / 2, ty + size / 2);
+          }
+        }
+      }
+    };
+
+    drawGrid();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('keydown', handleKeyDown);
+      delete (window as any).drift2048Up;
+      delete (window as any).drift2048Down;
+      delete (window as any).drift2048Left;
+      delete (window as any).drift2048Right;
+    };
+  }, [isPlaying, gameId]);
+
   // Game startup initializer
   const startGame = () => {
     setScore(0);
@@ -1440,7 +2411,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
             )}
 
             {/* Dynamic Game Rendering Canvas */}
-            {gameId === 'captn-ghost' || gameId === 'space-invaders' || gameId === 'tetris' ? (
+            {['captn-ghost', 'space-invaders', 'tetris', 'snake', 'retro-racer', 'pixel-platformer', '2048'].includes(gameId) ? (
               <canvas
                 ref={canvasRef}
                 className="w-full h-full bg-[#05000a] block cursor-crosshair"
@@ -1531,7 +2502,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
             )}
 
             {/* Mobile Touch Controls Overlays */}
-            {isPlaying && isMobile && (gameId === 'space-invaders' || gameId === 'tetris') && (
+            {isPlaying && isMobile && (
               <div className="absolute inset-x-0 bottom-16 z-30 flex justify-center gap-6 px-4 pointer-events-auto">
                 {gameId === 'space-invaders' && (
                   <div className="flex gap-4 w-full justify-between items-center max-w-sm">
@@ -1589,6 +2560,68 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
                     </div>
                   </div>
                 )}
+                {['snake', '2048'].includes(gameId) && (
+                  <div className="flex flex-col items-center gap-1.5 max-w-sm">
+                    <button
+                      onTouchStart={() => gameId === 'snake' ? (window as any).driftSnakeUp?.() : (window as any).drift2048Up?.()}
+                      className="w-11 h-11 rounded-full border border-neon-blue bg-black/80 text-neon-blue flex items-center justify-center active:bg-neon-blue active:text-black select-none"
+                    >
+                      ▲
+                    </button>
+                    <div className="flex gap-6">
+                      <button
+                        onTouchStart={() => gameId === 'snake' ? (window as any).driftSnakeLeft?.() : (window as any).drift2048Left?.()}
+                        className="w-11 h-11 rounded-full border border-neon-blue bg-black/80 text-neon-blue flex items-center justify-center active:bg-neon-blue active:text-black select-none"
+                      >
+                        ◀
+                      </button>
+                      <button
+                        onTouchStart={() => gameId === 'snake' ? (window as any).driftSnakeRight?.() : (window as any).drift2048Right?.()}
+                        className="w-11 h-11 rounded-full border border-neon-blue bg-black/80 text-neon-blue flex items-center justify-center active:bg-neon-blue active:text-black select-none"
+                      >
+                        ▶
+                      </button>
+                    </div>
+                    <button
+                      onTouchStart={() => gameId === 'snake' ? (window as any).driftSnakeDown?.() : (window as any).drift2048Down?.()}
+                      className="w-11 h-11 rounded-full border border-neon-blue bg-black/80 text-neon-blue flex items-center justify-center active:bg-neon-blue active:text-black select-none"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                )}
+                {gameId === 'retro-racer' && (
+                  <div className="flex gap-4 w-full justify-between items-center max-w-sm">
+                    <div className="flex gap-2">
+                      <button
+                        onTouchStart={() => (window as any).driftRacerLeft?.()}
+                        className="w-12 h-12 rounded-full border border-neon-blue bg-black/80 text-neon-blue text-lg font-bold active:bg-neon-blue active:text-black flex items-center justify-center select-none"
+                      >
+                        ◀
+                      </button>
+                      <button
+                        onTouchStart={() => (window as any).driftRacerRight?.()}
+                        className="w-12 h-12 rounded-full border border-neon-blue bg-black/80 text-neon-blue text-lg font-bold active:bg-neon-blue active:text-black flex items-center justify-center select-none"
+                      >
+                        ▶
+                      </button>
+                    </div>
+                    <button
+                      onTouchStart={() => (window as any).driftRacerAccelerate?.()}
+                      className="w-16 h-16 rounded-full border-2 border-neon-pink bg-black/80 text-neon-pink text-xs font-black tracking-widest active:bg-neon-pink active:text-black flex items-center justify-center select-none"
+                    >
+                      ACCEL
+                    </button>
+                  </div>
+                )}
+                {gameId === 'pixel-platformer' && (
+                  <button
+                    onTouchStart={() => (window as any).driftPlatformerJump?.()}
+                    className="w-20 h-20 rounded-full border-4 border-neon-pink bg-black/80 text-neon-pink text-sm font-black tracking-widest active:bg-neon-pink active:text-black flex items-center justify-center select-none"
+                  >
+                    JUMP
+                  </button>
+                )}
               </div>
             )}
 
@@ -1619,6 +2652,27 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
                 <li><strong className="text-neon-pink">SOFT DROP</strong>: Press <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">S</kbd> or <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">Down</kbd> arrow.</li>
                 <li><strong className="text-neon-pink">HARD DROP</strong>: Press the <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd> key.</li>
                 <li><strong className="text-neon-blue">MOBILE</strong>: Use the on-screen direction controls and rotate/drop action pads.</li>
+              </ul>
+            ) : gameId === 'snake' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">STEER NEON SNAKE</strong>: Press <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">W</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">A</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">S</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">D</kbd> or direction arrows.</li>
+                <li><strong className="text-neon-pink">MOBILE</strong>: Use the on-screen direction pad buttons to steer.</li>
+              </ul>
+            ) : gameId === 'retro-racer' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">STEER CAR</strong>: Press <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">A</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">D</kbd> or Left/Right arrows.</li>
+                <li><strong className="text-neon-blue">BOOST NITRO</strong>: Press the <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd> key to trigger glowing thrusters.</li>
+                <li><strong className="text-neon-pink">ACCELERATE / BRAKE</strong>: Press <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">W</kbd> / <kbd className="bg-black border border-neon-pink px-2 py-0.5 rounded text-white text-[10px]">S</kbd> or Up/Down arrows.</li>
+              </ul>
+            ) : gameId === 'pixel-platformer' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">JUMP / DOUBLE-JUMP</strong>: Press the <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">SPACEBAR</kbd> or <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">W</kbd> or <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">Up</kbd> arrow key.</li>
+                <li><strong className="text-neon-pink">MOBILE</strong>: Tap the big JUMP button on-screen to hop over red hazard columns.</li>
+              </ul>
+            ) : gameId === '2048' ? (
+              <ul className="list-disc pl-5 flex flex-col gap-2 font-mono text-xs text-text-secondary">
+                <li><strong className="text-neon-blue">SLIDE TILES</strong>: Press <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">W</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">A</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">S</kbd> / <kbd className="bg-black border border-neon-blue px-2 py-0.5 rounded text-white text-[10px]">D</kbd> or arrow keys.</li>
+                <li><strong className="text-neon-pink">OBJECTIVE</strong>: Merge matching numbers to double their value, and reach the 2048 glass tile!</li>
               </ul>
             ) : (
               <p className="text-xs font-mono">{game.description || 'Access open-source game. Enjoy!'}</p>

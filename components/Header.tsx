@@ -18,6 +18,7 @@ export default function Header() {
   const primaryLinks = [
     { name: 'Home', href: '/' },
     { name: 'Games', href: '/games' },
+    { name: 'Casino', href: '/casino' },
     { name: 'CunningCats', href: '/cunningcats' },
     { name: 'RogueGhost', href: '/rogueghost' },
     { name: 'AI Agents', href: '/agents' },
