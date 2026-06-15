@@ -17,17 +17,12 @@ export default function Header() {
   // Navigation Structure
   const primaryLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Games', href: '/games' },
-    { name: 'More Games', href: '/more-games' },
-    { name: 'Casino', href: '/casino' },
-    { name: 'CunningCats', href: '/cunningcats' },
     { name: 'RogueGhost', href: '/rogueghost' },
-    { name: 'AI Agents', href: '/agents' },
     { name: 'News', href: '/news' },
     { name: 'Community', href: '/community' },
-    { name: 'Store', href: '/store' },
-    { name: 'Tournaments', href: '/tournaments' },
     { name: 'Leaderboards', href: '/leaderboard' },
+    { name: 'Tournaments', href: '/tournaments' },
+    { name: 'Store', href: '/store' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' }
   ];
@@ -59,8 +54,8 @@ export default function Header() {
 
   // Pre-seeded tactical alerts
   const [notifications, setNotifications] = useState([
-    { id: '1', text: 'TACTICAL ALERT: CunningCats Nitro Grand Prix has launched!', read: false, time: '2h ago' },
-    { id: '2', text: 'SECURE_LINK: New RogueGhost Mission: Sandbath is active.', read: false, time: '1d ago' },
+    { id: '1', text: 'TACTICAL ALERT: RogueGhost – New Sandbath mission sector is now live!', read: false, time: '2h ago' },
+    { id: '2', text: 'SECURE_LINK: RogueGhost v0.2 Cargology map coordinates released.', read: false, time: '1d ago' },
     { id: '3', text: 'SYSTEM: Weekly global leaderboard scores compiled.', read: true, time: '3d ago' }
   ]);
 
@@ -75,7 +70,7 @@ export default function Header() {
     e.preventDefault();
     if (searchQuery.trim()) {
       setSearchFocused(false);
-      router.push(`/games/?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/rogueghost`);
     }
   };
 
