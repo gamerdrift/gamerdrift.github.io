@@ -4,288 +4,598 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useUser } from '../../lib/state/UserContext';
 
+// ─── MAP DATA ───────────────────────────────────────────────────────────────
+const MISSIONS = [
+  {
+    id: 'sandbath',
+    code: 'SB-44',
+    name: 'SANDBATH',
+    subtitle: 'Desert Military Compound',
+    season: 'SEASON 01',
+    status: 'ACTIVE',
+    playable: true,
+    mapImage: '/map_sandbath.png',
+    themeColor: '#ff9f00',
+    glowColor: 'rgba(255,159,0,0.35)',
+    accentColor: '#ffcc44',
+    bgGradient: 'from-[#1a0e00] via-[#0d0700] to-[#05070a]',
+    borderGlow: 'shadow-[0_0_40px_rgba(255,159,0,0.2)]',
+    classification: 'OPERATION: SCORCHED EARTH',
+    environment: 'Arid desert, +42°C, golden-hour sun, long shadows',
+    threat: 'HIGH',
+    enemyCount: '4 GUARDS',
+    timeLimit: '08:00',
+    reward: '500 XP',
+    objectives: [
+      { step: '01', icon: '🎯', label: 'PRIMARY', text: 'Eliminate all 4 hostile guards within the compound perimeter.' },
+      { step: '02', icon: '🏃', label: 'SECONDARY', text: 'Reach the smoke-flare extraction zone in the northern sector of the compound.' },
+      { step: '03', icon: '🔇', label: 'BONUS', text: 'Complete the mission without triggering alarm systems for stealth multiplier.' },
+    ],
+    intel: [
+      'Enemy patrols rotate clockwise — intercept during blind-spot transitions.',
+      'Sandbag clusters at grid refs B2, C4, D2 provide full crouched cover.',
+      'Extraction smoke is active — approach from the west side to avoid sniper line.',
+    ],
+    controls: [
+      { key: 'WASD', action: 'Move operative' },
+      { key: 'MOUSE', action: 'Aim / Look' },
+      { key: 'LMB', action: 'Shoot' },
+      { key: 'R', action: 'Reload' },
+      { key: 'SHIFT', action: 'Sprint' },
+      { key: 'C', action: 'Crouch' },
+      { key: 'F', action: 'Fullscreen' },
+    ],
+  },
+  {
+    id: 'snowblow',
+    code: 'SW-07',
+    name: 'SNOWBLOW',
+    subtitle: 'Arctic Research Outpost',
+    season: 'SEASON 02',
+    status: 'COMING SOON',
+    playable: false,
+    mapImage: '/map_snowblow.png',
+    themeColor: '#00f0ff',
+    glowColor: 'rgba(0,240,255,0.35)',
+    accentColor: '#88eeff',
+    bgGradient: 'from-[#00101a] via-[#000d14] to-[#05070a]',
+    borderGlow: 'shadow-[0_0_40px_rgba(0,240,255,0.2)]',
+    classification: 'OPERATION: FROZEN PROTOCOL',
+    environment: 'Arctic tundra, −28°C, active blizzard, visibility 25m',
+    threat: 'EXTREME',
+    enemyCount: '6 GUARDS + 2 SNIPERS',
+    timeLimit: '12:00',
+    reward: '900 XP',
+    objectives: [
+      { step: '01', icon: '💾', label: 'PRIMARY', text: 'Breach the research lab server room on Floor 2 and extract the classified data drive.' },
+      { step: '02', icon: '🚁', label: 'SECONDARY', text: 'Reach the helipad extraction zone without triggering rooftop sniper alerts.' },
+      { step: '03', icon: '❄️', label: 'BONUS', text: 'Disable the thermal camera array to earn the "Ghost Protocol" commendation.' },
+    ],
+    intel: [
+      'Rooftop snipers rotate 180° every 45 seconds — use snowdrift cover to advance.',
+      'The underground bunker tunnel connects the lab to the barracks — use for silent flanking.',
+      'Frozen lake crossing (SW sector) is exposed — only attempt during blizzard whiteout.',
+    ],
+    controls: [
+      { key: 'WASD', action: 'Move operative' },
+      { key: 'MOUSE', action: 'Aim / Look' },
+      { key: 'LMB', action: 'Shoot' },
+      { key: 'R', action: 'Reload' },
+      { key: 'SHIFT', action: 'Sprint' },
+      { key: 'C', action: 'Crouch' },
+    ],
+  },
+  {
+    id: 'cargology',
+    code: 'CG-22',
+    name: 'CARGOLOGY',
+    subtitle: 'Industrial Cargo Terminal',
+    season: 'SEASON 03',
+    status: 'COMING SOON',
+    playable: false,
+    mapImage: '/map_cargology.png',
+    themeColor: '#ff6600',
+    glowColor: 'rgba(255,102,0,0.35)',
+    accentColor: '#ffaa44',
+    bgGradient: 'from-[#1a0800] via-[#0d0500] to-[#05070a]',
+    borderGlow: 'shadow-[0_0_40px_rgba(255,102,0,0.2)]',
+    classification: 'OPERATION: IRON HARBOUR',
+    environment: 'Industrial docklands, +12°C, sodium lighting, industrial smog',
+    threat: 'VERY HIGH',
+    enemyCount: '10 GUARDS + 2 GUN EMPLACEMENTS',
+    timeLimit: '15:00',
+    reward: '1200 XP',
+    objectives: [
+      { step: '01', icon: '🧑‍🔬', label: 'PRIMARY', text: 'Breach the main warehouse and rescue 3 hostage scientists from separate holding rooms.' },
+      { step: '02', icon: '🚚', label: 'SECONDARY', text: 'Navigate the shipping container maze to the extraction truck at the north gate.' },
+      { step: '03', icon: '💣', label: 'BONUS', text: 'Destroy the oil tanker fuel line to prevent enemy reinforcement deployment.' },
+    ],
+    intel: [
+      'Shipping container corridors create tight CQC zones — use silenced carbine in close quarters.',
+      'The moving freight train cuts across the central route — time your crossing between passes.',
+      'Mounted gun on the tanker deck covers the north exit — must be neutralized or flanked via maintenance tunnel.',
+    ],
+    controls: [
+      { key: 'WASD', action: 'Move operative' },
+      { key: 'MOUSE', action: 'Aim / Look' },
+      { key: 'LMB', action: 'Shoot' },
+      { key: 'R', action: 'Reload' },
+      { key: 'SHIFT', action: 'Sprint' },
+      { key: 'C', action: 'Crouch' },
+    ],
+  },
+  {
+    id: 'forestfun',
+    code: 'FF-13',
+    name: 'FORESTFUN',
+    subtitle: 'Dense Woodland Combat Zone',
+    season: 'SEASON 04',
+    status: 'COMING SOON',
+    playable: false,
+    mapImage: '/map_forestfun.png',
+    themeColor: '#4ade80',
+    glowColor: 'rgba(74,222,128,0.35)',
+    accentColor: '#86efac',
+    bgGradient: 'from-[#001a08] via-[#000d05] to-[#05070a]',
+    borderGlow: 'shadow-[0_0_40px_rgba(74,222,128,0.2)]',
+    classification: 'OPERATION: DARK CANOPY',
+    environment: 'Temperate forest, −5°C, night op, rain, 15m visibility',
+    threat: 'EXTREME',
+    enemyCount: '8 GUARDS + 3 PATROL DOGS',
+    timeLimit: '10:00',
+    reward: '1000 XP',
+    objectives: [
+      { step: '01', icon: '💥', label: 'PRIMARY', text: 'Plant the explosive charge at the logging camp fuel depot to destroy enemy supply chain.' },
+      { step: '02', icon: '🌉', label: 'SECONDARY', text: 'Reach extraction at the river bridge before the 8-minute countdown expires.' },
+      { step: '03', icon: '🐕', label: 'BONUS', text: 'Neutralize all 3 patrol dogs silently to prevent compound-wide alert protocol.' },
+    ],
+    intel: [
+      'Night operation — enemy guards carry flashlights. Stay out of beam arc or risk instant detection.',
+      'Patrol dogs detect scent — move downwind (westward) when navigating around kennel positions.',
+      'Underground tunnel network (south spawn → village) allows fully silent approach to the fuel depot.',
+    ],
+    controls: [
+      { key: 'WASD', action: 'Move operative' },
+      { key: 'MOUSE', action: 'Aim / Look' },
+      { key: 'LMB', action: 'Shoot' },
+      { key: 'R', action: 'Reload' },
+      { key: 'SHIFT', action: 'Sprint' },
+      { key: 'C', action: 'Crouch' },
+    ],
+  },
+];
+
+// ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function RogueGhostPage() {
   const { user, gainXP } = useUser();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isTheaterMode, setIsTheaterMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<'briefing' | 'controls' | 'telemetry'>('briefing');
-  const gameContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedMission, setSelectedMission] = useState(MISSIONS[0]);
+  const [briefingOpen, setBriefingOpen] = useState(false);
+  const [launching, setLaunching] = useState(false);
+  const [launchProgress, setLaunchProgress] = useState(0);
+  const [activeTab, setActiveTab] = useState<'objectives' | 'intel' | 'controls'>('objectives');
+  const gameRef = useRef<HTMLDivElement>(null);
 
-  const toggleFullscreen = () => {
-    const container = gameContainerRef.current;
-    if (!container) return;
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
-    }
-  };
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
-  }, []);
-
-  const playBeep = (freq = 440, duration = 0.1) => {
-    if (typeof window === 'undefined') return;
+  const playBeep = (freq = 600, dur = 0.08) => {
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new Ctx();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(ctx.destination);
       osc.frequency.value = freq;
       gain.gain.setValueAtTime(0.04, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-      osc.start();
-      osc.stop(ctx.currentTime + duration);
-    } catch (e) {}
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      osc.start(); osc.stop(ctx.currentTime + dur);
+    } catch {}
   };
 
-  const startWebGLGame = () => {
-    setIsPlaying(true);
-    playBeep(600, 0.2);
-    if (user) {
-      gainXP(50); // reward XP for launching the real Godot simulator
-    }
+  const selectMission = (m: typeof MISSIONS[0]) => {
+    playBeep(800, 0.05);
+    setSelectedMission(m);
+    setBriefingOpen(false);
+    setLaunching(false);
+    setLaunchProgress(0);
+    setActiveTab('objectives');
   };
+
+  const openBriefing = () => {
+    playBeep(1000, 0.1);
+    setBriefingOpen(true);
+  };
+
+  const launchMission = () => {
+    if (!selectedMission.playable) return;
+    setLaunching(true);
+    let p = 0;
+    const interval = setInterval(() => {
+      p += Math.random() * 18 + 5;
+      if (p >= 100) {
+        p = 100;
+        clearInterval(interval);
+        if (user) gainXP(50);
+        window.location.href = '/play/rogue-ghost/';
+      }
+      setLaunchProgress(Math.min(100, p));
+    }, 120);
+    playBeep(400, 0.3);
+  };
+
+  const m = selectedMission;
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-[#05070a] relative font-mono text-xs text-slate-300">
-      {/* Background Cyber Grid */}
-      <div className="absolute inset-0 bg-tactical-grid opacity-10 pointer-events-none"></div>
-      <div className="scanlines"></div>
+    <div className="w-full min-h-screen bg-[#05070a] relative font-mono text-xs text-slate-300 overflow-x-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-tactical-grid opacity-10 pointer-events-none" />
+      <div className="scanlines" />
 
-      <div 
-        ref={gameContainerRef}
-        className={`relative z-10 flex flex-col gap-6 ${
-          isFullscreen 
-            ? 'fixed inset-0 w-screen h-screen z-50 p-8 bg-[#05070a] overflow-y-auto max-w-full' 
-            : 'max-w-6xl mx-auto'
-        }`}
-      >
-        {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#00f0ff]/20 pb-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 relative z-10">
+
+        {/* ── PAGE HEADER ── */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b pb-5 mb-8" style={{ borderColor: `${m.themeColor}30` }}>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/30 text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
-                FLAGSHIP_NODE: 02
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider border" style={{ color: m.themeColor, borderColor: `${m.themeColor}40`, backgroundColor: `${m.themeColor}10` }}>
+                FLAGSHIP_NODE: 01
               </span>
-              <span className="text-slate-500">//</span>
-              <span className="text-slate-500 uppercase tracking-widest text-[9px]">GODOT_WebGL_SIMULATOR</span>
+              <span className="text-slate-600 text-[9px]">// MISSION_SELECT_TERMINAL</span>
             </div>
-            <h1 className="text-3xl font-extrabold text-white tracking-widest uppercase leading-none">
-              ROGUE_GHOST <span className="text-[#00f0ff] hologram-text">3D</span>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-[0.15em] uppercase leading-none">
+              ROGUE_<span style={{ color: m.themeColor, textShadow: `0 0 20px ${m.themeColor}60` }}>GHOST</span>
             </h1>
+            <p className="text-slate-600 text-[9px] tracking-widest uppercase mt-1">// SELECT DEPLOYMENT SECTOR — REVIEW BRIEFING — DEPLOY OPERATIVE</p>
           </div>
-
           <div className="flex items-center gap-3 mt-4 md:mt-0">
-            <button
-              onClick={() => {
-                setIsTheaterMode(!isTheaterMode);
-                playBeep(450, 0.05);
-              }}
-              className="text-[10px] font-bold tracking-widest px-3 py-2 border border-[#ff00ff] text-[#ff00ff] hover:bg-[#ff00ff]/10 rounded transition-all duration-300"
-            >
-              [ {isTheaterMode ? 'STANDARD_VIEW' : 'THEATER_VIEW'} ]
-            </button>
-            <button
-              onClick={toggleFullscreen}
-              className="text-[10px] font-bold tracking-widest px-3 py-2 border border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff]/10 rounded transition-all duration-300 shadow-[0_0_10px_rgba(0,240,255,0.1)]"
-            >
-              {isFullscreen ? '[ EXIT_FULLSCREEN ]' : '[ ⛶ FULLSCREEN ]'}
-            </button>
-            <Link 
-              href="/games"
-              className="text-[10px] font-bold tracking-widest px-3 py-2 border border-slate-700 text-slate-400 hover:border-slate-500 rounded transition-all"
-            >
-              [ BACK_TO_ARCADE ]
+            <div className="text-right text-[9px] text-slate-600 uppercase">
+              <div>OPERATIVE: <span className="text-white font-bold">{user ? user.username.toUpperCase() : 'GUEST'}</span></div>
+              <div>CLEARANCE: <span style={{ color: m.themeColor }} className="font-bold">TOP SECRET</span></div>
+            </div>
+            <Link href="/" className="text-[10px] font-bold tracking-widest px-3 py-2 border border-slate-800 text-slate-500 hover:border-slate-600 hover:text-slate-300 transition-all">
+              [ HOME ]
             </Link>
           </div>
         </div>
 
-        {/* Main Interface Layout */}
-        <div className={`flex flex-col lg:flex-row gap-8 items-start`}>
-          
-          {/* Game Cabinet Column */}
-          <div className={`w-full transition-all duration-300 ${isTheaterMode ? 'lg:w-full' : 'lg:w-[65%]'}`}>
-            <div className="relative bg-[#020305] border-4 border-[#ff00ff] rounded-xl overflow-hidden shadow-[0_0_35px_rgba(255,0,255,0.25)] aspect-[16/9]">
-              
-              {/* CRT Screen Overlays */}
-              <div className="absolute inset-0 bg-radial-crt pointer-events-none z-20"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-              {/* Startup Boot Interface */}
-              {!isPlaying ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-30 p-6 text-center">
-                  <div className="text-5xl mb-4 animate-bounce">🕵️‍♂️</div>
-                  <h2 className="text-lg font-bold text-white tracking-widest uppercase mb-2">
-                    ROGUE_GHOST TACTICAL DECK
-                  </h2>
-                  <p className="text-[10px] text-slate-500 max-w-xs uppercase leading-relaxed mb-6">
-                    Infiltrate frozen outposts, purge rogue security AI, rescue hostages, and exit under cover of darkness. Powered by Godot Engine.
-                  </p>
-                  <button
-                    onClick={startWebGLGame}
-                    className="px-8 py-3 bg-[#00f0ff]/20 hover:bg-[#00f0ff]/40 text-[#00f0ff] border-2 border-[#00f0ff] rounded font-bold tracking-widest text-xs transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
-                  >
-                    DEPLOY MISSION &gt;&gt;
-                  </button>
+          {/* ── LEFT: MISSION SELECTOR CARDS ── */}
+          <div className="lg:col-span-4 flex flex-col gap-3">
+            <div className="text-[9px] text-slate-600 uppercase tracking-wider font-bold border-b border-slate-900 pb-2">// DEPLOYMENT SECTORS</div>
+
+            {MISSIONS.map((mission, idx) => (
+              <button
+                key={mission.id}
+                onClick={() => selectMission(mission)}
+                className={`w-full text-left relative overflow-hidden rounded-lg border-2 transition-all duration-300 group ${
+                  selectedMission.id === mission.id
+                    ? 'scale-[1.02]'
+                    : 'opacity-70 hover:opacity-100 hover:scale-[1.01]'
+                }`}
+                style={{
+                  borderColor: selectedMission.id === mission.id ? mission.themeColor : '#1e293b',
+                  boxShadow: selectedMission.id === mission.id ? `0 0 20px ${mission.themeColor}30` : 'none',
+                }}
+              >
+                {/* Map thumbnail */}
+                <div className="relative h-28 overflow-hidden">
+                  <img
+                    src={mission.mapImage}
+                    alt={mission.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    style={{ filter: 'saturate(1.1) contrast(1.05)' }}
+                  />
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(5,7,10,0.95) 20%, transparent 70%)` }} />
+                  {/* Scan lines */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px)' }} />
+
+                  {/* Status badge */}
+                  <div className="absolute top-2 right-2">
+                    <span
+                      className="text-[7px] font-black uppercase tracking-wider px-2 py-0.5"
+                      style={{
+                        backgroundColor: mission.playable ? `${mission.themeColor}25` : 'rgba(30,41,59,0.8)',
+                        border: `1px solid ${mission.playable ? mission.themeColor : '#334155'}`,
+                        color: mission.playable ? mission.themeColor : '#64748b',
+                      }}
+                    >
+                      {mission.playable ? '● ACTIVE' : '⧖ ' + mission.status}
+                    </span>
+                  </div>
+
+                  {/* Season */}
+                  <div className="absolute top-2 left-2 text-[7px] text-slate-500 font-bold tracking-wider">{mission.season}</div>
                 </div>
-              ) : (
-                <iframe
-                  src="/games/rogueghost/index.html"
-                  className="w-full h-full border-none bg-black"
-                  allow="autoplay; gamepad; keyboard; fullscreen"
-                  allowFullScreen
-                  sandbox="allow-scripts allow-same-origin allow-popups allow-pointer-lock"
-                />
-              )}
-            </div>
 
-            {/* Cabinet Sub-panel */}
-            <div className="mt-4 p-3 bg-[#0c0f16]/90 border border-slate-900 rounded flex justify-between items-center text-[10px] text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#39ff14] animate-ping"></span>
-                UPLINK_SECURE // LATENCY: 8ms
-              </span>
-              <span className="text-[#00f0ff] font-bold">WebGL_SYSTEM: ONLINE // 60 FPS</span>
-            </div>
+                {/* Card footer */}
+                <div className="px-3 py-2 bg-[#0c0f16]">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="font-black text-sm tracking-wider uppercase" style={{ color: selectedMission.id === mission.id ? mission.themeColor : '#94a3b8' }}>
+                        {mission.name}
+                      </div>
+                      <div className="text-[8px] text-slate-600 uppercase">{mission.subtitle}</div>
+                    </div>
+                    <div className="text-right text-[8px]">
+                      <div className="text-slate-500">THREAT</div>
+                      <div className="font-bold" style={{ color: mission.threat === 'EXTREME' ? '#ff4444' : mission.threat === 'VERY HIGH' ? '#ff6600' : '#ff9f00' }}>
+                        {mission.threat}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active indicator bar */}
+                {selectedMission.id === mission.id && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: mission.themeColor, boxShadow: `0 0 8px ${mission.themeColor}` }} />
+                )}
+              </button>
+            ))}
           </div>
 
-          {/* Intel & Briefings Column */}
-          {!isTheaterMode && (
-            <div className="w-full lg:w-[35%] flex flex-col gap-5 flex-shrink-0">
-              
-              {/* Tabs */}
-              <div className="flex border-b border-slate-900">
-                {(['briefing', 'controls', 'telemetry'] as const).map(tab => (
+          {/* ── RIGHT: MISSION POSTER + BRIEFING ── */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+
+            {/* MISSION POSTER — cinematic hero image */}
+            <div
+              className={`relative w-full rounded-xl overflow-hidden border-2 ${m.borderGlow}`}
+              style={{ borderColor: m.themeColor, aspectRatio: '16/7' }}
+            >
+              <img
+                key={m.id}
+                src={m.mapImage}
+                alt={m.name}
+                className="w-full h-full object-cover"
+                style={{
+                  filter: 'saturate(1.3) contrast(1.1) brightness(0.85)',
+                  transition: 'all 0.4s ease',
+                }}
+              />
+
+              {/* Gradient overlays */}
+              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, rgba(5,7,10,0.85) 0%, transparent 50%, rgba(5,7,10,0.4) 100%)` }} />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(5,7,10,0.95) 0%, transparent 60%)` }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)' }} />
+
+              {/* Top-left classification */}
+              <div className="absolute top-4 left-5 z-10">
+                <div className="text-[8px] font-bold tracking-[0.3em] uppercase mb-1" style={{ color: m.accentColor }}>
+                  ◈ {m.classification}
+                </div>
+                <div className="text-[10px] text-slate-500 uppercase tracking-wider">{m.season} // GRID REF: {m.code}</div>
+              </div>
+
+              {/* Top-right status */}
+              <div className="absolute top-4 right-5 z-10 text-right">
+                <span
+                  className="text-[8px] font-black tracking-widest uppercase px-3 py-1.5 inline-block"
+                  style={{ border: `1px solid ${m.themeColor}`, color: m.themeColor, backgroundColor: `${m.themeColor}15`, boxShadow: `0 0 12px ${m.themeColor}30` }}
+                >
+                  {m.playable ? '● SECTOR ACTIVE' : '⧖ CLASSIFIED — LOCKED'}
+                </span>
+              </div>
+
+              {/* Bottom: mission title + stats */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                  <div>
+                    <div className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">{m.subtitle}</div>
+                    <h2
+                      className="text-4xl md:text-5xl font-black tracking-[0.15em] uppercase leading-none"
+                      style={{ color: m.themeColor, textShadow: `0 0 30px ${m.themeColor}60, 0 0 60px ${m.themeColor}20` }}
+                    >
+                      {m.name}
+                    </h2>
+                    <div className="text-[10px] text-slate-400 uppercase mt-1 font-bold tracking-wider">{m.environment}</div>
+                  </div>
+
+                  {/* Quick stats */}
+                  <div className="flex gap-4 flex-shrink-0">
+                    {[
+                      { label: 'ENEMIES', value: m.enemyCount },
+                      { label: 'TIME LIMIT', value: m.timeLimit },
+                      { label: 'REWARD', value: m.reward },
+                    ].map(stat => (
+                      <div key={stat.label} className="text-center px-3 py-2 bg-black/60 border border-slate-800 min-w-[70px]">
+                        <div className="text-[7px] text-slate-600 uppercase tracking-wider">{stat.label}</div>
+                        <div className="font-black text-[10px] mt-0.5" style={{ color: m.themeColor }}>{stat.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BRIEFING PANEL ── */}
+            <div
+              className="rounded-xl border overflow-hidden"
+              style={{ borderColor: `${m.themeColor}30`, boxShadow: `0 0 25px ${m.themeColor}10` }}
+            >
+              {/* Tab bar */}
+              <div className="flex border-b" style={{ borderColor: `${m.themeColor}20`, backgroundColor: 'rgba(12,15,22,0.9)' }}>
+                {(['objectives', 'intel', 'controls'] as const).map(tab => (
                   <button
                     key={tab}
-                    onClick={() => {
-                      setActiveTab(tab);
-                      playBeep(500, 0.05);
+                    onClick={() => { setActiveTab(tab); playBeep(600, 0.04); }}
+                    className="flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all"
+                    style={{
+                      color: activeTab === tab ? m.themeColor : '#475569',
+                      borderBottom: activeTab === tab ? `2px solid ${m.themeColor}` : '2px solid transparent',
+                      backgroundColor: activeTab === tab ? `${m.themeColor}08` : 'transparent',
                     }}
-                    className={`flex-1 py-2 font-bold tracking-wider text-[10px] uppercase border-t border-x transition-all ${
-                      activeTab === tab 
-                        ? 'border-t-[#00f0ff] border-x-slate-900 bg-[#0c0f16] text-[#00f0ff]' 
-                        : 'border-transparent border-b-slate-900 text-slate-500 hover:text-slate-400'
-                    }`}
                   >
-                    {tab}
+                    {tab === 'objectives' ? '🎯 OBJECTIVES' : tab === 'intel' ? '📡 FIELD INTEL' : '🎮 CONTROLS'}
                   </button>
                 ))}
               </div>
 
-              {/* Tab Contents */}
-              <div className="hud-panel p-5 min-h-[300px] bg-[#0c0f16]/60">
-                {activeTab === 'briefing' && (
+              {/* Tab content */}
+              <div className={`p-6 bg-gradient-to-br ${m.bgGradient} min-h-[200px]`}>
+
+                {/* OBJECTIVES TAB */}
+                {activeTab === 'objectives' && (
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center text-[9px] text-slate-500 font-bold">
-                      <span>TACTICAL MISSION PARAMETERS</span>
-                      <span className="text-[#ff9f00]">CONFIDENTIAL // AGENT_EYES</span>
+                    <div className="text-[9px] text-slate-600 uppercase tracking-wider font-bold mb-4">
+                      // MISSION OBJECTIVES — {m.classification}
                     </div>
+                    {m.objectives.map((obj, i) => (
+                      <div
+                        key={i}
+                        className="flex gap-4 p-4 rounded-lg border relative overflow-hidden group"
+                        style={{
+                          borderColor: i === 0 ? `${m.themeColor}40` : '#1e293b',
+                          backgroundColor: i === 0 ? `${m.themeColor}08` : 'rgba(12,15,22,0.6)',
+                        }}
+                      >
+                        {/* Step indicator */}
+                        <div
+                          className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg font-black text-sm border"
+                          style={{
+                            borderColor: i === 0 ? m.themeColor : '#334155',
+                            color: i === 0 ? m.themeColor : '#475569',
+                            backgroundColor: i === 0 ? `${m.themeColor}15` : 'transparent',
+                          }}
+                        >
+                          {obj.step}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg leading-none">{obj.icon}</span>
+                            <span
+                              className="text-[8px] font-black tracking-widest uppercase px-2 py-0.5"
+                              style={{
+                                color: i === 0 ? m.themeColor : i === 1 ? '#94a3b8' : '#a855f7',
+                                backgroundColor: i === 0 ? `${m.themeColor}15` : i === 1 ? 'rgba(148,163,184,0.1)' : 'rgba(168,85,247,0.1)',
+                                border: `1px solid ${i === 0 ? m.themeColor + '40' : i === 1 ? '#33415580' : '#a855f740'}`,
+                              }}
+                            >
+                              {obj.label}
+                            </span>
+                          </div>
+                          <p className="text-slate-300 text-xs leading-relaxed font-sans">{obj.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-[#00f0ff] font-bold block">OPERATIONAL SECTOR:</span>
-                      <p className="text-slate-400 leading-relaxed font-sans text-xs">
-                        Snowblow Outpost. Extremely low temperatures, restricted visibility. High concentrations of patrol guard drones and automated thermal cameras.
-                      </p>
+                {/* INTEL TAB */}
+                {activeTab === 'intel' && (
+                  <div className="space-y-4">
+                    <div className="text-[9px] text-slate-600 uppercase tracking-wider font-bold mb-4">
+                      // FIELD INTELLIGENCE — CLASSIFIED UPLINK
                     </div>
+                    {m.intel.map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex gap-3 p-4 rounded-lg border"
+                        style={{ borderColor: `${m.themeColor}20`, backgroundColor: 'rgba(0,0,0,0.4)' }}
+                      >
+                        <div
+                          className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[10px] font-black mt-0.5"
+                          style={{ backgroundColor: `${m.themeColor}20`, color: m.themeColor, border: `1px solid ${m.themeColor}40` }}
+                        >
+                          {i + 1}
+                        </div>
+                        <p className="text-slate-300 text-xs leading-relaxed font-sans">{item}</p>
+                      </div>
+                    ))}
 
-                    <div className="space-y-1 pt-2">
-                      <span className="text-[10px] text-[#ff9f00] font-bold block">MISSION OBJECTIVE:</span>
-                      <ol className="list-decimal pl-4 space-y-1.5 text-slate-400 text-xs">
-                        <li>Locate and unlock the three hostage pods in secure vaults.</li>
-                        <li>Maintain low stealth profile index. Alarm triggered at 100% detection.</li>
-                        <li>Reach the helicopter extraction zone only after securing all hostages.</li>
-                      </ol>
+                    {/* Map preview in intel tab */}
+                    <div className="mt-4 rounded-lg overflow-hidden border" style={{ borderColor: `${m.themeColor}20` }}>
+                      <div className="text-[8px] font-bold px-3 py-1.5 uppercase tracking-wider" style={{ backgroundColor: `${m.themeColor}10`, color: m.themeColor }}>
+                        ◈ TACTICAL OVERHEAD MAP — {m.name} // GRID {m.code}
+                      </div>
+                      <img src={m.mapImage} alt={`${m.name} tactical map`} className="w-full object-cover" style={{ maxHeight: '200px', filter: 'saturate(1.2)' }} />
                     </div>
                   </div>
                 )}
 
+                {/* CONTROLS TAB */}
                 {activeTab === 'controls' && (
-                  <div className="space-y-4 text-xs">
-                    <div className="text-[9px] text-slate-500 font-bold">OPERATIVE DIRECTIVES</div>
-
-                    <div className="space-y-3">
-                      <div>
-                        <span className="text-[#00f0ff] font-bold block mb-1">WASD / ARROWS</span>
-                        <span className="text-slate-400">Move the Rogue Ghost operator.</span>
-                      </div>
-                      <div>
-                        <span className="text-[#00f0ff] font-bold block mb-1">MOUSE ROTATION</span>
-                        <span className="text-slate-400">Rotate the camera and align weapon sights.</span>
-                      </div>
-                      <div>
-                        <span className="text-[#00f0ff] font-bold block mb-1">LEFT MOUSE CLICK</span>
-                        <span className="text-slate-400">Fire weapon (Silenced Carbine or Blade projectile).</span>
-                      </div>
-                      <div>
-                        <span className="text-[#ff9f00] font-bold block mb-1">SHIFT (HOLD)</span>
-                        <span className="text-slate-400">Crouch to slide under security beams and reduce noise footprints.</span>
-                      </div>
+                  <div>
+                    <div className="text-[9px] text-slate-600 uppercase tracking-wider font-bold mb-4">
+                      // OPERATIVE KEYBINDING DIRECTIVES
                     </div>
-                  </div>
-                )}
-
-                {activeTab === 'telemetry' && (
-                  <div className="space-y-4">
-                    <div className="text-[9px] text-slate-500 font-bold">SYSTEM TELEMETRY INTEGRITY</div>
-
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500">SIMULATOR ENGINE:</span>
-                        <span className="text-white font-bold">Godot 4.6.3 WebAssembly</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500">RENDER METHOD:</span>
-                        <span className="text-[#00f0ff]">WebGL 2.0 (Compatibility)</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500">CLIENT RESOLUTION:</span>
-                        <span className="text-white">1280 x 720 (Scaled Aspect)</span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500">AUDIO OUT:</span>
-                        <span className="text-[#39ff14] font-bold">ACTIVE (WebAudio API)</span>
-                      </div>
-
-                      <div className="border-t border-slate-900 pt-3">
-                        <span className="text-slate-500 block text-[9px] uppercase mb-1">OPERATOR NOTES:</span>
-                        <p className="text-[10px] text-slate-600 font-sans italic leading-relaxed">
-                          For best performance, close background browser tabs. Enable browser hardware acceleration if framerate drops below 60.
-                        </p>
-                      </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {m.controls.map((ctrl, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-3 p-3 rounded-lg border"
+                          style={{ borderColor: `${m.themeColor}15`, backgroundColor: 'rgba(0,0,0,0.3)' }}
+                        >
+                          <kbd
+                            className="flex-shrink-0 px-2.5 py-1.5 rounded text-[9px] font-black tracking-wider uppercase"
+                            style={{
+                              backgroundColor: `${m.themeColor}15`,
+                              border: `1px solid ${m.themeColor}50`,
+                              color: m.themeColor,
+                              boxShadow: `0 2px 0 ${m.themeColor}30`,
+                              minWidth: '50px',
+                              textAlign: 'center',
+                            }}
+                          >
+                            {ctrl.key}
+                          </kbd>
+                          <span className="text-slate-400 text-xs font-sans">{ctrl.action}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* Pilot Card */}
-              <div className="hud-panel p-4 flex items-center gap-3 bg-gradient-to-r from-[#0c0f16] to-[#05070a]">
-                <div className="w-9 h-9 bg-slate-950 border border-slate-800 rounded-full flex items-center justify-center text-base">
-                  👨‍✈️
-                </div>
-                <div>
-                  <span className="text-slate-500 text-[8px] block uppercase">DRIFTER COMMANDER</span>
-                  <span className="text-white font-bold block uppercase">{user ? user.username : 'GUEST_OPERATIVE'}</span>
-                  <span className="text-[#39ff14] text-[8px] font-bold block mt-0.5">SYNC_COEF: 99.8%</span>
-                </div>
-              </div>
-
             </div>
-          )}
 
+            {/* ── DEPLOY BUTTON ── */}
+            <div className="flex items-center gap-4">
+              {m.playable ? (
+                <div className="flex-1">
+                  {!launching ? (
+                    <button
+                      onClick={launchMission}
+                      className="w-full py-4 text-base font-black tracking-[0.3em] uppercase transition-all duration-300 rounded-lg relative overflow-hidden group"
+                      style={{
+                        backgroundColor: `${m.themeColor}20`,
+                        border: `2px solid ${m.themeColor}`,
+                        color: m.themeColor,
+                        boxShadow: `0 0 25px ${m.themeColor}25`,
+                      }}
+                    >
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ backgroundColor: `${m.themeColor}15` }} />
+                      <span className="relative z-10">▶ DEPLOY OPERATIVE — {m.name}</span>
+                    </button>
+                  ) : (
+                    <div
+                      className="w-full py-4 rounded-lg border-2 relative overflow-hidden"
+                      style={{ borderColor: m.themeColor }}
+                    >
+                      <div
+                        className="absolute inset-y-0 left-0 transition-all duration-150"
+                        style={{ width: `${launchProgress}%`, backgroundColor: `${m.themeColor}30` }}
+                      />
+                      <div className="relative z-10 text-center text-[11px] font-black tracking-widest uppercase" style={{ color: m.themeColor }}>
+                        DEPLOYING OPERATIVE... {Math.floor(launchProgress)}%
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="flex-1 py-4 rounded-lg border-2 border-dashed text-center text-[11px] font-black tracking-widest uppercase text-slate-600"
+                  style={{ borderColor: '#1e293b' }}
+                >
+                  ⧖ SECTOR CLASSIFIED — {m.season} DEPLOYMENT PENDING
+                </div>
+              )}
+
+              <Link
+                href="/play/rogue-ghost/"
+                className="px-5 py-4 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all hover:border-slate-600 text-slate-500 border-slate-800 whitespace-nowrap"
+              >
+                QUICK LAUNCH →
+              </Link>
+            </div>
+
+          </div>
         </div>
-
       </div>
     </div>
   );
