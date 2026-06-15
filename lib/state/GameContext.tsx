@@ -49,8 +49,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Load custom submissions & extend initial default games
+    // Cache-bust: if stored games contain any non-rogue-ghost static IDs, wipe and reseed
     const storedGames = localStorage.getItem('gamerdrift_games');
+    const CURRENT_VERSION = 'rogue-ghost-only-v1';
+    const storedVersion = localStorage.getItem('gamerdrift_version');
+    if (storedVersion !== CURRENT_VERSION) {
+      localStorage.removeItem('gamerdrift_games');
+      localStorage.removeItem('gamerdrift_comments');
+      localStorage.setItem('gamerdrift_version', CURRENT_VERSION);
+    }
     let loadedGames: GameSubmission[] = [];
 
     if (storedGames) {
@@ -107,14 +114,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     if (storedComments) {
       setComments(JSON.parse(storedComments));
     } else {
-      // Pre-seed some mock reviews for Space Invaders and Retro Racer
+      // Pre-seed some mock reviews for RogueGhost
       const seededComments: Record<string, GameComment[]> = {
-        'retro-racer': [
-          { id: '1', username: 'Hex_Netrunner', rating: 5, text: 'Awesome soundtrack! Really captures the cyber synthwave aesthetic.', date: new Date('2026-06-01').toLocaleDateString() },
-          { id: '2', username: 'NeonSamurai', rating: 4, text: 'Clean visuals and responsive controls. Good time killer.', date: new Date('2026-06-02').toLocaleDateString() }
-        ],
-        'space-invaders': [
-          { id: '3', username: 'CipherZero', rating: 5, text: 'Love the neon styling of the alien grid!', date: new Date('2026-05-28').toLocaleDateString() }
+        'rogue-ghost': [
+          { id: '1', username: 'Hex_Netrunner', rating: 5, text: 'Insane stealth mechanics. The Sandbath sector AI is brutal!', date: new Date('2026-06-10').toLocaleDateString() },
+          { id: '2', username: 'GhostInGrid', rating: 5, text: 'Best browser tactical game I have ever played. Triple-A quality.', date: new Date('2026-06-12').toLocaleDateString() },
+          { id: '3', username: 'Desert_Fox', rating: 4, text: 'Smooth controls. Cargology map is my favourite sector.', date: new Date('2026-06-13').toLocaleDateString() }
         ]
       };
       setComments(seededComments);

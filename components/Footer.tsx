@@ -37,10 +37,10 @@ export default function Footer() {
   ];
 
   const intelLinks = [
-    { name: 'Games Database', href: '/games' },
-    { name: 'CunningCats Racing', href: '/cunningcats' },
     { name: 'RogueGhost Operations', href: '/rogueghost' },
-    { name: 'Leaderboards Matrix', href: '/leaderboard' }
+    { name: 'Deploy Mission', href: '/play/rogue-ghost/' },
+    { name: 'Leaderboards Matrix', href: '/leaderboard' },
+    { name: 'Tournaments Grid', href: '/tournaments' }
   ];
 
   const operationsLinks = [
