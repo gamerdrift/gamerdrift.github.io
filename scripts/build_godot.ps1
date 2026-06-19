@@ -22,6 +22,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "✅ Godot Web export generated inside public/games/rogueghost/" -ForegroundColor Green
 
+# Step 2.5: Patch HTML Preloader
+Write-Host "🛠️ [STEP 2.5] Patching HTML preloader..." -ForegroundColor Yellow
+node ./scripts/patch_html.js
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ HTML patching failed!" -ForegroundColor Red
+    exit 1
+}
+Write-Host "✅ HTML patching successful." -ForegroundColor Green
+
 # Step 3: Next.js Compile
 Write-Host "🛰️ [STEP 3] Running Next.js compilation..." -ForegroundColor Yellow
 npm run build

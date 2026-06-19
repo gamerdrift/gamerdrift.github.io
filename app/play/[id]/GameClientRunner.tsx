@@ -50,8 +50,14 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
           setStage(val);
         }
       }
+      
+      // Auto-start game if deployed directly with a mission query parameter
+      const mission = params.get('mission');
+      if (gameId === 'rogue-ghost' && mission) {
+        setIsPlaying(true);
+      }
     }
-  }, []);
+  }, [gameId]);
 
   // Review System States
   const [reviewText, setReviewText] = useState('');
