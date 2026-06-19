@@ -264,6 +264,204 @@ let weaponGroup, gunMesh, muzzleFlashLight;
 let walls = [], extractionZone;
 let extractionReached = false;
 
+// Audio & Mission globals
+let sfx;
+let footstepTimer = 0;
+let missionId = 'sandbath';
+
+// ─── PROCEDURAL SOUND EFFECTS ────────────────────────────────
+class SoundEffects {
+  constructor() {
+    this.ctx = null;
+    this.windNode = null;
+  }
+
+  init() {
+    if (this.ctx) return;
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.startAmbientWind();
+    } catch (e) {
+      console.warn("Failed to initialize AudioContext:", e);
+    }
+  }
+
+  resume() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  playGunshot() {
+    this.init();
+    this.resume();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // Transient high click
+    const clickOsc = ctx.createOscillator();
+    const clickGain = ctx.createGain();
+    clickOsc.type = 'triangle';
+    clickOsc.frequency.setValueAtTime(1200, now);
+    clickOsc.frequency.exponentialRampToValueAtTime(100, now + 0.04);
+    clickGain.gain.setValueAtTime(0.25, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    clickOsc.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    clickOsc.start(now);
+    clickOsc.stop(now + 0.04);
+
+    // Noise buffer boom
+    const bufferSize = ctx.sampleRate * 0.35;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 450;
+    filter.Q.value = 1.2;
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.6, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+    noiseSource.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noiseSource.start(now);
+    noiseSource.stop(now + 0.35);
+  }
+
+  playReload() {
+    this.init();
+    this.resume();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    // Stagger reload sounds across 2.2 seconds
+    this.playClick(now + 0.1, 750, 0.06, 0.12);   // Mag release
+    this.playClick(now + 0.9, 600, 0.08, 0.15);   // Insert new mag
+    this.playClick(now + 1.6, 950, 0.06, 0.18);   // Bolt chamber release
+  }
+
+  playClick(time, freq, duration, volume) {
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, time);
+    osc.frequency.exponentialRampToValueAtTime(120, time + duration);
+    gain.gain.setValueAtTime(volume, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(time);
+    osc.stop(time + duration);
+  }
+
+  playFootstep() {
+    this.init();
+    this.resume();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(90, now);
+    osc.frequency.exponentialRampToValueAtTime(30, now + 0.1);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 130;
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.1);
+  }
+
+  startAmbientWind() {
+    if (!this.ctx) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const bufferSize = ctx.sampleRate * 2.0;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
+    noiseSource.loop = true;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 300;
+    filter.Q.value = 2.0;
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.06, now);
+
+    noiseSource.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    noiseSource.start(now);
+    this.windNode = { source: noiseSource, filter, gain };
+
+    // Modulate wind frequency
+    const modulate = () => {
+      if (!this.windNode || !this.ctx) return;
+      const targetFreq = 180 + Math.random() * 280;
+      const duration = 2.0 + Math.random() * 3.0;
+      filter.frequency.exponentialRampToValueAtTime(targetFreq, ctx.currentTime + duration);
+      setTimeout(modulate, duration * 1000);
+    };
+    modulate();
+  }
+}
+
+// ─── BRIEFING DYNAMIC LOAD ────────────────────────────────────
+function setupStartScreen() {
+  const urlParams = new URLSearchParams(window.location.search);
+  missionId = urlParams.get('mission') || 'sandbath';
+
+  const subEl = document.querySelector('#start-screen .screen-sub');
+  const briefEl = document.querySelector('#start-screen .mission-brief');
+
+  let sectorName = "SANDBATH — DESERT SECTOR";
+  let briefHtml = `<span>MISSION BRIEF:</span> Infiltrate the enemy compound at grid <span>SB-44</span>. Neutralize all hostiles. Reach the smoke-flare extraction zone at the northern boundary.<br><br><span>CONTROLS:</span> WASD Move · Mouse Aim · LMB Shoot · R Reload · Shift Sprint · C Crouch · F Fullscreen`;
+
+  if (missionId === 'snowblow') {
+    sectorName = "SNOWBLOW — ARCTIC SECTOR";
+    briefHtml = `<span>MISSION BRIEF:</span> Infiltrate the research lab compound at grid <span>SW-07</span> under cover of the blizzard. Neutralize all active guards. Reach the helipad extraction zone.<br><br><span>CONTROLS:</span> WASD Move · Mouse Aim · LMB Shoot · R Reload · Shift Sprint · C Crouch · F Fullscreen`;
+  } else if (missionId === 'cargology') {
+    sectorName = "CARGOLOGY — CARGO SECTOR";
+    briefHtml = `<span>MISSION BRIEF:</span> Infiltrate the shipping container maze at grid <span>CG-22</span>. Locate and eliminate all container guards. Evacuate through the north terminal gate.<br><br><span>CONTROLS:</span> WASD Move · Mouse Aim · LMB Shoot · R Reload · Shift Sprint · C Crouch · F Fullscreen`;
+  } else if (missionId === 'forestfun') {
+    sectorName = "FORESTFUN — WOODLAND SECTOR";
+    briefHtml = `<span>MISSION BRIEF:</span> Infiltrate the midnight logging camp at grid <span>FF-13</span>. Clear all security guards in the forest. Escape via the bridge extraction point.<br><br><span>CONTROLS:</span> WASD Move · Mouse Aim · LMB Shoot · R Reload · Shift Sprint · C Crouch · F Fullscreen`;
+  }
+
+  if (subEl) subEl.innerHTML = `// ${sectorName} //`;
+  if (briefEl) briefEl.innerHTML = briefHtml;
+}
+
 // ─── LOAD PROGRESS ───────────────────────────────────────────
 function setLoad(pct, text) {
   document.getElementById('loadbar').style.width = pct + '%';
@@ -272,12 +470,34 @@ function setLoad(pct, text) {
 
 // ─── INIT ─────────────────────────────────────────────────────
 function init() {
+  setupStartScreen();
+  sfx = new SoundEffects();
+
   setLoad(10, 'INITIALIZING RENDERER...');
 
-  // Scene
+  // Scene setup based on mission ID
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x8B7355); // Desert haze
-  scene.fog = new THREE.FogExp2(0xC4A46B, 0.018);
+  
+  let bgColor = 0x8B7355;
+  let fogColor = 0xC4A46B;
+  let fogDensity = 0.018;
+
+  if (missionId === 'snowblow') {
+    bgColor = 0x7A98B0;
+    fogColor = 0x94B0C2;
+    fogDensity = 0.035;
+  } else if (missionId === 'cargology') {
+    bgColor = 0x0F0B14;
+    fogColor = 0x1B1622;
+    fogDensity = 0.022;
+  } else if (missionId === 'forestfun') {
+    bgColor = 0x071208;
+    fogColor = 0x0E1F0F;
+    fogDensity = 0.03;
+  }
+
+  scene.background = new THREE.Color(bgColor);
+  scene.fog = new THREE.FogExp2(fogColor, fogDensity);
 
   clock = new THREE.Clock();
 
@@ -324,73 +544,75 @@ function init() {
 
 // ─── WORLD BUILDER ────────────────────────────────────────────
 function buildWorld() {
-  // Ground — sandy desert
+  // Ground color setting
+  let groundColor = 0xC4955A;
+  let roughness = 0.95;
+  let metalness = 0.0;
+
+  if (missionId === 'snowblow') {
+    groundColor = 0xEAEFF2;
+  } else if (missionId === 'cargology') {
+    groundColor = 0x24262E;
+    roughness = 0.7;
+    metalness = 0.2;
+  } else if (missionId === 'forestfun') {
+    groundColor = 0x1E3B1C;
+  }
+
+  // Sandy / Snowy / Grassy dunes
   const groundGeo = new THREE.PlaneGeometry(200, 200, 40, 40);
-  // Vertex displacement for terrain variation
   const pos = groundGeo.attributes.position;
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i), z = pos.getZ(i);
-    pos.setY(i, (Math.sin(x * 0.1) * Math.cos(z * 0.12) * 0.8));
+    let height = 0;
+    if (missionId === 'sandbath') {
+      height = Math.sin(x * 0.1) * Math.cos(z * 0.12) * 0.8;
+    } else if (missionId === 'snowblow') {
+      height = Math.sin(x * 0.08) * Math.cos(z * 0.08) * 1.5;
+    } else if (missionId === 'forestfun') {
+      height = (Math.sin(x * 0.05) + Math.cos(z * 0.05)) * 2.0;
+    }
+    pos.setY(i, height);
   }
   groundGeo.computeVertexNormals();
   const groundMat = new THREE.MeshStandardMaterial({
-    color: 0xC4955A,
-    roughness: 0.95,
-    metalness: 0.0,
+    color: groundColor,
+    roughness: roughness,
+    metalness: metalness,
   });
   const ground = new THREE.Mesh(groundGeo, groundMat);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // ── COMPOUND WALLS ──
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0x8B7355, roughness: 0.9, metalness: 0.05 });
-  const damagedMat = new THREE.MeshStandardMaterial({ color: 0x7A6345, roughness: 1.0, metalness: 0.0 });
+  // Outer perimeter walls
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: missionId === 'snowblow' ? 0x8B9CA5 : missionId === 'cargology' ? 0x333333 : missionId === 'forestfun' ? 0x2E271F : 0x8B7355,
+    roughness: 0.9,
+    metalness: 0.05
+  });
 
-  // Outer perimeter
   addWall(0, 3, -30, 60, 6, 1.2, wallMat);   // North
   addWall(0, 3,  30, 60, 6, 1.2, wallMat);   // South
   addWall(-30, 3, 0, 1.2, 6, 60, wallMat);   // West
   addWall( 30, 3, 0, 1.2, 6, 60, wallMat);   // East
 
-  // Gate openings (gaps in north wall)
-  addWall(-20, 3, -30, 15, 6, 1.2, wallMat);
-  addWall( 20, 3, -30, 15, 6, 1.2, wallMat);
+  // Gate openings in north wall (except forest which has bridge)
+  if (missionId !== 'forestfun') {
+    addWall(-20, 3, -30, 15, 6, 1.2, wallMat);
+    addWall( 20, 3, -30, 15, 6, 1.2, wallMat);
+  }
 
-  // Interior structures
-  addWall(-10, 2, -15, 12, 4, 1, damagedMat);
-  addWall( 10, 2, -10, 1, 4, 10, damagedMat);
-  addWall(-5, 2, 5, 8, 4, 1, wallMat);
-  addWall( 15, 2, 10, 1, 4, 12, wallMat);
-  addWall(-15, 2, 15, 10, 4, 1, damagedMat);
-  addWall( 5, 2, -5, 6, 4, 1, damagedMat);
-
-  // Watchtowers
-  addTower(-28, 0, -28);
-  addTower( 28, 0, -28);
-  addTower(-28, 0,  28);
-  addTower( 28, 0,  28);
-
-  // Sandbags / cover objects
-  addSandbagPile(-8, 0, -20);
-  addSandbagPile( 8, 0, -20);
-  addSandbagPile( 0, 0,  5);
-  addSandbagPile(-18, 0, 5);
-  addSandbagPile( 18, 0, 5);
-  addSandbagPile( 0, 0, -12);
-
-  // Crates
-  addCrate(-12, 0, 10, 0.4);
-  addCrate(-14, 0, 10, 0.4);
-  addCrate(-12, 0.9, 10, 0.4);
-  addCrate(12, 0, -15, 0.4);
-  addCrate( 5, 0,  18, 0.4);
-
-  // Barrels
-  addBarrel(-20, 0, 0);
-  addBarrel( 20, 0, -5);
-  addBarrel( 0, 0, 20);
-  addBarrel(-10, 0, -5);
+  // Draw layout based on mission ID
+  if (missionId === 'sandbath') {
+    buildDesertLayout();
+  } else if (missionId === 'snowblow') {
+    buildArcticLayout();
+  } else if (missionId === 'cargology') {
+    buildCargoLayout();
+  } else if (missionId === 'forestfun') {
+    buildForestLayout();
+  }
 
   // Extraction Zone (glowing green circle)
   const extGeo = new THREE.CircleGeometry(4, 32);
@@ -404,7 +626,7 @@ function buildWorld() {
   scene.add(extractionZone);
 
   // Extraction point light
-  const extLight = new THREE.PointLight(0x00ff88, 2, 12);
+  const extLight = new THREE.PointLight(0x00ff88, 2.5, 12);
   extLight.position.set(0, 2, 22);
   scene.add(extLight);
 
@@ -415,11 +637,11 @@ function buildWorld() {
     addSmokeEmitter(smokePos);
   }
 
-  // Distant mountains (skybox feel)
+  // Distant mountains
   addDistantMountains();
 
-  // Dust particles
-  addAmbientDust();
+  // Weather particles
+  addAmbientWeather();
 }
 
 function addWall(x, y, z, w, h, d, mat) {
@@ -434,7 +656,8 @@ function addWall(x, y, z, w, h, d, mat) {
 }
 
 function addTower(x, z0, z) {
-  const mat = new THREE.MeshStandardMaterial({ color: 0x7A6040, roughness: 0.9, metalness: 0.1 });
+  const towerColor = missionId === 'snowblow' ? 0x6A7B85 : missionId === 'cargology' ? 0xFF9900 : missionId === 'forestfun' ? 0x2E1E15 : 0x7A6040;
+  const mat = new THREE.MeshStandardMaterial({ color: towerColor, roughness: 0.9, metalness: 0.1 });
   // Base pillar
   const pillar = addWall(x, 5, z, 3, 10, 3, mat);
   // Platform
@@ -491,7 +714,6 @@ function addBarrel(x, y, z) {
 }
 
 function addSmokeEmitter(pos) {
-  // Will emit particles in the game loop
   scene.userData.smokeEmitters = scene.userData.smokeEmitters || [];
   scene.userData.smokeEmitters.push({ pos: pos.clone(), timer: 0 });
 }
@@ -511,22 +733,242 @@ function addDistantMountains() {
   });
 }
 
-function addAmbientDust() {
+function buildDesertLayout() {
+  const damagedMat = new THREE.MeshStandardMaterial({ color: 0x7A6345, roughness: 1.0, metalness: 0.0 });
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x8B7355, roughness: 0.9, metalness: 0.05 });
+
+  // Interior structures
+  addWall(-10, 2, -15, 12, 4, 1, damagedMat);
+  addWall( 10, 2, -10, 1, 4, 10, damagedMat);
+  addWall(-5, 2, 5, 8, 4, 1, wallMat);
+  addWall( 15, 2, 10, 1, 4, 12, wallMat);
+  addWall(-15, 2, 15, 10, 4, 1, damagedMat);
+  addWall( 5, 2, -5, 6, 4, 1, damagedMat);
+
+  // Watchtowers
+  addTower(-28, 0, -28);
+  addTower( 28, 0, -28);
+  addTower(-28, 0,  28);
+  addTower( 28, 0,  28);
+
+  // Cover piles
+  addSandbagPile(-8, 0, -20);
+  addSandbagPile( 8, 0, -20);
+  addSandbagPile( 0, 0,  5);
+  addSandbagPile(-18, 0, 5);
+  addSandbagPile( 18, 0, 5);
+  addSandbagPile( 0, 0, -12);
+
+  // Crates
+  addCrate(-12, 0, 10, 0.4);
+  addCrate(-14, 0, 10, 0.4);
+  addCrate(-12, 0.9, 10, 0.4);
+  addCrate(12, 0, -15, 0.4);
+  addCrate( 5, 0,  18, 0.4);
+
+  // Barrels
+  addBarrel(-20, 0, 0);
+  addBarrel( 20, 0, -5);
+  addBarrel( 0, 0, 20);
+  addBarrel(-10, 0, -5);
+}
+
+function buildArcticLayout() {
+  const labMat = new THREE.MeshStandardMaterial({ color: 0xD0E0E5, roughness: 0.5, metalness: 0.5 });
+  
+  // Central Research Lab structure
+  addWall(0, 3, 0, 20, 6, 1, labMat);         // South wall
+  addWall(-10, 3, -10, 1, 6, 20, labMat);     // West wall
+  addWall(10, 3, -10, 1, 6, 20, labMat);      // East wall
+  addWall(0, 3, -20, 20, 6, 1, labMat);       // North wall
+
+  // Partition panels
+  addWall(-4, 3, -10, 1, 6, 8, labMat);
+  addWall(4, 3, -5, 8, 6, 1, labMat);
+
+  // Server rack models
+  const serverMat = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0x00a0ff, emissiveIntensity: 0.3, roughness: 0.4 });
+  for (let z = -18; z <= -12; z += 2) {
+    addCustomCrate(-6, 0, z, 1.2, 2.2, 0.8, serverMat);
+    addCustomCrate(6, 0, z, 1.2, 2.2, 0.8, serverMat);
+  }
+
+  // Corner towers
+  addTower(-28, 0, -28);
+  addTower( 28, 0, -28);
+  addTower(-28, 0,  28);
+  addTower( 28, 0,  28);
+
+  // Barricades
+  addSandbagPile(-12, 0, -15);
+  addSandbagPile(12, 0, -10);
+  addCrate(-18, 0, 8, 0.2);
+  addCrate(18, 0, 12, 0.8);
+  addBarrel(-15, 0, -5);
+  addBarrel(15, 0, 2);
+}
+
+function buildCargoLayout() {
+  const containerColors = [0x1E3A8A, 0xB91C1C, 0x15803D, 0xC2410C, 0x4B5563];
+  
+  // Containers stacks
+  const stackCoords = [
+    [-15, -15, 4, 3, 8],
+    [-15, -5, 4, 6, 8],
+    [-15, 5, 4, 3, 8],
+    [15, -15, 4, 6, 8],
+    [15, -5, 4, 3, 8],
+    [15, 5, 4, 6, 8],
+    [0, -10, 6, 3, 4],
+    [0, 10, 6, 3, 4],
+    [-8, 0, 4, 3, 4],
+    [8, 0, 4, 3, 4]
+  ];
+
+  stackCoords.forEach((coord, i) => {
+    const col = containerColors[i % containerColors.length];
+    const mat = new THREE.MeshStandardMaterial({ color: col, metalness: 0.6, roughness: 0.4 });
+    addCustomCrate(coord[0], 0, coord[1], coord[2], coord[3], coord[4], mat);
+  });
+
+  addTower(-28, 0, -28);
+  addTower( 28, 0, -28);
+  addTower(-28, 0,  28);
+  addTower( 28, 0,  28);
+
+  addCrate(-8, 0, -18, 0.3);
+  addCrate(8, 0, -18, 0.9);
+  addBarrel(-22, 0, -8);
+  addBarrel(22, 0, 8);
+  addBarrel(-2, 0, -3);
+}
+
+function buildForestLayout() {
+  const logMat = new THREE.MeshStandardMaterial({ color: 0x4A2511, roughness: 0.9 });
+  const leafMat = new THREE.MeshStandardMaterial({ color: 0x1E4620, roughness: 0.9 });
+  const woodCabinMat = new THREE.MeshStandardMaterial({ color: 0x3E251C, roughness: 1.0 });
+
+  // Log piles
+  for (let pile = 0; pile < 4; pile++) {
+    const px = (pile % 2 === 0 ? -12 : 12) + (Math.random() - 0.5) * 4;
+    const pz = (pile < 2 ? -15 : 5) + (Math.random() - 0.5) * 4;
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 3 - r; c++) {
+        const geo = new THREE.CylinderGeometry(0.3, 0.3, 3, 8);
+        geo.rotateZ(Math.PI / 2);
+        const mesh = new THREE.Mesh(geo, logMat);
+        mesh.position.set(px + c * 0.7 + r * 0.35, 0.3 + r * 0.65, pz);
+        mesh.castShadow = true; mesh.receiveShadow = true;
+        scene.add(mesh);
+        walls.push({ mesh, box: new THREE.Box3().setFromObject(mesh) });
+      }
+    }
+  }
+
+  // Wooden cabins
+  addWall(-18, 2, -5, 8, 4, 6, woodCabinMat);
+  addWall(18, 2, 8, 6, 4, 8, woodCabinMat);
+
+  // Trees (trunk + leaf cones)
+  const treeCoords = [
+    [-22, -22], [-18, -25], [-25, -18], [22, -22], [18, -25], [25, -18],
+    [-22, 22], [-18, 25], [-25, 18], [22, 22], [18, 25], [25, 18],
+    [-8, -22], [8, -22], [-8, 12], [8, 12], [0, -5], [-12, 10], [12, -10]
+  ];
+
+  treeCoords.forEach(([tx, tz]) => {
+    const trunkGeo = new THREE.CylinderGeometry(0.2, 0.3, 5, 8);
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x3E2A1C, roughness: 1.0 });
+    const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+    trunk.position.set(tx, 2.5, tz);
+    trunk.castShadow = true; trunk.receiveShadow = true;
+    scene.add(trunk);
+    walls.push({ mesh: trunk, box: new THREE.Box3().setFromObject(trunk) });
+
+    for (let l = 0; l < 3; l++) {
+      const leafGeo = new THREE.ConeGeometry(1.8 - l * 0.4, 2.2, 8);
+      const leaves = new THREE.Mesh(leafGeo, leafMat);
+      leaves.position.set(tx, 4.5 + l * 1.5, tz);
+      leaves.castShadow = true;
+      scene.add(leaves);
+    }
+  });
+
+  addTower(-28, 0, -28);
+  addTower( 28, 0, -28);
+  addTower(-28, 0,  28);
+  addTower( 28, 0,  28);
+}
+
+function addCustomCrate(x, y, z, w, h, d, mat) {
+  const geo = new THREE.BoxGeometry(w, h, d);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, y + h / 2, z);
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  scene.add(mesh);
+  walls.push({ mesh, box: new THREE.Box3().setFromObject(mesh) });
+  return mesh;
+}
+
+function addAmbientWeather() {
   const geo = new THREE.BufferGeometry();
-  const count = 800;
+  
+  let count = 800;
+  let particleSize = 0.04;
+  let particleColor = 0xD4AA70;
+  let opacity = 0.4;
+
+  if (missionId === 'snowblow') {
+    count = 1500;
+    particleSize = 0.08;
+    particleColor = 0xFFFFFF;
+    opacity = 0.85;
+  } else if (missionId === 'cargology') {
+    count = 600;
+    particleSize = 0.05;
+    particleColor = 0x8A7E70;
+    opacity = 0.35;
+  } else if (missionId === 'forestfun') {
+    count = 2000;
+    particleSize = 0.03;
+    particleColor = 0x88CCFF;
+    opacity = 0.7;
+  }
+
   const pos = new Float32Array(count * 3);
+  const vels = new Float32Array(count * 3);
+
   for (let i = 0; i < count; i++) {
     pos[i * 3] = (Math.random() - 0.5) * 60;
-    pos[i * 3 + 1] = Math.random() * 8;
+    pos[i * 3 + 1] = Math.random() * (missionId === 'snowblow' || missionId === 'forestfun' ? 12 : 8);
     pos[i * 3 + 2] = (Math.random() - 0.5) * 60;
+
+    if (missionId === 'snowblow') {
+      vels[i * 3] = -4.0 - Math.random() * 4.0;
+      vels[i * 3 + 1] = -3.0 - Math.random() * 3.0;
+      vels[i * 3 + 2] = (Math.random() - 0.5) * 2;
+    } else if (missionId === 'forestfun') {
+      vels[i * 3] = (Math.random() - 0.5) * 0.5;
+      vels[i * 3 + 1] = -12.0 - Math.random() * 5.0;
+      vels[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+    } else {
+      vels[i * 3] = (Math.random() - 0.5) * 0.1;
+      vels[i * 3 + 1] = -0.1 - Math.random() * 0.2;
+      vels[i * 3 + 2] = (Math.random() - 0.5) * 0.1;
+    }
   }
+
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const mat = new THREE.PointsMaterial({ color: 0xD4AA70, size: 0.04, transparent: true, opacity: 0.4 });
-  const dust = new THREE.Points(geo, mat);
-  scene.add(dust);
-  scene.userData.dust = dust;
-  scene.userData.dustPos = pos;
+  const mat = new THREE.PointsMaterial({ color: particleColor, size: particleSize, transparent: true, opacity: opacity });
+  const weather = new THREE.Points(geo, mat);
+  scene.add(weather);
+  
+  scene.userData.weather = weather;
+  scene.userData.weatherPos = pos;
+  scene.userData.weatherVels = vels;
+  scene.userData.weatherCount = count;
 }
+
 
 // ─── LIGHTING ─────────────────────────────────────────────────
 function setupLighting() {
@@ -1079,6 +1521,51 @@ function clampToBounds(pos) {
   pos.z = Math.max(-29, Math.min(29, pos.z));
 }
 
+// ─── AI STEERING & PATHFINDING ───────────────────────────────
+function getSteeringDirection(enemy, targetPos, speed, dt) {
+  const desiredDir = targetPos.clone().sub(enemy.group.position);
+  desiredDir.y = 0;
+  desiredDir.normalize();
+
+  // Check direct path collision
+  const testPos = enemy.group.position.clone().add(desiredDir.clone().multiplyScalar(1.5));
+  if (!checkWallCollision(testPos)) {
+    return desiredDir;
+  }
+
+  // Desired path blocked. Cast search rays at alternate angles.
+  const angles = [Math.PI / 6, -Math.PI / 6, Math.PI / 3, -Math.PI / 3, Math.PI / 2, -Math.PI / 2, Math.PI * 2/3, -Math.PI * 2/3];
+  for (const angle of angles) {
+    const altDir = desiredDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+    const altTestPos = enemy.group.position.clone().add(altDir.clone().multiplyScalar(1.5));
+    if (!checkWallCollision(altTestPos)) {
+      return altDir;
+    }
+  }
+  return desiredDir;
+}
+
+function moveEnemyWithPathfinding(enemy, targetPos, speed, dt) {
+  const moveDir = getSteeringDirection(enemy, targetPos, speed, dt);
+  const movement = moveDir.multiplyScalar(speed * dt);
+  const newPos = enemy.group.position.clone().add(movement);
+  
+  if (!checkWallCollision(newPos)) {
+    enemy.group.position.copy(newPos);
+  } else {
+    // Axis slide
+    const slideX = enemy.group.position.clone();
+    slideX.x = newPos.x;
+    if (!checkWallCollision(slideX)) enemy.group.position.copy(slideX);
+    else {
+      const slideZ = enemy.group.position.clone();
+      slideZ.z = newPos.z;
+      if (!checkWallCollision(slideZ)) enemy.group.position.copy(slideZ);
+    }
+  }
+  enemy.group.position.y = 0; // Lock to ground plane
+}
+
 // ─── AI UPDATE ────────────────────────────────────────────────
 function updateEnemies(dt) {
   enemies.forEach(enemy => {
@@ -1086,7 +1573,7 @@ function updateEnemies(dt) {
 
     const eDist = enemy.group.position.distanceTo(player.pos);
 
-    // Line of sight check (simplified)
+    // Raycast Line of Sight
     const toPlayer = player.pos.clone().sub(enemy.group.position).normalize();
     const ray = new THREE.Raycaster(
       enemy.group.position.clone().add(new THREE.Vector3(0, 1.6, 0)),
@@ -1096,7 +1583,7 @@ function updateEnemies(dt) {
     const wallHits = ray.intersectObjects(wallMeshes, false);
     enemy.canSeePlayer = wallHits.length === 0 && eDist < 35;
 
-    // Face player if can see
+    // Turn to player
     if (enemy.canSeePlayer) {
       const angle = Math.atan2(
         player.pos.x - enemy.group.position.x,
@@ -1105,22 +1592,22 @@ function updateEnemies(dt) {
       enemy.group.rotation.y = angle;
     }
 
-    // State machine
+    // State machine FSM
     switch (enemy.state) {
       case 'patrol': {
-        // Circle patrol
         enemy.patrolAngle += dt * 0.4;
         const tx = enemy.patrolCenter.x + Math.cos(enemy.patrolAngle) * enemy.patrolRadius;
         const tz = enemy.patrolCenter.z + Math.sin(enemy.patrolAngle) * enemy.patrolRadius;
         const dir = new THREE.Vector3(tx - enemy.group.position.x, 0, tz - enemy.group.position.z);
         dir.normalize();
+        
         const newPos = enemy.group.position.clone().add(dir.multiplyScalar(dt * 2.5));
         if (!checkWallCollision(newPos)) enemy.group.position.copy(newPos);
         enemy.group.position.y = 0;
 
         if (enemy.canSeePlayer) {
           enemy.state = 'alert';
-          enemy.alertTimer = 2;
+          enemy.alertTimer = 2.0;
         }
         break;
       }
@@ -1129,31 +1616,21 @@ function updateEnemies(dt) {
         if (enemy.alertTimer <= 0 || enemy.canSeePlayer) {
           enemy.state = 'attack';
         }
-        // Move toward player cautiously
         if (eDist > 8) {
-          const dir = player.pos.clone().sub(enemy.group.position).normalize();
-          dir.y = 0;
-          const newPos = enemy.group.position.clone().add(dir.multiplyScalar(dt * 3));
-          if (!checkWallCollision(newPos)) enemy.group.position.copy(newPos);
+          moveEnemyWithPathfinding(enemy, player.pos, 3.0, dt);
         }
         break;
       }
       case 'attack': {
-        // Strafe and shoot
+        // Pursuit player
         if (eDist > 5 && eDist < 30) {
-          const dir = player.pos.clone().sub(enemy.group.position).normalize();
-          dir.y = 0;
-          const strafe = new THREE.Vector3(-dir.z, 0, dir.x).multiplyScalar(Math.sin(Date.now() * 0.001) * 0.5);
-          const move = dir.add(strafe).normalize().multiplyScalar(dt * 2);
-          const newPos = enemy.group.position.clone().add(move);
-          if (!checkWallCollision(newPos)) enemy.group.position.copy(newPos);
+          moveEnemyWithPathfinding(enemy, player.pos, 2.2, dt);
         }
 
-        // Shoot at player
+        // Fire rate limits
         enemy.shootCooldown -= dt;
         if (enemy.shootCooldown <= 0 && enemy.canSeePlayer && eDist < 30) {
           enemy.shootCooldown = 1.5 + Math.random() * 1.5;
-          // Damage player (with spread/accuracy)
           if (Math.random() < 0.45) {
             const dmg = 8 + Math.random() * 12;
             health -= dmg;
@@ -1166,7 +1643,7 @@ function updateEnemies(dt) {
             }
           }
 
-          // Enemy muzzle flash
+          // Gun flash
           spawnExplosion(enemy.group.position.clone().add(new THREE.Vector3(0.35, 1.0, -0.4)));
         }
         break;
@@ -1195,7 +1672,6 @@ function playerWin() {
 function updatePlayer(dt) {
   if (!gameStarted || !isAlive) return;
 
-  // Sprint
   const sprinting = keys['ShiftLeft'] && (keys['KeyW'] || keys['KeyS']);
   player.sprinting = sprinting;
   if (sprinting) {
@@ -1205,12 +1681,10 @@ function updatePlayer(dt) {
   }
   document.getElementById('sprint-bar').style.width = sprintStamina + '%';
 
-  // Crouch
   const crouching = keys['KeyC'];
   const targetHeight = crouching ? 1.0 : 1.75;
   player.height += (targetHeight - player.height) * dt * 8;
 
-  // Movement
   const speed = sprinting && sprintStamina > 0 ? 9 : (crouching ? 3 : 5.5);
   const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
   const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
@@ -1224,6 +1698,17 @@ function updatePlayer(dt) {
 
   const isMoving = moveDir.length() > 0;
 
+  // Sound: footsteps thuds
+  if (isMoving) {
+    footstepTimer -= dt;
+    if (footstepTimer <= 0) {
+      sfx.playFootstep();
+      footstepTimer = sprinting ? 0.30 : (crouching ? 0.65 : 0.45);
+    }
+  } else {
+    footstepTimer = 0;
+  }
+
   // Weapon bob
   if (isMoving) {
     weaponBob += dt * (sprinting ? 14 : 8);
@@ -1236,12 +1721,11 @@ function updatePlayer(dt) {
     weaponGroup.position.x += (0.18 - weaponGroup.position.x) * dt * 6;
   }
 
-  // Apply movement
+  // Apply movement with axis slide
   const newPos = player.pos.clone().add(moveDir.clone().multiplyScalar(speed * dt));
   if (!checkWallCollision(newPos)) {
     player.pos.copy(newPos);
   } else {
-    // Try axis-separated sliding
     const slideX = player.pos.clone();
     slideX.x = newPos.x;
     if (!checkWallCollision(slideX)) player.pos.copy(slideX);
@@ -1255,32 +1739,26 @@ function updatePlayer(dt) {
   clampToBounds(player.pos);
   player.pos.y = player.height;
 
-  // Camera
   camera.position.copy(player.pos);
   camera.rotation.order = 'YXZ';
   camera.rotation.y = yaw;
 
-  // Recoil recovery
   recoilPitch += (-recoilPitch) * dt * 8;
   camera.rotation.x = pitch + recoilPitch;
 
-  // Weapon sway from mouse
   weaponSway.x += (-weaponSway.x) * dt * 6;
   weaponSway.y += (-weaponSway.y) * dt * 6;
   weaponGroup.rotation.x = weaponSway.y * 0.02;
   weaponGroup.rotation.z = weaponSway.x * 0.02;
 
-  // Update muzzle flash light position
   const muzzleWorld = new THREE.Vector3();
   weaponGroup.getObjectByName('muzzleFlash')?.getWorldPosition(muzzleWorld);
   muzzleFlashLight.position.copy(muzzleWorld);
 
-  // Shoot
   if (mouse.buttons === 1) {
     shoot();
   }
 
-  // Reload timer
   if (reloading) {
     reloadTimer -= dt;
     if (reloadTimer <= 0) {
@@ -1293,16 +1771,13 @@ function updatePlayer(dt) {
     }
   }
 
-  // Shoot cooldown
   if (shootCooldown > 0) shootCooldown -= dt;
 
-  // Health regen (slow)
   if (health < 100 && health > 0) {
     health = Math.min(100, health + dt * 3);
     updateHUD();
   }
 
-  // Check extraction
   if (kills >= totalEnemies && !extractionReached) {
     const distToExt = player.pos.distanceTo(new THREE.Vector3(0, player.height, 22));
     if (distToExt < 5) {
@@ -1356,15 +1831,29 @@ function updateParticles(dt) {
     });
   }
 
-  // Ambient dust drift
-  if (scene.userData.dust && scene.userData.dustPos) {
-    const pos = scene.userData.dustPos;
-    for (let i = 0; i < pos.length / 3; i++) {
-      pos[i * 3] += Math.sin(Date.now() * 0.0003 + i) * 0.002;
-      pos[i * 3 + 1] += 0.001;
-      if (pos[i * 3 + 1] > 8) pos[i * 3 + 1] = 0;
+  // Weather particles movement
+  if (scene.userData.weather && scene.userData.weatherPos && scene.userData.weatherVels) {
+    const pos = scene.userData.weatherPos;
+    const vels = scene.userData.weatherVels;
+    const count = scene.userData.weatherCount;
+    const limitHeight = (missionId === 'snowblow' || missionId === 'forestfun' ? 12 : 8);
+
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] += vels[i * 3] * dt;
+      pos[i * 3 + 1] += vels[i * 3 + 1] * dt;
+      pos[i * 3 + 2] += vels[i * 3 + 2] * dt;
+
+      if (pos[i * 3 + 1] < 0) {
+        pos[i * 3 + 1] = limitHeight;
+        pos[i * 3] = (Math.random() - 0.5) * 60;
+        pos[i * 3 + 2] = (Math.random() - 0.5) * 60;
+      }
+      if (pos[i * 3] < -30) pos[i * 3] = 30;
+      if (pos[i * 3] > 30) pos[i * 3] = -30;
+      if (pos[i * 3 + 2] < -30) pos[i * 3 + 2] = 30;
+      if (pos[i * 3 + 2] > 30) pos[i * 3 + 2] = -30;
     }
-    scene.userData.dust.geometry.attributes.position.needsUpdate = true;
+    scene.userData.weather.geometry.attributes.position.needsUpdate = true;
   }
 
   // Extraction zone pulse

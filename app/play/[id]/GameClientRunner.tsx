@@ -2420,7 +2420,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
               // Fallback default iframe for legacy HTML5 games
               isPlaying ? (
                 <iframe
-                  src={game.embedUrl || 'https://hextris.github.io/hextris/'}
+                  src={game.embedUrl ? `${game.embedUrl}${typeof window !== 'undefined' ? window.location.search : ''}` : 'https://hextris.github.io/hextris/'}
                   className="w-full h-full border-none bg-black"
                   allow="autoplay; gamepad; keyboard; fullscreen"
                   allowFullScreen

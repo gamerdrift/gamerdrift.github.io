@@ -52,8 +52,8 @@ const MISSIONS = [
     name: 'SNOWBLOW',
     subtitle: 'Arctic Research Outpost',
     season: 'SEASON 02',
-    status: 'COMING SOON',
-    playable: false,
+    status: 'ACTIVE',
+    playable: true,
     mapImage: '/map_snowblow.png',
     themeColor: '#00f0ff',
     glowColor: 'rgba(0,240,255,0.35)',
@@ -91,8 +91,8 @@ const MISSIONS = [
     name: 'CARGOLOGY',
     subtitle: 'Industrial Cargo Terminal',
     season: 'SEASON 03',
-    status: 'COMING SOON',
-    playable: false,
+    status: 'ACTIVE',
+    playable: true,
     mapImage: '/map_cargology.png',
     themeColor: '#ff6600',
     glowColor: 'rgba(255,102,0,0.35)',
@@ -130,8 +130,8 @@ const MISSIONS = [
     name: 'FORESTFUN',
     subtitle: 'Dense Woodland Combat Zone',
     season: 'SEASON 04',
-    status: 'COMING SOON',
-    playable: false,
+    status: 'ACTIVE',
+    playable: true,
     mapImage: '/map_forestfun.png',
     themeColor: '#4ade80',
     glowColor: 'rgba(74,222,128,0.35)',
@@ -213,7 +213,7 @@ export default function RogueGhostPage() {
         p = 100;
         clearInterval(interval);
         if (user) gainXP(50);
-        window.location.href = '/play/rogue-ghost/';
+        window.location.href = `/play/rogue-ghost/?mission=${selectedMission.id}`;
       }
       setLaunchProgress(Math.min(100, p));
     }, 120);
@@ -587,7 +587,7 @@ export default function RogueGhostPage() {
               )}
 
               <Link
-                href="/play/rogue-ghost/"
+                href={`/play/rogue-ghost/?mission=${selectedMission.id}`}
                 className="px-5 py-4 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all hover:border-slate-600 text-slate-500 border-slate-800 whitespace-nowrap"
               >
                 QUICK LAUNCH →

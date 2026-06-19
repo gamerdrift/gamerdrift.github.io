@@ -16,7 +16,7 @@ export const games: Game[] = [
     thumbnail: "/rogue_ghost_character.png",
     url: "/play/rogue-ghost/",
     isExternal: true,
-    embedUrl: "/games/rogueghost/index.html",
+    embedUrl: "/games/rogueghost/hd.html",
     category: "Action",
     description: "3D Third-Person Tactical Infiltration / Stealth Action game. Infiltrate secure vaults, avoid patrol guards, rescue hostages and extract."
   }
