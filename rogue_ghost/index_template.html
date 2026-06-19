@@ -12,7 +12,7 @@
 				margin: 0;
 				padding: 0;
 				border: 0;
-				background-color: #030712;
+				background-color: #020617;
 				width: 100%;
 				height: 100%;
 			}
@@ -62,56 +62,26 @@
 
 			.loader-container {
 				display: flex;
-				flex-direction: row;
+				flex-direction: column;
 				align-items: center;
-				gap: 3rem;
-				max-width: 900px;
-				width: 92%;
+				max-width: 500px;
+				width: 90%;
 				padding: 2.5rem;
-				background: rgba(15, 23, 42, 0.65);
-				border: 1px solid rgba(0, 240, 255, 0.2);
-				box-shadow: 0 0 50px rgba(0, 240, 255, 0.08), inset 0 0 25px rgba(0, 240, 255, 0.04);
+				background: rgba(15, 23, 42, 0.7);
+				border: 1px solid rgba(0, 240, 255, 0.25);
+				box-shadow: 0 0 50px rgba(0, 240, 255, 0.1), inset 0 0 25px rgba(0, 240, 255, 0.05);
 				border-radius: 12px;
 				backdrop-filter: blur(10px);
 				position: relative;
 				z-index: 20;
-			}
-
-			@media (max-width: 768px) {
-				.loader-container {
-					flex-direction: column;
-					gap: 1.5rem;
-					padding: 1.5rem;
-					text-align: center;
-				}
-			}
-
-			.left-panel {
-				position: relative;
-				width: 280px;
-				height: 280px;
-				flex-shrink: 0;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				border: 1px solid rgba(0, 240, 255, 0.15);
-				background: rgba(2, 6, 23, 0.85);
-				border-radius: 8px;
-				overflow: hidden;
-				box-shadow: 0 0 20px rgba(0, 240, 255, 0.05);
-			}
-
-			.right-panel {
-				flex-grow: 1;
-				display: flex;
-				flex-direction: column;
-				min-width: 0;
+				text-align: center;
 			}
 
 			#custom-loader {
 				display: flex;
 				flex-direction: column;
 				width: 100%;
+				align-items: center;
 			}
 
 			.glow-header {
@@ -131,7 +101,7 @@
 				font-weight: 700;
 				letter-spacing: 0.18em;
 				color: #ff9f00;
-				margin-bottom: 1.5rem;
+				margin-bottom: 2rem;
 				text-shadow: 0 0 8px rgba(255, 159, 0, 0.5);
 				text-transform: uppercase;
 			}
@@ -143,6 +113,7 @@
 				color: #64748b;
 				margin-bottom: 0.5rem;
 				letter-spacing: 0.05em;
+				width: 100%;
 			}
 
 			.progress-container {
@@ -165,11 +136,13 @@
 			}
 
 			.terminal-logs {
+				width: 100%;
 				height: 110px;
 				background: #020617;
 				border: 1px solid #1e293b;
 				border-radius: 6px;
 				padding: 0.75rem;
+				box-sizing: border-box;
 				font-family: 'Share Tech Mono', monospace;
 				font-size: 0.7rem;
 				color: #38bdf8;
@@ -234,37 +207,39 @@
 		<div id="status">
 			<div class="scanline-overlay"></div>
 			<div class="loader-container">
-				<!-- Left Panel: Animated Radar Map -->
-				<div class="left-panel">
-					<canvas id="tactical-canvas" style="width: 280px; height: 280px; display: block;"></canvas>
-				</div>
-				<!-- Right Panel: Mission Specs & Console Logs -->
-				<div class="right-panel">
-					<div id="custom-loader">
-						<div class="glow-header">ROGUE GHOST</div>
-						<div class="glow-sub">TACTICAL INFILTRATION GRID // GAMERDRIFT.COM</div>
-						
-						<div class="progress-info">
-							<span id="custom-status-text">CONNECTING TO SATELLITE...</span>
-							<span id="custom-percentage-text">0%</span>
-						</div>
-						<div class="progress-container">
-							<div id="custom-progress-bar"></div>
-						</div>
-						
-						<div class="terminal-logs" id="terminal-logs">
-							<!-- Custom loading logs will be dynamically inserted here -->
-						</div>
+				<!-- Center Panel: Specs & Console Logs -->
+				<div id="custom-loader">
+					<div class="glow-header">ROGUE GHOST</div>
+					<div class="glow-sub">TACTICAL INFILTRATION GRID // GAMERDRIFT.COM</div>
+					
+					<div class="progress-info">
+						<span id="custom-status-text">INITIALIZING QUANTUM UPLINK...</span>
+						<span id="custom-percentage-text">0%</span>
 					</div>
-					<div id="status-notice"></div>
-					<div id="status-progress"></div>
+					<div class="progress-container">
+						<div id="custom-progress-bar"></div>
+					</div>
+					
+					<div class="terminal-logs" id="terminal-logs">
+						<!-- Custom loading logs will be dynamically inserted here -->
+					</div>
 				</div>
+				<div id="status-notice"></div>
+				<div id="status-progress"></div>
 			</div>
 		</div>
 
 		<script src="index.js"></script>
 		<script>
 // {{GODOT_CONFIG}}
+
+// Forward URL mission parameter to Godot engine arguments
+const urlParams = new URLSearchParams(window.location.search);
+const mission = urlParams.get('mission');
+if (mission) {
+	GODOT_CONFIG.args = ['--mission', mission];
+}
+
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
@@ -320,177 +295,6 @@ const engine = new Engine(GODOT_CONFIG);
 		setStatusMode('notice');
 		initializing = false;
 	}
-
-	// ─── CANVAST TACTICAL RADAR ANIMATION ───
-	const radarCanvas = document.getElementById('tactical-canvas');
-	const ctx = radarCanvas.getContext('2d');
-	const dpr = window.devicePixelRatio || 1;
-	radarCanvas.width = 280 * dpr;
-	radarCanvas.height = 280 * dpr;
-	ctx.scale(dpr, dpr);
-
-	const cx = 140;
-	const cy = 140;
-	let angle = 0;
-
-	const targets = [
-		{ name: 'TG-01: WHITE_REAPER', x: 195, y: 70, label: 'SNIPER BOSS' },
-		{ name: 'OBJ-02: CONVOY_ALPHA', x: 80, y: 180, label: 'WRECKAGE' },
-		{ name: 'FR-01: RANGER_ALPHA', x: 105, y: 120, label: 'SURVIVOR' },
-		{ name: 'EXT-01: EXTRACTION', x: 210, y: 210, label: 'HELIPAD' }
-	];
-
-	const contours = [
-		{ x: 185, y: 85, rMax: 75, count: 5, amp: 7, phase: 0.3 },
-		{ x: 90, y: 185, rMax: 60, count: 4, amp: 5, phase: 1.2 }
-	];
-
-	function drawRadar() {
-		ctx.fillStyle = '#020617';
-		ctx.fillRect(0, 0, 280, 280);
-
-		ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
-		ctx.lineWidth = 1;
-		for (let x = 20; x < 280; x += 40) {
-			ctx.beginPath();
-			ctx.moveTo(x, 0);
-			ctx.lineTo(x, 280);
-			ctx.stroke();
-		}
-		for (let y = 20; y < 280; y += 40) {
-			ctx.beginPath();
-			ctx.moveTo(0, y);
-			ctx.lineTo(280, y);
-			ctx.stroke();
-		}
-
-		ctx.lineWidth = 1;
-		contours.forEach(c => {
-			for (let r = 15; r <= c.rMax; r += 15) {
-				ctx.strokeStyle = `rgba(0, 240, 255, ${0.03 + (1 - r/c.rMax) * 0.08})`;
-				ctx.beginPath();
-				for (let a = 0; a < Math.PI * 2; a += 0.08) {
-					const wave = Math.sin(a * c.count + c.phase) * c.amp;
-					const currR = r + wave;
-					const px = c.x + Math.cos(a) * currR;
-					const py = c.y + Math.sin(a) * currR;
-					if (a === 0) ctx.moveTo(px, py);
-					else ctx.lineTo(px, py);
-				}
-				ctx.closePath();
-				ctx.stroke();
-			}
-		});
-
-		ctx.strokeStyle = 'rgba(0, 240, 255, 0.07)';
-		ctx.beginPath();
-		ctx.arc(cx, cy, 125, 0, Math.PI * 2);
-		ctx.stroke();
-		ctx.beginPath();
-		ctx.arc(cx, cy, 80, 0, Math.PI * 2);
-		ctx.stroke();
-		ctx.beginPath();
-		ctx.arc(cx, cy, 40, 0, Math.PI * 2);
-		ctx.stroke();
-
-		ctx.strokeStyle = 'rgba(0, 240, 255, 0.12)';
-		ctx.beginPath();
-		ctx.moveTo(cx - 130, cy);
-		ctx.lineTo(cx + 130, cy);
-		ctx.moveTo(cx, cy - 130);
-		ctx.lineTo(cx, cy + 130);
-		ctx.stroke();
-
-		angle = (angle + 0.012) % (Math.PI * 2);
-
-		ctx.beginPath();
-		ctx.moveTo(cx, cy);
-		ctx.arc(cx, cy, 125, angle - 0.5, angle);
-		ctx.lineTo(cx, cy);
-		const sweepGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 125);
-		sweepGrad.addColorStop(0, 'rgba(0, 240, 255, 0.15)');
-		sweepGrad.addColorStop(1, 'rgba(0, 240, 255, 0.01)');
-		ctx.fillStyle = sweepGrad;
-		ctx.fill();
-
-		ctx.beginPath();
-		ctx.moveTo(cx, cy);
-		ctx.lineTo(cx + Math.cos(angle) * 125, cy + Math.sin(angle) * 125);
-		ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
-		ctx.lineWidth = 1.5;
-		ctx.stroke();
-
-		targets.forEach(t => {
-			const dx = t.x - cx;
-			const dy = t.y - cy;
-			let tAngle = Math.atan2(dy, dx);
-			if (tAngle < 0) tAngle += Math.PI * 2;
-
-			let diff = (angle - tAngle) % (Math.PI * 2);
-			if (diff < 0) diff += Math.PI * 2;
-
-			let intensity = 0;
-			if (diff < 1.0) {
-				intensity = 1.0 - diff / 1.0;
-			}
-
-			const isBlinking = Date.now() % 1000 < 500;
-
-			ctx.beginPath();
-			ctx.arc(t.x, t.y, 3, 0, Math.PI * 2);
-			ctx.fillStyle = t.name.includes('WHITE_REAPER')
-				? `rgba(239, 68, 68, ${0.3 + intensity * 0.7})`
-				: `rgba(0, 240, 255, ${0.3 + intensity * 0.7})`;
-			ctx.fill();
-
-			if (intensity > 0.05) {
-				ctx.beginPath();
-				ctx.arc(t.x, t.y, 4 + (1 - intensity) * 12, 0, Math.PI * 2);
-				ctx.strokeStyle = t.name.includes('WHITE_REAPER')
-					? `rgba(239, 68, 68, ${intensity * 0.35})`
-					: `rgba(0, 240, 255, ${intensity * 0.35})`;
-				ctx.lineWidth = 1;
-				ctx.stroke();
-
-				const boxSize = 6 + (1 - intensity) * 3;
-				ctx.strokeStyle = t.name.includes('WHITE_REAPER')
-					? `rgba(239, 68, 68, ${intensity * 0.5})`
-					: `rgba(0, 240, 255, ${intensity * 0.5})`;
-				ctx.strokeRect(t.x - boxSize, t.y - boxSize, boxSize * 2, boxSize * 2);
-
-				ctx.fillStyle = t.name.includes('WHITE_REAPER')
-					? `rgba(239, 68, 68, ${0.4 + intensity * 0.6})`
-					: `rgba(56, 189, 248, ${0.4 + intensity * 0.6})`;
-				ctx.font = '6px "Share Tech Mono", monospace';
-				ctx.fillText(t.name, t.x + boxSize + 3, t.y - 2);
-				ctx.fillText(t.label, t.x + boxSize + 3, t.y + 4);
-			}
-		});
-
-		ctx.fillStyle = 'rgba(0, 240, 255, 0.4)';
-		ctx.font = '7px "Share Tech Mono", monospace';
-		ctx.fillText('N 000°', cx - 12, 18);
-		ctx.fillText('S 180°', cx - 12, 270);
-		ctx.fillText('W 270°', 10, cy + 3);
-		ctx.fillText('E 090°', 245, cy + 3);
-
-		const tickLat = (78.1342 + Math.sin(Date.now() / 1200) * 0.0003).toFixed(4);
-		const tickLon = (15.3881 + Math.cos(Date.now() / 1200) * 0.0003).toFixed(4);
-		ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-		ctx.fillText(`GPS.LAT: ${tickLat}° N`, 15, 25);
-		ctx.fillText(`GPS.LON: ${tickLon}° E`, 15, 35);
-		ctx.fillText(`ALTITUDE: 142.4 M`, 15, 45);
-
-		ctx.fillStyle = 'rgba(34, 197, 94, 0.6)';
-		ctx.fillText('SYS.LINK: OK', 200, 25);
-		if (Date.now() % 1000 < 500) {
-			ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
-			ctx.fillText('• RADAR SCAN', 200, 35);
-		}
-
-		requestAnimationFrame(drawRadar);
-	}
-	requestAnimationFrame(drawRadar);
 
 	// ─── TERMINAL LOG SYSTEM ───
 	const logsContainer = document.getElementById('terminal-logs');

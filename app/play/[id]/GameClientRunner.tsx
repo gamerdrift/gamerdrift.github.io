@@ -50,14 +50,8 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
           setStage(val);
         }
       }
-      
-      // Auto-start game if deployed directly with a mission query parameter
-      const mission = params.get('mission');
-      if (gameId === 'rogue-ghost' && mission) {
-        setIsPlaying(true);
-      }
     }
-  }, [gameId]);
+  }, []);
 
   // Review System States
   const [reviewText, setReviewText] = useState('');
@@ -2332,6 +2326,15 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     setGameOver(false);
     setGameWon(false);
     setIsPlaying(true);
+
+    // Enter fullscreen automatically on user click gesture for Rogue Ghost
+    if (gameId === 'rogue-ghost' && cabinetRef.current) {
+      if (!document.fullscreenElement) {
+        cabinetRef.current.requestFullscreen().catch((err) => {
+          console.error("Fullscreen entry rejected:", err);
+        });
+      }
+    }
   };
 
   if (!game) {
@@ -2404,15 +2407,42 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
 
             {/* Menu Panel HUD */}
             {!isPlaying && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 z-20 gap-4">
-                {gameOver && <h3 className="text-4xl text-neon-pink font-black tracking-wider animate-pulse neon-text">SYS_COLLAPSE: GAME OVER</h3>}
-                {gameWon && <h3 className="text-4xl text-neon-blue font-black tracking-wider animate-pulse neon-text">SYS_CLEARED: VICTORY</h3>}
-                <button
-                  onClick={startGame}
-                  className="neon-button text-xl px-8 py-3 bg-neon-pink/30 hover:bg-neon-pink/50 transition border border-neon-pink rounded-lg font-bold tracking-widest"
-                >
-                  {gameOver ? 'RELOAD_TERMINAL' : gameWon ? 'PLAY_AGAIN' : 'BOOT_GAME_SIGNAL'}
-                </button>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-20 gap-6 p-6">
+                {gameId === 'rogue-ghost' ? (
+                  <div className="text-center flex flex-col items-center max-w-md">
+                    <span className="text-[10px] font-mono text-[#00f0ff] tracking-[0.3em] uppercase mb-2 border border-[#00f0ff]/30 px-3 py-1 bg-[#00f0ff]/10">
+                      SYS.STATUS: DISPATCH LINK ONLINE
+                    </span>
+                    <h3 className="text-3xl font-black tracking-widest text-white uppercase mb-1 font-sans">
+                      ROGUE GHOST
+                    </h3>
+                    <p className="text-xs text-slate-500 font-mono mb-6 uppercase tracking-wider">
+                      MISSION 01: SNOWBLOW // ARCTIC INFILTRATION
+                    </p>
+                    
+                    <button
+                      onClick={startGame}
+                      className="neon-button text-base px-8 py-4 bg-[#00f0ff]/20 hover:bg-[#00f0ff]/40 transition border-2 border-[#00f0ff] rounded-lg font-black tracking-[0.2em] text-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_35px_rgba(0,240,255,0.6)] uppercase"
+                    >
+                      ▶ ENGAGE DIRECTIVE [FULLSCREEN]
+                    </button>
+                    
+                    <span className="text-[8px] font-mono text-slate-600 mt-4 tracking-widest uppercase">
+                      SECURED SATELLITE COMMS LINK // GAMERDRIFT.COM
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-4">
+                    {gameOver && <h3 className="text-4xl text-neon-pink font-black tracking-wider animate-pulse neon-text">SYS_COLLAPSE: GAME OVER</h3>}
+                    {gameWon && <h3 className="text-4xl text-neon-blue font-black tracking-wider animate-pulse neon-text">SYS_CLEARED: VICTORY</h3>}
+                    <button
+                      onClick={startGame}
+                      className="neon-button text-xl px-8 py-3 bg-neon-pink/30 hover:bg-neon-pink/50 transition border border-neon-pink rounded-lg font-bold tracking-widest"
+                    >
+                      {gameOver ? 'RELOAD_TERMINAL' : gameWon ? 'PLAY_AGAIN' : 'BOOT_GAME_SIGNAL'}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

@@ -23,6 +23,29 @@ var pulse_time: float = 0.0
 @onready var preview_blade: MeshInstance3D = $Panel/ViewportContainer/SubViewport/PreviewSoldier/PreviewBlade
 
 func _ready() -> void:
+	# Check command line arguments to bypass menu and launch directly
+	var args = OS.get_cmdline_args()
+	print("OS Args: ", args)
+	var auto_launch = false
+	for arg in args:
+		if arg.begins_with("--mission="):
+			var mission_name = arg.split("=")[1]
+			if mission_name == "snowblow":
+				selected_level_path = "res://scenes/level_snowblow.tscn"
+				auto_launch = true
+		elif arg == "--mission" and args.find(arg) + 1 < args.size():
+			var idx = args.find(arg)
+			var mission_name = args[idx + 1]
+			if mission_name == "snowblow":
+				selected_level_path = "res://scenes/level_snowblow.tscn"
+				auto_launch = true
+
+	if auto_launch:
+		print("🚀 Auto-launching mission directly: ", selected_level_path)
+		var err = get_tree().change_scene_to_file(selected_level_path)
+		if err == OK:
+			return # Avoid setting up menu if redirecting
+
 	# captures button press
 	if start_button:
 		start_button.pressed.connect(_on_start_pressed)
