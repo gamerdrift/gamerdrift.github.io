@@ -1,98 +1,257 @@
-[gd_scene load_steps=8 format=3 uid="uid://b4v4r3d"]
+[gd_scene load_steps=18 format=3 uid="uid://b4v4r3d"]
 
 [ext_resource type="Script" path="res://scripts/mission_manager.gd" id="1_manager"]
 [ext_resource type="PackedScene" uid="uid://b1v1r3d" path="res://scenes/player_ghost.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://b2v2r3d" path="res://scenes/guard_enemy.tscn" id="3_guard"]
-[ext_resource type="PackedScene" uid="uid://b3v3r3d" path="res://scenes/hostage_node.tscn" id="4_hostage"]
+[ext_resource type="Script" path="res://scripts/ranger_ai.gd" id="5_ranger_script"]
+[ext_resource type="Script" path="res://scripts/white_reaper_ai.gd" id="6_boss_script"]
+[ext_resource type="Script" path="res://scripts/clue_evidence.gd" id="7_clue_script"]
+[ext_resource type="Script" path="res://scripts/weather_snow_system.gd" id="8_weather_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
-radius = 2.5
+radius = 4.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_1"]
-top_radius = 2.4
-bottom_radius = 2.4
+top_radius = 3.8
+bottom_radius = 3.8
 height = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.2, 1, 0.2, 0.4)
+albedo_color = Color(0.0, 1.0, 0.5, 0.4)
 transparency = 1
 emission_enabled = true
-emission = Color(0.2, 1, 0.2, 1)
+emission = Color(0.0, 1.0, 0.5, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_Snow"]
+albedo_color = Color(0.92, 0.95, 0.98, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Material_Ice"]
+albedo_color = Color(0.5, 0.8, 0.9, 0.6)
+transparency = 1
+roughness = 0.1
+refraction_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="Material_Wood"]
+albedo_color = Color(0.3, 0.2, 0.15, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Material_Foliage"]
+albedo_color = Color(0.1, 0.35, 0.15, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Material_Steel"]
+albedo_color = Color(0.2, 0.22, 0.25, 1)
+metalness = 0.7
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="Material_Rock"]
+albedo_color = Color(0.4, 0.42, 0.45, 1)
+roughness = 0.85
+
+[sub_resource type="Environment" id="Environment_Snowblow"]
+background_mode = 1
+background_color = Color(0.48, 0.52, 0.58, 1)
+fog_enabled = true
+fog_light_color = Color(0.58, 0.62, 0.68, 1)
+fog_density = 0.035
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.035
+volumetric_fog_albedo = Color(0.8, 0.85, 0.9, 1)
 
 [node name="LevelSnowblow" type="Node3D" node_paths=PackedStringArray("target_exit_zone")]
 script = ExtResource("1_manager")
 target_exit_zone = NodePath("ExitZone")
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." groups=["world_environments"]]
+environment = SubResource("Environment_Snowblow")
+
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
-light_color = Color(0.8, 0.9, 1, 1)
-light_energy = 0.5
+light_color = Color(0.8, 0.88, 0.95, 1)
+light_energy = 0.6
 shadow_enabled = true
 
+[node name="WeatherSystem" type="Node3D" parent="."]
+script = ExtResource("8_weather_script")
+
+# --- MAP GEOMETRY ---
 [node name="MapLayout" type="CSGCombiner3D" parent="."]
 use_collision = true
 
-[node name="Floor" type="CSGBox3D" parent="MapLayout"]
+[node name="SnowGround" type="CSGBox3D" parent="MapLayout"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-size = Vector3(50, 1, 50)
+size = Vector3(120, 1, 120)
+material = SubResource("Material_Snow")
 
 [node name="NorthWall" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -25)
-size = Vector3(50, 4, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -60)
+size = Vector3(120, 8, 2)
+material = SubResource("Material_Rock")
 
 [node name="SouthWall" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 25)
-size = Vector3(50, 4, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 60)
+size = Vector3(120, 8, 2)
+material = SubResource("Material_Rock")
 
 [node name="WestWall" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2, 0)
-size = Vector3(1, 4, 50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 4, 0)
+size = Vector3(2, 8, 120)
+material = SubResource("Material_Rock")
 
 [node name="EastWall" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 2, 0)
-size = Vector3(1, 4, 50)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 4, 0)
+size = Vector3(2, 8, 120)
+material = SubResource("Material_Rock")
 
-[node name="Column1" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -8)
-size = Vector3(4, 4, 4)
+# Frozen Creek
+[node name="FrozenCreek" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 5)
+size = Vector3(120, 0.2, 8)
+material = SubResource("Material_Ice")
 
-[node name="Column2" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, -8)
-size = Vector3(4, 4, 4)
+# Rocky Ridges for Nests
+[node name="NorthRidge" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -35)
+size = Vector3(45, 6, 12)
+material = SubResource("Material_Rock")
 
-[node name="Column3" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, 8)
-size = Vector3(4, 4, 4)
+[node name="LeftRidge" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 2, -15)
+size = Vector3(15, 4, 25)
+material = SubResource("Material_Rock")
 
-[node name="Column4" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 8)
-size = Vector3(4, 4, 4)
+[node name="RightRidge" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 2, -15)
+size = Vector3(15, 4, 25)
+material = SubResource("Material_Rock")
 
-[node name="DividerWall" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-size = Vector3(20, 4, 2)
+# Cover Objects (Blocks in group 'cover')
+[node name="SandbagsConvoy" type="CSGBox3D" parent="MapLayout" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.5, 22)
+size = Vector3(6, 1.2, 1)
+material = SubResource("Material_Steel")
 
+[node name="SandbagsConvoy2" type="CSGBox3D" parent="MapLayout" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, 20)
+size = Vector3(5, 1.2, 1)
+material = SubResource("Material_Steel")
+
+# --- CONVOY WRECKAGE ASSETS ---
+[node name="TruckWreck1" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -8, 1.5, 25)
+size = Vector3(3, 3, 7)
+material = SubResource("Material_Steel")
+
+[node name="TruckWreck2" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 8, 1.5, 26)
+size = Vector3(3, 3, 7)
+material = SubResource("Material_Steel")
+
+# --- SCATTERED PINE TREES ---
+[node name="PineTree1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -10)
+
+[node name="Trunk" type="MeshInstance3D" parent="PineTree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_1")
+surface_material_override/0 = SubResource("Material_Wood")
+
+[node name="Foliage" type="CSGCylinder3D" parent="PineTree1" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+cone = true
+radius = 3.5
+height = 6.0
+material = SubResource("Material_Foliage")
+
+[node name="PineTree2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -18)
+
+[node name="Trunk" type="MeshInstance3D" parent="PineTree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_1")
+surface_material_override/0 = SubResource("Material_Wood")
+
+[node name="Foliage" type="CSGCylinder3D" parent="PineTree2" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+cone = true
+radius = 3.5
+height = 6.0
+material = SubResource("Material_Foliage")
+
+[node name="PineTree3" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, 8)
+
+[node name="Trunk" type="MeshInstance3D" parent="PineTree3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_1")
+surface_material_override/0 = SubResource("Material_Wood")
+
+[node name="Foliage" type="CSGCylinder3D" parent="PineTree3" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+cone = true
+radius = 3.5
+height = 6.0
+material = SubResource("Material_Foliage")
+
+# --- CHARACTERS & SPONSORS ---
 [node name="PlayerGhost" parent="." instance=ExtResource("2_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 42)
 
-[node name="GuardEnemy1" parent="." instance=ExtResource("3_guard")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -12)
-patrol_points = [Vector3(-12, 1, -12), Vector3(-12, 1, 0), Vector3(-18, 1, -6)]
+[node name="RangerSupport1" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 23)
+script = ExtResource("5_ranger_script")
 
-[node name="GuardEnemy2" parent="." instance=ExtResource("3_guard")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, 12)
-patrol_points = [Vector3(12, 1, 12), Vector3(12, 1, 0), Vector3(18, 1, 6)]
+[node name="RayCast3D" type="RayCast3D" parent="RangerSupport1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+target_position = Vector3(0, 0, -20)
 
-[node name="Hostage1" parent="." instance=ExtResource("4_hostage")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.9, -15)
-hostage_name = "Hostage Scientist Nyx"
+[node name="RangerSupport2" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 22)
+script = ExtResource("5_ranger_script")
 
-[node name="Hostage2" parent="." instance=ExtResource("4_hostage")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.9, 15)
-hostage_name = "Hostage Commander Sahara"
+[node name="RayCast3D" type="RayCast3D" parent="RangerSupport2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+target_position = Vector3(0, 0, -20)
 
+[node name="TheWhiteReaper" type="CharacterBody3D" parent="." groups=["bosses", "guards"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5, -35)
+script = ExtResource("6_boss_script")
+reposition_cooldown = 15.0
+
+[node name="RayCast3D" type="RayCast3D" parent="TheWhiteReaper"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+target_position = Vector3(0, 0, 50)
+
+# SpotLight representing sniper optics reflection flash
+[node name="SpotLight3D" type="SpotLight3D" parent="TheWhiteReaper"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 1)
+light_color = Color(1, 0, 0, 1)
+light_energy = 0.0
+spot_angle = 15.0
+
+# --- CLUE EVIDENCE ITEMS ---
+[node name="ClueShellCasing" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 30)
+script = ExtResource("7_clue_script")
+clue_id = "shell_casing"
+clue_description = "Spent 7.62x54mm Sniper Shell Casing"
+
+[node name="ClueBrokenBranches" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.5, -2)
+script = ExtResource("7_clue_script")
+clue_id = "broken_branches"
+clue_description = "Broken pine branches pointing north"
+
+[node name="ClueBootPrints" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, -10)
+script = ExtResource("7_clue_script")
+clue_id = "boot_prints"
+clue_description = "Thermal boot footprints climbing ridges"
+
+# --- EXTRACTION PORTAL ---
 [node name="ExitZone" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 50)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ExitZone"]
 shape = SubResource("SphereShape3D_1")

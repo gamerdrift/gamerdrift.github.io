@@ -18,24 +18,26 @@ signal alert_level_updated(max_alert: float)
 # Telemetry registers
 var total_hostages: int = 0
 var rescued_hostages: int = 0
+var total_clues: int = 0
+var discovered_clues: int = 0
+var ranger_casualties: int = 0
 var elapsed_time: float = 0.0
 var max_alert_level: float = 0.0
 var is_active: bool = false
-
 var player: PlayerGhost = null
 
 func _ready() -> void:
 	add_to_group("managers")
 	
-	# Locate player and hostages in tree
+	# Locate player
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
 		player = players[0] as PlayerGhost
 		player.health_changed.connect(_on_player_health_changed)
 		
-	# Find total hostages in scene
-	var host_list = get_tree().get_nodes_in_group("hostages")
-	total_hostages = host_list.size()
+	# Find total hostages and clues
+	total_hostages = get_tree().get_nodes_in_group("hostages").size()
+	total_clues = get_tree().get_nodes_in_group("clues").size()
 	
 	# Wire exit zone if configured
 	if target_exit_zone:
@@ -83,16 +85,42 @@ func record_hostage_rescue(_hostage: HostageNode) -> void:
 	if player:
 		player.hostages_changed.emit(rescued_hostages, total_hostages)
 
+func record_clue_discovery(_clue: ClueEvidence) -> void:
+	if not is_active:
+		return
+	discovered_clues += 1
+	print("🔍 Discovered clues: ", discovered_clues, " / ", total_clues)
+
+func record_ranger_casualty() -> void:
+	if not is_active:
+		return
+	ranger_casualties += 1
+	print("🚨 Ranger Casualty recorded! Casualties count: ", ranger_casualties)
+
 func _on_exit_zone_entered(body: Node) -> void:
 	if not is_active:
 		return
 		
 	# Verify player entered exit portal
 	if body is PlayerGhost or body.is_in_group("player"):
-		if rescued_hostages >= total_hostages:
-			_complete_mission()
-		else:
-			print("⚠️ Extraction denied. Hostages remain locked in sector.")
+		# Win check: Sniper must be eliminated
+		var sniper_alive = get_tree().get_nodes_in_group("bosses").size() > 0
+		if sniper_alive:
+			print("⚠️ Extraction denied. The White Reaper is still tracking you in the forest!")
+			return
+			
+		# At least one ranger must survive
+		var ranger_alive = get_tree().get_nodes_in_group("rangers").size() > 0
+		if not ranger_alive:
+			_fail_mission("CRITICAL ERROR: ALL RANGERS KIA")
+			return
+			
+		# Intel/Clues must be fully checked
+		if discovered_clues < total_clues:
+			print("⚠️ Extraction denied. Ranger distress records and sniper intelligence remain uncollected.")
+			return
+			
+		_complete_mission()
 
 func _on_player_health_changed(current_health: float, _max_val: float) -> void:
 	if current_health <= 0.0 and is_active:
@@ -104,7 +132,14 @@ func _complete_mission() -> void:
 	# Calculate score based on speed and stealth indexes
 	var speed_bonus = max(0, int((round_time_limit - elapsed_time) * 10))
 	var stealth_bonus = int(max(0.0, 100.0 - max_alert_level) * 5)
-	var base_score = 1000
+	
+	# Optional objective: zero ranger casualties
+	var casualty_multiplier = 1.0
+	if ranger_casualties == 0:
+		casualty_multiplier = 1.25 # 25% score boost for flawless escort
+		print("⭐ Optional Objective Complete: Zero additional casualties.")
+		
+	var base_score = 1500 # higher base for sniper hunts
 	var final_score = base_score + speed_bonus + stealth_bonus
 	
 	# Apply stealth multipliers
@@ -120,7 +155,7 @@ func _complete_mission() -> void:
 		multiplier = 0.80
 		rating = "Loud Enforcer"
 		
-	final_score = int(final_score * multiplier)
+	final_score = int(final_score * multiplier * casualty_multiplier)
 	
 	# Reward XP points (10% of final score)
 	var xp_rewarded = int(final_score * 0.1)
@@ -131,8 +166,10 @@ func _complete_mission() -> void:
 	print("🏆 MISSION COMPLETE // DECLASSIFIED TELEMETRY")
 	print("==============================================")
 	print("Rating:        ", rating, " (Multiplier: ", multiplier, "x)")
+	print("Casualty Mod:  ", casualty_multiplier, "x")
 	print("Elapsed Time:  ", elapsed_time, "s")
-	print("Hostages:      ", rescued_hostages, " / ", total_hostages)
+	print("Clues Discovered: ", discovered_clues, " / ", total_clues)
+	print("Ranger Casualties: ", ranger_casualties)
 	print("Max Alert:     ", max_alert_level, "%")
 	print("Base Score:    ", base_score)
 	print("Speed Bonus:   ", speed_bonus)

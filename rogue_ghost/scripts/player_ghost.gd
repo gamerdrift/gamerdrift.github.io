@@ -14,20 +14,38 @@ signal fired_weapon()
 # Exported Configuration
 @export var speed: float = 5.0
 @export var crouch_speed: float = 2.2
+@export var prone_speed: float = 1.0
+@export var slide_speed: float = 10.0
 @export var acceleration: float = 12.0
 @export var gravity: float = 9.8
 @export var jump_force: float = 4.5
+@export var stamina_max: float = 100.0
 
 # Player stats
 var max_health: float = 100.0
 var health: float = 100.0
 var max_stealth: float = 100.0
 var stealth_level: float = 100.0 # 100 = invisible/hidden in shadow, 0 = fully revealed
+var stamina: float = 100.0
 
-# Faction equipment configs
-var active_weapon: String = "Silenced Carbine"
+# Posture & Actions
+var active_weapon: String = "Silenced DMR Rifle"
 var is_crouching: bool = false
+var is_prone: bool = false
+var is_sliding: bool = false
 var is_active: bool = true
+var slide_timer: float = 0.0
+var slide_direction: Vector3 = Vector3.ZERO
+
+# Leaning state
+var lean_angle: float = 0.0
+var lean_offset: float = 0.0
+
+# Zoom / Scope settings
+var current_zoom_state: int = 0 # 0=normal, 1=ADS, 2=DMR
+var is_holding_breath: bool = false
+var is_thermal_mode: bool = false
+var breath_stamina_decay: float = 25.0
 
 # Camera variables
 var camera_sensitivity: float = 0.003
@@ -62,12 +80,32 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 				
+	# Middle click toggles weapon scope zoom level
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_MIDDLE:
+			current_zoom_state = (current_zoom_state + 1) % 3
+			_apply_zoom()
+
+	# Key-based triggers
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_Z:
+			# Toggle prone posture
+			_set_prone(!is_prone)
+		elif event.keycode == KEY_T:
+			is_thermal_mode = !is_thermal_mode
+			print("🕶️ THERMAL ACTIVE: ", is_thermal_mode)
+
 	# Mouse look rotation
 	if event is InputEventMouseMotion and mouse_captured:
+		# Reduce sensitivity when scoped in
+		var sens = camera_sensitivity
+		if current_zoom_state == 1: sens = camera_sensitivity * 0.4
+		elif current_zoom_state == 2: sens = camera_sensitivity * 0.15
+		
 		# Rotate parent Y
-		rotate_y(-event.relative.x * camera_sensitivity)
+		rotate_y(-event.relative.x * sens)
 		# Rotate camera pivot X (clamp vertical looking)
-		camera_pivot.rotate_x(-event.relative.y * camera_sensitivity)
+		camera_pivot.rotate_x(-event.relative.y * sens)
 		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -deg_to_rad(65.0), deg_to_rad(65.0))
 
 func _physics_process(delta: float) -> void:
@@ -78,37 +116,86 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 
-	# Check crouch toggle
-	if Input.is_key_pressed(KEY_CTRL):
-		if not is_crouching:
+	# Check slide/crouch transitions
+	var is_sprinting = Input.is_key_pressed(KEY_SHIFT) and velocity.length() > 0.5 and not is_crouching and not is_prone
+	
+	if is_sliding:
+		slide_timer -= delta
+		if slide_timer <= 0.0:
+			is_sliding = false
 			_set_crouch(true)
-	else:
-		if is_crouching:
-			_set_crouch(false)
+	elif is_sprinting and Input.is_key_pressed(KEY_CTRL) and not is_sliding:
+		is_sliding = true
+		slide_timer = 0.8
+		slide_direction = -transform.basis.z.normalized()
+		_set_crouch(true)
+		stealth_level = clamp(stealth_level - 15.0, 0.0, max_stealth)
 
-	# Handle jump
-	if Input.is_key_pressed(KEY_SPACE) and is_on_floor():
+	# Check crouch toggle (fallback if not sliding)
+	if not is_sliding:
+		if Input.is_key_pressed(KEY_CTRL):
+			if not is_crouching:
+				_set_crouch(true)
+				_set_prone(false)
+		else:
+			if is_crouching:
+				_set_crouch(false)
+
+	# Handle jump (cannot jump when prone/sliding)
+	if Input.is_key_pressed(KEY_SPACE) and is_on_floor() and not is_prone and not is_sliding:
 		velocity.y = jump_force
 		stealth_level = clamp(stealth_level - 10.0, 0.0, max_stealth)
 		stealth_changed.emit(stealth_level, max_stealth)
 
+	# Camera leaning Q/E
+	var target_lean_angle = 0.0
+	var target_lean_offset = 0.0
+	if Input.is_key_pressed(KEY_Q):
+		target_lean_angle = deg_to_rad(6.0)
+		target_lean_offset = -0.4
+	elif Input.is_key_pressed(KEY_E):
+		target_lean_angle = -deg_to_rad(6.0)
+		target_lean_offset = 0.4
+		
+	lean_angle = move_toward(lean_angle, target_lean_angle, 10.0 * delta)
+	lean_offset = move_toward(lean_offset, target_lean_offset, 6.0 * delta)
+	
+	if camera:
+		camera.rotation.z = lean_angle
+		camera.position.x = lean_offset
+
+	# Hold breath sway adjustments
+	is_holding_breath = Input.is_key_pressed(KEY_SHIFT) and current_zoom_state > 0 and stamina > 5.0
+	if is_holding_breath:
+		stamina = max(0.0, stamina - breath_stamina_decay * delta)
+	else:
+		stamina = min(stamina_max, stamina + 15.0 * delta)
+
 	# Calculate movement vectors based on camera direction
 	var input_dir := Vector3.ZERO
-	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
-		input_dir -= transform.basis.z
-	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
-		input_dir += transform.basis.z
-	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
-		input_dir -= transform.basis.x
-	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
-		input_dir += transform.basis.x
+	if not is_sliding:
+		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+			input_dir -= transform.basis.z
+		if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+			input_dir += transform.basis.z
+		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+			input_dir -= transform.basis.x
+		if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+			input_dir += transform.basis.x
+		input_dir = input_dir.normalized()
+	else:
+		input_dir = slide_direction
 
-	input_dir = input_dir.normalized()
-	
 	# Determine speed multiplier
 	var current_speed = speed
-	if is_crouching:
+	if is_sliding:
+		current_speed = slide_speed
+	elif is_prone:
+		current_speed = prone_speed
+	elif is_crouching:
 		current_speed = crouch_speed
+	elif is_sprinting:
+		current_speed = speed * 1.5
 
 	# Move character
 	var target_velocity_xz = input_dir * current_speed
@@ -119,12 +206,13 @@ func _physics_process(delta: float) -> void:
 
 	# Manage dynamic stealth recovery
 	if velocity.length() < 0.2:
-		# Staying still restores stealth rapidly, especially if crouching
-		var recovery = 25.0 if is_crouching else 10.0
+		# Staying still or crawling restores stealth
+		var recovery = 35.0 if is_prone else (25.0 if is_crouching else 10.0)
 		stealth_level = min(max_stealth, stealth_level + recovery * delta)
 	else:
-		# Moving drains stealth slightly based on speed
-		var drain = 3.0 if is_crouching else 8.0
+		# Moving drains stealth based on speed & posture
+		var drain = 1.0 if is_prone else (3.0 if is_crouching else 8.0)
+		if is_sprinting: drain = 15.0
 		stealth_level = max(0.0, stealth_level - drain * delta)
 		
 	stealth_changed.emit(stealth_level, max_stealth)
@@ -149,15 +237,40 @@ func _physics_process(delta: float) -> void:
 
 func _set_crouch(state: bool) -> void:
 	is_crouching = state
+	is_prone = false
 	if collision_shape:
-		# Adjust height of capsule collision shape
 		var cap = collision_shape.shape as CapsuleShape3D
 		if cap:
 			cap.height = 1.0 if state else 2.0
 	
-	# Offset camera pivot slightly down for visual crouch
 	if camera_pivot:
 		camera_pivot.position.y = 0.4 if state else 0.8
+
+func _set_prone(state: bool) -> void:
+	is_prone = state
+	is_crouching = false
+	if collision_shape:
+		var cap = collision_shape.shape as CapsuleShape3D
+		if cap:
+			cap.height = 0.4 if state else 2.0
+			
+	if camera_pivot:
+		camera_pivot.position.y = 0.2 if state else 0.8
+
+var fov_default: float = 75.0
+var fov_ads: float = 30.0
+var fov_dmr: float = 12.0
+
+func _apply_zoom() -> void:
+	if not camera:
+		return
+	match current_zoom_state:
+		0:
+			camera.fov = fov_default
+		1:
+			camera.fov = fov_ads
+		2:
+			camera.fov = fov_dmr
 
 var fire_cooldown: float = 0.0
 func _shoot_weapon() -> void:
