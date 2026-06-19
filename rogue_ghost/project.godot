@@ -15,6 +15,8 @@ config/tags=PackedStringArray("stealth", "tactical", "infiltration", "3d")
 run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0.0196, 0.0275, 0.0392, 1)
 
 [display]
 
