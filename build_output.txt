@@ -1,0 +1,23 @@
+
+> gamerdrift.github.io@0.1.0 build
+> next build
+
+▲ Next.js 16.2.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./app/play/[id]/page.tsx:1:14
+Route segment config "unstable_instant" requires `nextConfig.cacheComponents` to be enabled.
+[31m[1m>[0m [90m1 |[0m [36mexport[0m [36mconst[0m unstable_instant = { prefetch: [32m'static'[0m };
+  [90m  |[0m              [31m[1m^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m
+  [90m3 |[0m [36mimport[0m [33mReact[0m, { [33mSuspense[0m } [36mfrom[0m [32m'react'[0m;
+  [90m4 |[0m [36mimport[0m { games } [36mfrom[0m [32m'../../../data/games'[0m;
+
+Ecmascript file had an error
+
+
+    at <unknown> (./app/play/[id]/page.tsx:1:14)
