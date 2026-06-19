@@ -32,6 +32,8 @@ var is_active: bool = true
 # Camera variables
 var camera_sensitivity: float = 0.003
 var mouse_captured: bool = false
+var recoil_pitch: float = 0.0
+var recoil_yaw: float = 0.0
 
 # Node references (setup onready)
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
@@ -127,6 +129,20 @@ func _physics_process(delta: float) -> void:
 		
 	stealth_changed.emit(stealth_level, max_stealth)
 
+	# Apply recoil decay
+	if recoil_pitch > 0.0 or recoil_yaw != 0.0:
+		var rec_p = move_toward(recoil_pitch, 0.0, 4.0 * delta)
+		var rec_y = move_toward(recoil_yaw, 0.0, 4.0 * delta)
+		var diff_p = rec_p - recoil_pitch
+		var diff_y = rec_y - recoil_yaw
+		recoil_pitch = rec_p
+		recoil_yaw = rec_y
+		
+		if camera_pivot:
+			camera_pivot.rotate_x(diff_p)
+			camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -deg_to_rad(65.0), deg_to_rad(65.0))
+		rotate_y(diff_y)
+
 	# Shooting handler (Left Mouse Button)
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		_shoot_weapon()
@@ -150,6 +166,10 @@ func _shoot_weapon() -> void:
 		return
 	
 	fire_cooldown = time + 0.35 # Cooldown period of 350ms
+	
+	# Add weapon kick recoil
+	recoil_pitch += randf_range(0.05, 0.1)
+	recoil_yaw += randf_range(-0.03, 0.03)
 	
 	# Instantly reduce stealth due to firing blast noise
 	stealth_level = clamp(stealth_level - 35.0, 0.0, max_stealth)

@@ -164,12 +164,20 @@ func _process_chase(delta: float) -> void:
 	to_player.y = 0 # keep movement flat
 	var dist = to_player.length()
 
-	# Move toward player at high speed
+	# Move toward player or cover
 	var move_dir = to_player.normalized()
+	if is_in_cover:
+		cover_timer -= delta
+		if cover_timer <= 0.0 or global_position.distance_to(cover_position) < 1.0:
+			is_in_cover = false
+		else:
+			move_dir = (cover_position - global_position).normalized()
+			move_dir.y = 0
+
 	velocity.x = move_toward(velocity.x, move_dir.x * chase_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, move_dir.z * chase_speed, acceleration * delta)
 	
-	# Rotate to face player
+	# Rotate to face target movement direction
 	var target_look = global_position + move_dir
 	look_at(target_look, Vector3.UP)
 	rotation.x = 0
@@ -180,6 +188,45 @@ func _process_chase(delta: float) -> void:
 		active_target.take_damage(damage_per_sec * delta)
 		# Draw direct red laser beam (debug visualization)
 		DebugDraw.line(global_position + Vector3.UP * 0.8, active_target.global_position + Vector3.UP * 0.5, Color.RED)
+
+	# Periodically broadcast alert to nearby squad members
+	squad_alert_timer -= delta
+	if squad_alert_timer <= 0.0:
+		squad_alert_timer = 1.5
+		_broadcast_alert()
+
+func _broadcast_alert() -> void:
+	for guard in get_tree().get_nodes_in_group("guards"):
+		if guard != self and guard.global_position.distance_to(global_position) < 20.0:
+			if guard.has_method("alert_squad_member"):
+				guard.alert_squad_member(active_target)
+
+func alert_squad_member(target: PlayerGhost) -> void:
+	if current_state != State.CHASE:
+		current_state = State.CHASE
+		active_target = target
+		alert_level = 100.0
+		if spotlight:
+			spotlight.light_color = Color(1.0, 0.0, 0.0)
+
+var squad_alert_timer: float = 0.0
+var is_in_cover: bool = false
+var cover_position: Vector3 = Vector3.ZERO
+var cover_timer: float = 0.0
+
+func _find_nearest_cover() -> Vector3:
+	var covers = get_tree().get_nodes_in_group("cover")
+	if covers.size() == 0:
+		# Emulate cover points relative to position
+		return global_position + Vector3(randf_range(-4.0, 4.0), 0.0, randf_range(-4.0, 4.0))
+	var nearest = covers[0].global_position
+	var min_dist = global_position.distance_to(nearest)
+	for c in covers:
+		var d = global_position.distance_to(c.global_position)
+		if d < min_dist:
+			min_dist = d
+			nearest = c.global_position
+	return nearest
 
 func _process_return(delta: float) -> void:
 	var return_pt = patrol_points[current_patrol_idx]
@@ -200,9 +247,17 @@ func _process_return(delta: float) -> void:
 
 func take_damage(amount: float) -> void:
 	print("💥 Guard hit! Damage amount: ", amount)
-	# Trigger alert state on taking damage
 	alert_level = 100.0
 	current_state = State.CHASE
+	
+	# Seek cover on hit
+	if not is_in_cover and randf() < 0.7:
+		cover_position = _find_nearest_cover()
+		cover_timer = 3.0
+		is_in_cover = true
+	
+	# Alert nearby guards
+	_broadcast_alert()
 	
 	# Guard is neutralized/deleted on large damage
 	if amount >= 35.0:
@@ -212,5 +267,4 @@ func take_damage(amount: float) -> void:
 # Simple static helper class to emulate laser beams since Godot doesn't have immediate lines
 class DebugDraw:
 	static func line(from: Vector3, to: Vector3, color: Color) -> void:
-		# In headless/editor, printing is sufficient. In real scene we can add a transient cylinder or line
 		pass

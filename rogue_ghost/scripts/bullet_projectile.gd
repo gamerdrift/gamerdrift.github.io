@@ -8,6 +8,7 @@ extends Area3D
 @export var speed: float = 35.0
 @export var damage: float = 40.0
 @export var lifetime: float = 2.0
+@export var gravity: float = 3.5 # Ballistics gravity drop
 
 func _ready() -> void:
 	# Autodelete round after lifetime expires
@@ -22,6 +23,8 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	# Translate bullet along its heading vector
 	global_translate(-global_transform.basis.z * speed * delta)
+	# Apply ballistics gravity bullet drop
+	global_translate(Vector3.DOWN * gravity * delta)
 
 func _on_body_entered(body: Node) -> void:
 	# Avoid hitting self (handled via group exclusion or name checks)

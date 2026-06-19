@@ -103,15 +103,43 @@ func _complete_mission() -> void:
 	
 	# Calculate score based on speed and stealth indexes
 	var speed_bonus = max(0, int((round_time_limit - elapsed_time) * 10))
-	var stealth_bonus = int((100.0 - max_alert_level) * 5)
+	var stealth_bonus = int(max(0.0, 100.0 - max_alert_level) * 5)
 	var base_score = 1000
 	var final_score = base_score + speed_bonus + stealth_bonus
+	
+	# Apply stealth multipliers
+	var multiplier = 1.0
+	var rating = "Stealth Operative"
+	if max_alert_level == 0.0:
+		multiplier = 1.50
+		rating = "Ghost Infiltrator"
+	elif max_alert_level < 40.0:
+		multiplier = 1.20
+		rating = "Shadow Specialist"
+	elif max_alert_level >= 95.0:
+		multiplier = 0.80
+		rating = "Loud Enforcer"
+		
+	final_score = int(final_score * multiplier)
 	
 	# Reward XP points (10% of final score)
 	var xp_rewarded = int(final_score * 0.1)
 	
 	mission_completed.emit(final_score, xp_rewarded)
-	print("🏆 MISSION SUCCESSFUL! Final Score: ", final_score, " | XP: +", xp_rewarded)
+	
+	print("\n==============================================")
+	print("🏆 MISSION COMPLETE // DECLASSIFIED TELEMETRY")
+	print("==============================================")
+	print("Rating:        ", rating, " (Multiplier: ", multiplier, "x)")
+	print("Elapsed Time:  ", elapsed_time, "s")
+	print("Hostages:      ", rescued_hostages, " / ", total_hostages)
+	print("Max Alert:     ", max_alert_level, "%")
+	print("Base Score:    ", base_score)
+	print("Speed Bonus:   ", speed_bonus)
+	print("Stealth Bonus: ", stealth_bonus)
+	print("----------------------------------------------")
+	print("FINAL SCORE:   ", final_score, " | XP REWARD: +", xp_rewarded)
+	print("==============================================\n")
 
 func _fail_mission(reason: String) -> void:
 	is_active = false
