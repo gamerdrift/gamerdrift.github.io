@@ -50,6 +50,21 @@ var current_aim_distance: float = 50.0
 var breath_stamina_decay: float = 25.0
 var footstep_timer: float = 0.0
 
+# Hip vs ADS weapon positions
+var rifle_hip_pos: Vector3 = Vector3(0.2, -0.25, -0.45)
+var rifle_ads_pos: Vector3 = Vector3(0.0, -0.178, -0.32)
+
+var right_arm_hip_pos: Vector3 = Vector3(0.22, -0.32, -0.32)
+var right_arm_ads_pos: Vector3 = Vector3(0.02, -0.24, -0.20)
+
+var left_arm_hip_pos: Vector3 = Vector3(-0.16, -0.3, -0.45)
+var left_arm_ads_pos: Vector3 = Vector3(-0.24, -0.22, -0.38)
+
+# Burst Fire State
+var burst_shots_remaining: int = 0
+var burst_timer: float = 0.0
+var burst_interval: float = 0.08
+
 # Camera variables
 var camera_sensitivity: float = 0.003
 var mouse_captured: bool = false
@@ -60,8 +75,14 @@ var recoil_yaw: float = 0.0
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var camera: Camera3D = $CameraPivot/Camera3D
-@onready var muzzle: Marker3D = $Muzzle
-@onready var laser_beam: MeshInstance3D = get_node_or_null("Visuals/CarbineRifle/LaserBeam")
+@onready var muzzle: Marker3D = $CameraPivot/CarbineRifle/Muzzle
+@onready var laser_beam: MeshInstance3D = get_node_or_null("CameraPivot/CarbineRifle/LaserBeam")
+
+@onready var flash_mesh: MeshInstance3D = $CameraPivot/CarbineRifle/Muzzle/FlashMesh
+@onready var flash_light: OmniLight3D = $CameraPivot/CarbineRifle/Muzzle/FlashLight
+@onready var carbine_rifle: Node3D = $CameraPivot/CarbineRifle
+@onready var right_arm: Node3D = $CameraPivot/RightArm
+@onready var left_arm: Node3D = $CameraPivot/LeftArm
 
 func _ready() -> void:
 	# Add to groups for global access
@@ -70,22 +91,39 @@ func _ready() -> void:
 	# Initial UI updates
 	health_changed.emit(health, max_health)
 	stealth_changed.emit(stealth_level, max_stealth)
+	
+	# Auto-lock mouse on ready
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	mouse_captured = true
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_active:
 		return
 		
-	# Toggle mouse lock for camera rotation
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed:
-			mouse_captured = !mouse_captured
-			if mouse_captured:
-				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			else:
-				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-				
-	# Middle click toggles weapon scope zoom level
+	# Lock mouse cursor on screen click if it is visible
 	if event is InputEventMouseButton and event.pressed:
+		if not mouse_captured:
+			mouse_captured = true
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			get_viewport().set_input_as_handled()
+			return
+
+	# Unlock mouse cursor on Escape key
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		mouse_captured = false
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		return
+
+	# Right Mouse Button toggles ADS/Scope aiming
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and mouse_captured:
+		if current_zoom_state == 0:
+			current_zoom_state = 2 # Open scope directly
+		else:
+			current_zoom_state = 0 # Close scope
+		_apply_zoom()
+				
+	# Middle click cycles all weapon scope zoom levels
+	if event is InputEventMouseButton and event.pressed and mouse_captured:
 		if event.button_index == MOUSE_BUTTON_MIDDLE:
 			current_zoom_state = (current_zoom_state + 1) % 3
 			_apply_zoom()
@@ -286,9 +324,29 @@ func _physics_process(delta: float) -> void:
 			c_mesh.height = distance
 		laser_beam.position = Vector3(0, 0, -0.6 - (distance / 2.0))
 
-	# Shooting handler (Left Mouse Button)
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		_shoot_weapon()
+	# Smoothly Lerp weapon/arms positions for ADS transition
+	var is_aiming = current_zoom_state > 0
+	var target_rifle_pos = rifle_ads_pos if is_aiming else rifle_hip_pos
+	var target_right_arm_pos = right_arm_ads_pos if is_aiming else right_arm_hip_pos
+	var target_left_arm_pos = left_arm_ads_pos if is_aiming else left_arm_hip_pos
+
+	if carbine_rifle:
+		carbine_rifle.position = carbine_rifle.position.lerp(target_rifle_pos, 14.0 * delta)
+	if right_arm:
+		right_arm.position = right_arm.position.lerp(target_right_arm_pos, 14.0 * delta)
+	if left_arm:
+		left_arm.position = left_arm.position.lerp(target_left_arm_pos, 14.0 * delta)
+
+	# Firing input detection (Left Mouse Button)
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and mouse_captured:
+		_trigger_burst_fire()
+
+	# Process active 3-round burst sequence
+	if burst_shots_remaining > 0:
+		burst_timer -= delta
+		if burst_timer <= 0.0:
+			burst_timer = burst_interval
+			_fire_single_bullet()
 
 func _set_crouch(state: bool) -> void:
 	is_crouching = state
@@ -328,43 +386,57 @@ func _apply_zoom() -> void:
 			camera.fov = fov_dmr
 
 var fire_cooldown: float = 0.0
-func _shoot_weapon() -> void:
+func _trigger_burst_fire() -> void:
 	var time = Time.get_ticks_msec() / 1000.0
-	if time < fire_cooldown:
+	if time < fire_cooldown or burst_shots_remaining > 0:
 		return
+		
+	fire_cooldown = time + 0.48 # 480ms cooldown between bursts
 	
-	fire_cooldown = time + 0.35 # Cooldown period of 350ms
+	# Play the synthesized 3-round M16 burst sound!
+	SoundManager.play("shot_m16_burst")
 	
-	# Play shot sound
-	SoundManager.play("shot_silenced")
+	# Start burst sequence
+	burst_shots_remaining = 3
+	burst_timer = 0.0 # Trigger first bullet instantly
+
+func _fire_single_bullet() -> void:
+	burst_shots_remaining -= 1
 	
-	# Add weapon kick recoil
-	recoil_pitch += randf_range(0.05, 0.1)
-	recoil_yaw += randf_range(-0.03, 0.03)
+	# Gun kick recoil
+	recoil_pitch += randf_range(0.04, 0.07)
+	recoil_yaw += randf_range(-0.02, 0.02)
 	
-	# Instantly reduce stealth due to firing blast noise
-	stealth_level = clamp(stealth_level - 35.0, 0.0, max_stealth)
+	# Visual muzzle flash
+	_show_muzzle_flash()
+	
+	# Reduce stealth from gun burst noise
+	stealth_level = clamp(stealth_level - 12.0, 0.0, max_stealth)
 	stealth_changed.emit(stealth_level, max_stealth)
 	fired_weapon.emit()
 	
-	print("💥 DISCHARGING ", active_weapon, "!")
+	print("💥 DISCHARGING M16 ROUND!")
 	
-	# Instantiate bullet projectile programmatically (fallback if scenes aren't loaded)
+	# Instantiate tracer bullet
 	var bullet_class = load("res://scenes/bullet_projectile.tscn")
 	if bullet_class:
 		var b = bullet_class.instantiate() as Node3D
 		get_tree().root.add_child(b)
 		b.global_position = muzzle.global_position
-		# Point bullet along the camera aim direction
+		
+		# Point tracer bullet along aim heading (plus tiny spread)
 		var aim_dir = -camera.global_transform.basis.z
+		var spread = 0.015 if current_zoom_state == 0 else 0.002
+		aim_dir += Vector3(randf_range(-spread, spread), randf_range(-spread, spread), randf_range(-spread, spread))
+		aim_dir = aim_dir.normalized()
 		b.global_transform.basis = Basis.looking_at(aim_dir, Vector3.UP)
 	else:
-		# Cast a raycast tracer if projectile isn't created
+		# Fallback Raycast
 		var space_state = get_world_3d().direct_space_state
 		var origin = camera.global_position
 		var target = origin + (-camera.global_transform.basis.z * 100.0)
 		var query = PhysicsRayQueryParameters3D.create(origin, target)
-		query.exclude = [get_rid()] # don't hit player
+		query.exclude = [get_rid()]
 		
 		var result = space_state.intersect_ray(query)
 		if result:
@@ -372,6 +444,46 @@ func _shoot_weapon() -> void:
 			if hit_obj.has_method("take_damage"):
 				hit_obj.take_damage(40.0)
 				print("🎯 Projectile hit target: ", hit_obj.name)
+				
+	# Pop spent shell casing brass
+	_eject_shell_casing()
+
+func _show_muzzle_flash() -> void:
+	if flash_mesh and flash_light:
+		flash_mesh.visible = true
+		flash_light.visible = true
+		get_tree().create_timer(0.04).timeout.connect(func():
+			if is_instance_valid(flash_mesh): flash_mesh.visible = false
+			if is_instance_valid(flash_light): flash_light.visible = false
+		)
+
+func _eject_shell_casing() -> void:
+	var casing_mesh = CylinderMesh.new()
+	casing_mesh.radius = 0.008
+	casing_mesh.height = 0.03
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(1.0, 0.8, 0.2, 1) # gold brass
+	mat.metallic = 0.8
+	mat.roughness = 0.2
+	casing_mesh.material = mat
+	
+	var casing = MeshInstance3D.new()
+	casing.mesh = casing_mesh
+	get_tree().root.add_child(casing)
+	
+	# Position at rifle eject port
+	casing.global_position = carbine_rifle.global_position + carbine_rifle.global_transform.basis.x * 0.05
+	
+	# Trajectory velocity vector
+	var velocity = (carbine_rifle.global_transform.basis.x * randf_range(1.5, 2.5) +
+					carbine_rifle.global_transform.basis.y * randf_range(1.0, 1.8) -
+					carbine_rifle.global_transform.basis.z * randf_range(-0.5, 0.5))
+	
+	var tween = create_tween()
+	var target_pos = casing.global_position + velocity * 0.3 + Vector3.DOWN * 0.6
+	tween.tween_property(casing, "global_position", target_pos, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(casing, "rotation", Vector3(randf_range(-TAU, TAU), randf_range(-TAU, TAU), randf_range(-TAU, TAU)), 0.3)
+	tween.finished.connect(func(): if is_instance_valid(casing): casing.queue_free())
 
 func take_damage(amount: float) -> void:
 	if health <= 0.0:

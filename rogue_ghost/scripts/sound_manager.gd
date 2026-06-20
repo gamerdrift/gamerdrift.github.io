@@ -10,6 +10,7 @@ var streams: Dictionary = {}
 func _ready() -> void:
 	# Cache-generate all sound streams at load
 	streams["shot_silenced"] = _generate_silenced_shot()
+	streams["shot_m16_burst"] = _generate_m16_burst()
 	streams["footstep_snow"] = _generate_footstep(0.06, 120.0, 0.12)
 	streams["footstep_desert"] = _generate_footstep(0.05, 240.0, 0.08)
 	streams["guard_alert"] = _generate_guard_alert()
@@ -229,3 +230,33 @@ func _generate_defeat() -> AudioStreamWAV:
 		bytes.append(byte_val)
 
 	return _create_stream(bytes, mix_rate)
+
+# 9. M16 Burst fire sound: 3 rapid, punchy shots with metallic thud
+func _generate_m16_burst() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.42
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+	var shot_starts = [0.0, 0.09, 0.18]
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var total_sample = 0.0
+
+		for start_t in shot_starts:
+			if t >= start_t:
+				var local_t = t - start_t
+				var noise_env = exp(-local_t * 38.0)
+				var body_env = exp(-local_t * 16.0)
+				var noise = randf_range(-1.0, 1.0) * noise_env * 0.45
+				var freq = lerp(420.0, 70.0, clamp(local_t * 18.0, 0.0, 1.0))
+				var thud = sin(2.0 * PI * freq * local_t) * body_env * 0.5
+				total_sample += noise + thud
+
+		total_sample = clamp(total_sample * 0.55, -1.0, 1.0)
+		var byte_val = int(total_sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+

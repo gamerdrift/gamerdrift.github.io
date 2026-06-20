@@ -169,6 +169,57 @@ height = 0.26
 material = SubResource("StandardMaterial3D_weapon")
 size = Vector3(0.02, 0.035, 0.18)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_skin"]
+albedo_color = Color(0.82, 0.62, 0.48, 1)
+roughness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gloves"]
+albedo_color = Color(0.12, 0.12, 0.14, 1)
+roughness = 0.9
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_forearm"]
+material = SubResource("StandardMaterial3D_skin")
+radius = 0.055
+height = 0.36
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="BoxMesh_glove"]
+material = SubResource("StandardMaterial3D_gloves")
+size = Vector3(0.07, 0.07, 0.1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_m16_scope"]
+material = SubResource("StandardMaterial3D_black_plastic")
+top_radius = 0.015
+bottom_radius = 0.015
+height = 0.12
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lens"]
+albedo_color = Color(0.0, 0.6, 1.0, 1)
+emission_enabled = true
+emission = Color(0.0, 0.4, 0.8, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_scope_lens"]
+material = SubResource("StandardMaterial3D_lens")
+radius = 0.014
+height = 0.02
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+albedo_color = Color(1.0, 0.9, 0.3, 1)
+emission_enabled = true
+emission = Color(1.0, 0.8, 0.1, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_flash"]
+material = SubResource("StandardMaterial3D_flash")
+radius = 0.08
+height = 0.16
+radial_segments = 8
+rings = 4
+
 
 [node name="PlayerGhost" type="CharacterBody3D"]
 script = ExtResource("1_player")
@@ -233,22 +284,6 @@ mesh = SubResource("CylinderMesh_nvg_tube")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0)
 mesh = SubResource("SphereMesh_nvg_lens")
 
-[node name="LeftArm" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.2, 0)
-mesh = SubResource("CapsuleMesh_arm")
-
-[node name="ElbowPad" type="MeshInstance3D" parent="Visuals/LeftArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.09)
-mesh = SubResource("BoxMesh_joint_pad")
-
-[node name="RightArm" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0.35, 0.2, -0.1)
-mesh = SubResource("CapsuleMesh_arm")
-
-[node name="ElbowPad" type="MeshInstance3D" parent="Visuals/RightArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.09)
-mesh = SubResource("BoxMesh_joint_pad")
-
 [node name="LeftLeg" type="MeshInstance3D" parent="Visuals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, -0.4, 0)
 mesh = SubResource("CapsuleMesh_leg")
@@ -265,45 +300,87 @@ mesh = SubResource("CapsuleMesh_leg")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.11)
 mesh = SubResource("BoxMesh_joint_pad")
 
-[node name="CarbineRifle" type="Node3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.2, -0.4)
-
-[node name="Receiver" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-mesh = SubResource("BoxMesh_m16_receiver")
-
-[node name="Stock" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, -0.01, 0.22)
-mesh = SubResource("BoxMesh_m16_stock")
-
-[node name="Grip" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, -0.06, 0.04)
-mesh = SubResource("BoxMesh_m16_grip")
-
-[node name="Magazine" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0, -0.08, -0.06)
-mesh = SubResource("BoxMesh_m16_mag")
-
-[node name="Handguard" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.22)
-mesh = SubResource("CylinderMesh_m16_handguard")
-
-[node name="Barrel" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.45)
-mesh = SubResource("CylinderMesh_m16_barrel")
-
-[node name="CarryHandle" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.02)
-mesh = SubResource("BoxMesh_m16_handle")
-
-[node name="LaserBeam" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.6)
-mesh = SubResource("CylinderMesh_Laser")
-
 [node name="CameraPivot" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
 current = true
 
-[node name="Muzzle" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.2, -1.0)
+[node name="CarbineRifle" type="Node3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.25, -0.45)
+
+[node name="Receiver" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+mesh = SubResource("BoxMesh_m16_receiver")
+
+[node name="Stock" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, -0.01, 0.22)
+mesh = SubResource("BoxMesh_m16_stock")
+
+[node name="Grip" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, -0.06, 0.04)
+mesh = SubResource("BoxMesh_m16_grip")
+
+[node name="Magazine" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0, -0.08, -0.06)
+mesh = SubResource("BoxMesh_m16_mag")
+
+[node name="Handguard" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.22)
+mesh = SubResource("CylinderMesh_m16_handguard")
+
+[node name="Barrel" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.45)
+mesh = SubResource("CylinderMesh_m16_barrel")
+
+[node name="CarryHandle" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.02)
+mesh = SubResource("BoxMesh_m16_handle")
+
+[node name="Scope" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.08, -0.02)
+mesh = SubResource("CylinderMesh_m16_scope")
+
+[node name="Lens" type="MeshInstance3D" parent="CameraPivot/CarbineRifle/Scope"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06, 0)
+mesh = SubResource("SphereMesh_scope_lens")
+
+[node name="LaserBeam" type="MeshInstance3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.6)
+mesh = SubResource("CylinderMesh_Laser")
+
+[node name="Muzzle" type="Marker3D" parent="CameraPivot/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.6)
+
+[node name="FlashMesh" type="MeshInstance3D" parent="CameraPivot/CarbineRifle/Muzzle"]
+visible = false
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.05)
+mesh = SubResource("SphereMesh_flash")
+
+[node name="FlashLight" type="OmniLight3D" parent="CameraPivot/CarbineRifle/Muzzle"]
+visible = false
+light_color = Color(1, 0.85, 0.3, 1)
+light_energy = 5.0
+omni_range = 6.0
+
+[node name="RightArm" type="Node3D" parent="CameraPivot"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0.22, -0.32, -0.32)
+
+[node name="Forearm" type="MeshInstance3D" parent="CameraPivot/RightArm"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.1)
+mesh = SubResource("CapsuleMesh_forearm")
+
+[node name="Hand" type="MeshInstance3D" parent="CameraPivot/RightArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, 0.04, -0.1)
+mesh = SubResource("BoxMesh_glove")
+
+[node name="LeftArm" type="Node3D" parent="CameraPivot"]
+transform = Transform3D(0.866025, -0.5, 0, 0.5, 0.866025, 0, 0, 0, 1, -0.16, -0.3, -0.45)
+
+[node name="Forearm" type="MeshInstance3D" parent="CameraPivot/LeftArm"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.1)
+mesh = SubResource("CapsuleMesh_forearm")
+
+[node name="Hand" type="MeshInstance3D" parent="CameraPivot/LeftArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.04, -0.1)
+mesh = SubResource("BoxMesh_glove")
+
