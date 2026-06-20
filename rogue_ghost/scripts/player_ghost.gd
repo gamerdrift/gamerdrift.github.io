@@ -45,6 +45,8 @@ var lean_offset: float = 0.0
 var current_zoom_state: int = 0 # 0=normal, 1=ADS, 2=DMR
 var is_holding_breath: bool = false
 var is_thermal_mode: bool = false
+var is_nvg_mode: bool = false
+var current_aim_distance: float = 50.0
 var breath_stamina_decay: float = 25.0
 var footstep_timer: float = 0.0
 
@@ -95,8 +97,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			_set_prone(!is_prone)
 		elif event.keycode == KEY_T:
 			is_thermal_mode = !is_thermal_mode
+			if is_thermal_mode:
+				is_nvg_mode = false
 			SoundManager.play("clue")
 			print("🕶️ THERMAL ACTIVE: ", is_thermal_mode)
+		elif event.keycode == KEY_N:
+			is_nvg_mode = !is_nvg_mode
+			if is_nvg_mode:
+				is_thermal_mode = false
+			SoundManager.play("clue")
+			print("🕶️ NVG ACTIVE: ", is_nvg_mode)
 
 	# Mouse look rotation
 	if event is InputEventMouseMotion and mouse_captured:
@@ -269,6 +279,7 @@ func _physics_process(delta: float) -> void:
 		var distance = 50.0
 		if result:
 			distance = origin.distance_to(result.position)
+		current_aim_distance = distance
 		
 		var c_mesh = laser_beam.mesh as CylinderMesh
 		if c_mesh:

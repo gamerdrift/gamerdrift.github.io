@@ -52,12 +52,20 @@ func _update_volumetric_fog() -> void:
 		
 	var env = active_environment.environment
 	
-	# Check if thermal vision is currently active
 	var thermal_active = player and player.is_active and player.is_thermal_mode
+	var nvg_active = player and player.is_active and player.is_nvg_mode
 	
 	match environment_type:
 		EnvType.ARCTIC:
-			if thermal_active:
+			if nvg_active:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.05, 0.9, 0.15)
+					env.fog_density = base_fog_density * 0.35
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = base_fog_density * 0.35
+					env.volumetric_fog_emission = Color(0.02, 0.45, 0.08)
+					env.volumetric_fog_albedo = Color(0.05, 0.9, 0.15)
+			elif thermal_active:
 				if env.fog_enabled:
 					env.fog_light_color = Color(0.0, 0.8, 0.3)
 					env.fog_density = base_fog_density * 0.4
@@ -75,29 +83,51 @@ func _update_volumetric_fog() -> void:
 					env.volumetric_fog_albedo = Color(0.12, 0.14, 0.18)
 				
 		EnvType.DESERT:
-			if env.fog_enabled:
-				env.fog_light_color = Color(0.65, 0.52, 0.38) # Dusty orange-brown
-				env.fog_density = (base_fog_density * 1.5) * storm_intensity # denser sandstorm
-			if env.volumetric_fog_enabled:
-				env.volumetric_fog_density = (base_fog_density * 1.5) * storm_intensity
-				env.volumetric_fog_emission = Color(0.5, 0.38, 0.22) # Warm sand glow
-				env.volumetric_fog_albedo = Color(0.65, 0.52, 0.38)
-				
-		EnvType.NIGHT:
-			# Night ops visibility dynamics
-			if thermal_active:
-				# Thermal Goggles clear the fog slightly and turn it bright cyber-green
+			if nvg_active:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.05, 0.9, 0.15)
+					env.fog_density = base_fog_density * 0.6
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = base_fog_density * 0.6
+					env.volumetric_fog_emission = Color(0.02, 0.45, 0.08)
+					env.volumetric_fog_albedo = Color(0.05, 0.9, 0.15)
+			elif thermal_active:
 				if env.fog_enabled:
 					env.fog_light_color = Color(0.0, 0.8, 0.3)
-					env.fog_density = base_fog_density * 0.4 # clearer vision in thermal!
+					env.fog_density = base_fog_density * 0.5
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = base_fog_density * 0.5
+					env.volumetric_fog_emission = Color(0.0, 0.4, 0.15)
+					env.volumetric_fog_albedo = Color(0.0, 0.8, 0.3)
+			else:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.65, 0.52, 0.38)
+					env.fog_density = (base_fog_density * 1.5) * storm_intensity
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = (base_fog_density * 1.5) * storm_intensity
+					env.volumetric_fog_emission = Color(0.5, 0.38, 0.22)
+					env.volumetric_fog_albedo = Color(0.65, 0.52, 0.38)
+				
+		EnvType.NIGHT:
+			if nvg_active:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.05, 0.9, 0.15)
+					env.fog_density = base_fog_density * 0.35
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = base_fog_density * 0.35
+					env.volumetric_fog_emission = Color(0.02, 0.45, 0.08)
+					env.volumetric_fog_albedo = Color(0.05, 0.9, 0.15)
+			elif thermal_active:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.0, 0.8, 0.3)
+					env.fog_density = base_fog_density * 0.4
 				if env.volumetric_fog_enabled:
 					env.volumetric_fog_density = base_fog_density * 0.4
 					env.volumetric_fog_emission = Color(0.0, 0.4, 0.15)
 					env.volumetric_fog_albedo = Color(0.0, 0.8, 0.3)
 			else:
-				# Dark forest night shadows
 				if env.fog_enabled:
-					env.fog_light_color = Color(0.02, 0.04, 0.08) # Midnight blue-black
+					env.fog_light_color = Color(0.02, 0.04, 0.08)
 					env.fog_density = base_fog_density * 1.2
 				if env.volumetric_fog_enabled:
 					env.volumetric_fog_density = base_fog_density * 1.2

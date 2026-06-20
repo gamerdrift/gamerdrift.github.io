@@ -2470,7 +2470,7 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
                   className="w-full h-full border-none bg-black"
                   allow="autoplay; gamepad; keyboard; fullscreen"
                   allowFullScreen
-                  sandbox="allow-scripts allow-same-origin allow-popups allow-pointer-lock"
+                  sandbox={gameId === 'rogue-ghost' ? undefined : "allow-scripts allow-same-origin allow-popups allow-pointer-lock"}
                 />
               ) : (
                 <div className="w-full h-full bg-[#0a000f] flex items-center justify-center text-text-secondary">
