@@ -5,195 +5,94 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 		<title>RogueGhost</title>
 		<style>
-			/* Google Fonts integration */
-			@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
 
-			html, body, #canvas {
-				margin: 0;
-				padding: 0;
-				border: 0;
-				background-color: #020617;
-				width: 100%;
-				height: 100%;
-			}
+body {
+	color: white;
+	background-color: black;
+	overflow: hidden;
+	touch-action: none;
+}
 
-			body {
-				color: #94a3b8;
-				overflow: hidden;
-				touch-action: none;
-				font-family: 'Share Tech Mono', monospace;
-			}
+#canvas {
+	display: block;
+}
 
-			#canvas {
-				display: block;
-				width: 100%;
-				height: 100%;
-			}
+#canvas:focus {
+	outline: none;
+}
 
-			#canvas:focus {
-				outline: none;
-			}
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
 
-			#status {
-				position: absolute;
-				left: 0;
-				right: 0;
-				top: 0;
-				bottom: 0;
-				background-color: #020617 !important;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				z-index: 999;
-				visibility: visible;
-			}
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
 
-			.scanline-overlay {
-				position: absolute;
-				inset: 0;
-				pointer-events: none;
-				background: linear-gradient(
-					rgba(18, 16, 16, 0) 50%, 
-					rgba(0, 0, 0, 0.25) 50%
-				);
-				background-size: 100% 4px;
-				z-index: 10;
-			}
+#status {
+	background-color: #05070a;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
 
-			.loader-container {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				max-width: 500px;
-				width: 90%;
-				padding: 2.5rem;
-				background: rgba(15, 23, 42, 0.7);
-				border: 1px solid rgba(0, 240, 255, 0.25);
-				box-shadow: 0 0 50px rgba(0, 240, 255, 0.1), inset 0 0 25px rgba(0, 240, 255, 0.05);
-				border-radius: 12px;
-				backdrop-filter: blur(10px);
-				position: relative;
-				z-index: 20;
-				text-align: center;
-			}
+#status-splash {
+	max-height: 100%;
+	max-width: 100%;
+	margin: auto;
+}
 
-			#custom-loader {
-				display: flex;
-				flex-direction: column;
-				width: 100%;
-				align-items: center;
-			}
+#status-splash.show-image--false {
+	display: none;
+}
 
-			.glow-header {
-				font-family: 'Orbitron', sans-serif;
-				font-size: 2.2rem;
-				font-weight: 900;
-				letter-spacing: 0.25em;
-				color: #ffffff;
-				text-shadow: 0 0 15px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 240, 255, 0.2);
-				margin-bottom: 0.2rem;
-				text-transform: uppercase;
-			}
+#status-splash.fullsize--true {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
 
-			.glow-sub {
-				font-family: 'Orbitron', sans-serif;
-				font-size: 0.75rem;
-				font-weight: 700;
-				letter-spacing: 0.18em;
-				color: #ff9f00;
-				margin-bottom: 2rem;
-				text-shadow: 0 0 8px rgba(255, 159, 0, 0.5);
-				text-transform: uppercase;
-			}
+#status-splash.use-filter--false {
+	image-rendering: pixelated;
+}
 
-			.progress-info {
-				display: flex;
-				justify-content: space-between;
-				font-size: 0.75rem;
-				color: #64748b;
-				margin-bottom: 0.5rem;
-				letter-spacing: 0.05em;
-				width: 100%;
-			}
+#status-progress, #status-notice {
+	display: none;
+}
 
-			.progress-container {
-				width: 100%;
-				height: 6px;
-				background: #0f172a;
-				border: 1px solid #1e293b;
-				position: relative;
-				border-radius: 4px;
-				overflow: hidden;
-				margin-bottom: 1.5rem;
-			}
+#status-progress {
+	bottom: 10%;
+	width: 50%;
+	margin: 0 auto;
+}
 
-			#custom-progress-bar {
-				width: 0%;
-				height: 100%;
-				background: linear-gradient(90deg, #00f0ff, #a855f7);
-				box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
-				transition: width 0.1s ease;
-			}
-
-			.terminal-logs {
-				width: 100%;
-				height: 110px;
-				background: #020617;
-				border: 1px solid #1e293b;
-				border-radius: 6px;
-				padding: 0.75rem;
-				box-sizing: border-box;
-				font-family: 'Share Tech Mono', monospace;
-				font-size: 0.7rem;
-				color: #38bdf8;
-				overflow-y: hidden;
-				line-height: 1.4;
-				display: flex;
-				flex-direction: column;
-				justify-content: flex-end;
-				text-align: left;
-			}
-
-			.terminal-line {
-				margin: 2px 0;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-
-			.terminal-line.success {
-				color: #4ade80;
-			}
-
-			.terminal-line.info {
-				color: #00f0ff;
-			}
-
-			.terminal-line.warning {
-				color: #fbbf24;
-			}
-
-			#status-notice {
-				background-color: #3f1a24;
-				border-radius: 0.5rem;
-				border: 1px solid #9b3943;
-				color: #fca5a5;
-				font-family: 'Share Tech Mono', monospace;
-				line-height: 1.4;
-				padding: 1rem;
-				text-align: center;
-				display: none;
-				width: 100%;
-				box-sizing: border-box;
-				font-size: 0.75rem;
-			}
-
-			#status-progress {
-				display: none;
-			}
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
 		</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
-		<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+
 	</head>
 	<body>
 		<canvas id="canvas">
@@ -205,46 +104,20 @@
 		</noscript>
 
 		<div id="status">
-			<div class="scanline-overlay"></div>
-			<div class="loader-container">
-				<!-- Center Panel: Specs & Console Logs -->
-				<div id="custom-loader">
-					<div class="glow-header">ROGUE GHOST</div>
-					<div class="glow-sub">TACTICAL INFILTRATION GRID // GAMERDRIFT.COM</div>
-					
-					<div class="progress-info">
-						<span id="custom-status-text">INITIALIZING QUANTUM UPLINK...</span>
-						<span id="custom-percentage-text">0%</span>
-					</div>
-					<div class="progress-container">
-						<div id="custom-progress-bar"></div>
-					</div>
-					
-					<div class="terminal-logs" id="terminal-logs">
-						<!-- Custom loading logs will be dynamically inserted here -->
-					</div>
-				</div>
-				<div id="status-notice"></div>
-				<div id="status-progress"></div>
-			</div>
+			<img id="status-splash" class="show-image--false fullsize--true use-filter--true" src="index.png" alt="">
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
 		</div>
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":88640,"index.wasm":37700666},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
-
-// Forward URL mission parameter to Godot engine arguments
-const urlParams = new URLSearchParams(window.location.search);
-const mission = urlParams.get('mission');
-if (mission) {
-	GODOT_CONFIG.args = ['--mission', mission];
-}
-
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":88656,"index.wasm":37700666},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
 (function () {
 	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
 	const statusNotice = document.getElementById('status-notice');
 
 	let initializing = true;
@@ -260,15 +133,8 @@ const engine = new Engine(GODOT_CONFIG);
 			return;
 		}
 		statusOverlay.style.visibility = 'visible';
-		
-		const customLoader = document.getElementById('custom-loader');
-		if (mode === 'notice') {
-			statusNotice.style.display = 'block';
-			if (customLoader) customLoader.style.display = 'none';
-		} else {
-			statusNotice.style.display = 'none';
-			if (customLoader) customLoader.style.display = 'flex';
-		}
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
 		statusMode = mode;
 	}
 
@@ -296,34 +162,6 @@ const engine = new Engine(GODOT_CONFIG);
 		initializing = false;
 	}
 
-	// ─── TERMINAL LOG SYSTEM ───
-	const logsContainer = document.getElementById('terminal-logs');
-
-	function addTerminalLog(text, type = 'info') {
-		const logEl = document.createElement('div');
-		logEl.className = 'terminal-line ' + type;
-		
-		const now = new Date();
-		const timeStr = '[' + 
-			String(now.getHours()).padStart(2, '0') + ':' + 
-			String(now.getMinutes()).padStart(2, '0') + ':' + 
-			String(now.getSeconds()).padStart(2, '0') + '.' + 
-			String(Math.floor(now.getMilliseconds() / 10)).padStart(2, '0') + 
-		']';
-		
-		logEl.textContent = timeStr + ' ' + text;
-		logsContainer.appendChild(logEl);
-		
-		while (logsContainer.children.length > 5) {
-			logsContainer.removeChild(logsContainer.firstChild);
-		}
-	}
-
-	addTerminalLog('ESTABLISHING SECURE CONNECTION TO SATELLITE CORONA-9...', 'info');
-	setTimeout(() => addTerminalLog('HANDSHAKE COMPLETED. ENCRYPTED COMMS TUNNEL STABLE.', 'success'), 350);
-	setTimeout(() => addTerminalLog('GAMERDRIFT NETWORK INTEGRITY CHECK: PASS', 'success'), 700);
-	setTimeout(() => addTerminalLog('DISPATCHING TACTICAL GRID TO SECTOR SW-07...', 'info'), 1050);
-
 	const missing = Engine.getMissingFeatures({
 		threads: GODOT_THREADS_ENABLED,
 	});
@@ -336,6 +174,7 @@ const engine = new Engine(GODOT_CONFIG);
 			} catch (err) {
 				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
 			}
+			// There's a chance that installing the service worker would fix the issue
 			Promise.race([
 				serviceWorkerRegistrationPromise.then((registration) => {
 					if (registration != null) {
@@ -343,61 +182,31 @@ const engine = new Engine(GODOT_CONFIG);
 					}
 					return registration;
 				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
 				new Promise((resolve) => {
 					setTimeout(() => resolve(), 2000);
 				}),
 			]).then(() => {
+				// Reload if there was no error.
 				window.location.reload();
 			}).catch((err) => {
 				console.error('Error while registering service worker:', err);
 			});
 		} else {
+			// Display the message as usual
 			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
 			displayFailureNotice(missingMsg + missing.join('\n'));
 		}
 	} else {
 		setStatusMode('progress');
-
-		let milestone15 = false;
-		let milestone40 = false;
-		let milestone65 = false;
-		let milestone85 = false;
-		let milestone100 = false;
-
 		engine.startGame({
 			'onProgress': function (current, total) {
 				if (current > 0 && total > 0) {
-					const pct = (current / total) * 100;
-					
-					const bar = document.getElementById('custom-progress-bar');
-					if (bar) bar.style.width = pct + '%';
-					
-					const pctText = document.getElementById('custom-percentage-text');
-					if (pctText) pctText.textContent = Math.floor(pct) + '%';
-					
-					const statusText = document.getElementById('custom-status-text');
-					if (statusText) statusText.textContent = 'SYS.LOAD: RECONNAISSANCE MAP "SNOWBLOW"';
-
-					if (pct >= 15 && !milestone15) {
-						milestone15 = true;
-						addTerminalLog('COMPILING SPATIAL SHADERS: FOG_BLIZZARD.SHD', 'info');
-					}
-					if (pct >= 40 && !milestone40) {
-						milestone40 = true;
-						addTerminalLog('LOADING TACTICAL OPERATIVE MODEL & COLLIDERS', 'info');
-					}
-					if (pct >= 65 && !milestone65) {
-						milestone65 = true;
-						addTerminalLog('RESOLVING ENVIRONMENT COORDINATES: OUTPOST_SNOWBLOW.MAP', 'info');
-					}
-					if (pct >= 85 && !milestone85) {
-						milestone85 = true;
-						addTerminalLog('INITIALIZING OP-FOR RECON AI: "THE WHITE REAPER"', 'warning');
-					}
-					if (pct >= 99 && !milestone100) {
-						milestone100 = true;
-						addTerminalLog('SYNCHRONIZATION COMPLETE. ENGAGING DISPATCH VECTOR.', 'success');
-					}
+					statusProgress.value = current;
+					statusProgress.max = total;
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
 				}
 			},
 		}).then(() => {
@@ -408,3 +217,4 @@ const engine = new Engine(GODOT_CONFIG);
 		</script>
 	</body>
 </html>
+
