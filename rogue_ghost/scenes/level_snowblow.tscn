@@ -75,7 +75,6 @@ shadow_enabled = true
 [node name="WeatherSystem" type="Node3D" parent="."]
 script = ExtResource("8_weather_script")
 
-# --- MAP GEOMETRY ---
 [node name="MapLayout" type="CSGCombiner3D" parent="."]
 use_collision = true
 
@@ -104,13 +103,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 4, 0)
 size = Vector3(2, 8, 120)
 material = SubResource("Material_Rock")
 
-# Frozen Creek
 [node name="FrozenCreek" type="CSGBox3D" parent="MapLayout"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 5)
 size = Vector3(120, 0.2, 8)
 material = SubResource("Material_Ice")
 
-# Rocky Ridges for Nests
 [node name="NorthRidge" type="CSGBox3D" parent="MapLayout"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -35)
 size = Vector3(45, 6, 12)
@@ -126,7 +123,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 2, -15)
 size = Vector3(15, 4, 25)
 material = SubResource("Material_Rock")
 
-# Cover Objects (Blocks in group 'cover')
 [node name="SandbagsConvoy" type="CSGBox3D" parent="MapLayout" groups=["cover"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.5, 22)
 size = Vector3(6, 1.2, 1)
@@ -137,7 +133,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, 20)
 size = Vector3(5, 1.2, 1)
 material = SubResource("Material_Steel")
 
-# --- CONVOY WRECKAGE ASSETS ---
 [node name="TruckWreck1" type="CSGBox3D" parent="MapLayout"]
 transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -8, 1.5, 25)
 size = Vector3(3, 3, 7)
@@ -148,7 +143,6 @@ transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 8, 1.5, 26
 size = Vector3(3, 3, 7)
 material = SubResource("Material_Steel")
 
-# --- SCATTERED PINE TREES ---
 [node name="PineTree1" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -10)
 
@@ -194,7 +188,6 @@ radius = 3.5
 height = 6.0
 material = SubResource("Material_Foliage")
 
-# --- CHARACTERS & SPONSORS ---
 [node name="PlayerGhost" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 42)
 
@@ -223,14 +216,12 @@ reposition_cooldown = 15.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 target_position = Vector3(0, 0, 50)
 
-# SpotLight representing sniper optics reflection flash
 [node name="SpotLight3D" type="SpotLight3D" parent="TheWhiteReaper"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 1)
 light_color = Color(1, 0, 0, 1)
 light_energy = 0.0
 spot_angle = 15.0
 
-# --- CLUE EVIDENCE ITEMS ---
 [node name="ClueShellCasing" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 30)
 script = ExtResource("7_clue_script")
@@ -249,7 +240,6 @@ script = ExtResource("7_clue_script")
 clue_id = "boot_prints"
 clue_description = "Thermal boot footprints climbing ridges"
 
-# --- EXTRACTION PORTAL ---
 [node name="ExitZone" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 50)
 
