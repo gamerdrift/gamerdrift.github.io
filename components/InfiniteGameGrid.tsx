@@ -1,17 +1,31 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import InteractiveGameCard from './InteractiveGameCard';
 import { GameSubmission } from '../lib/state/GameContext';
 
+const CATEGORIES = ['All', 'Action', 'Shooting', 'Racing', 'Casual', 'Puzzle', 'Retro', 'Multiplayer', 'Arcade', 'Casino'];
+
 export default function InfiniteGameGrid({ games }: { games: GameSubmission[] }) {
+  const searchParams = useSearchParams();
+  const catParam = searchParams ? searchParams.get('category') : null;
+
   const [itemsToShow, setItemsToShow] = useState(12);
   const [sortBy, setSortBy] = useState<'plays' | 'rating' | 'alphabetical' | 'newest'>('plays');
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  useEffect(() => {
+    if (catParam) {
+      // Find case-insensitive match in categories list
+      const matched = CATEGORIES.find(c => c.toLowerCase() === catParam.toLowerCase());
+      if (matched) {
+        setSelectedCategory(matched);
+      }
+    }
+  }, [catParam]);
   
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  const categories = ['All', 'Action', 'Shooting', 'Racing', 'Casual', 'Puzzle', 'Retro', 'Multiplayer', 'Arcade', 'Casino'];
 
   // Filter games based on category
   const filteredGames = games.filter(g => {
@@ -63,7 +77,7 @@ export default function InfiniteGameGrid({ games }: { games: GameSubmission[] })
         
         {/* Categories filters tabs */}
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start flex-grow">
-          {categories.map((cat) => (
+          {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
