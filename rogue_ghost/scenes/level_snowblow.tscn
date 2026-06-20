@@ -22,9 +22,20 @@ transparency = 1
 emission_enabled = true
 emission = Color(0.0, 1.0, 0.5, 1)
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fine"]
+noise_type = 3
+frequency = 0.15
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_SnowNormal"]
+as_normal_map = true
+bump_strength = 1.2
+noise = SubResource("FastNoiseLite_fine")
+
 [sub_resource type="StandardMaterial3D" id="Material_Snow"]
 albedo_color = Color(0.92, 0.95, 0.98, 1)
 roughness = 0.9
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_SnowNormal")
 
 [sub_resource type="StandardMaterial3D" id="Material_Ice"]
 albedo_color = Color(0.5, 0.8, 0.9, 0.6)
@@ -40,24 +51,58 @@ roughness = 0.95
 albedo_color = Color(0.1, 0.35, 0.15, 1)
 roughness = 0.9
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_metal"]
+noise_type = 3
+frequency = 0.08
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_MetalNormal"]
+as_normal_map = true
+bump_strength = 1.8
+noise = SubResource("FastNoiseLite_metal")
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_MetalRoughness"]
+noise = SubResource("FastNoiseLite_metal")
+
 [sub_resource type="StandardMaterial3D" id="Material_Steel"]
 albedo_color = Color(0.2, 0.22, 0.25, 1)
-metalness = 0.7
+metallic = 0.7
 roughness = 0.4
+roughness_texture = SubResource("NoiseTexture_MetalRoughness")
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_MetalNormal")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rock"]
+noise_type = 3
+frequency = 0.04
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_RockNormal"]
+as_normal_map = true
+bump_strength = 3.5
+noise = SubResource("FastNoiseLite_rock")
 
 [sub_resource type="StandardMaterial3D" id="Material_Rock"]
 albedo_color = Color(0.4, 0.42, 0.45, 1)
 roughness = 0.85
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_RockNormal")
 
 [sub_resource type="Environment" id="Environment_Snowblow"]
 background_mode = 1
-background_color = Color(0.48, 0.52, 0.58, 1)
+background_color = Color(0.12, 0.14, 0.18, 1)
+tonemap_mode = 3
+tonemap_exposure = 1.15
+tonemap_white = 1.0
+ssao_enabled = true
+ssao_radius = 1.5
+ssao_intensity = 2.0
+glow_enabled = true
+glow_intensity = 0.7
+glow_strength = 1.1
+glow_bloom = 0.12
+glow_blend_mode = 1
 fog_enabled = true
-fog_light_color = Color(0.58, 0.62, 0.68, 1)
-fog_density = 0.035
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.035
-volumetric_fog_albedo = Color(0.8, 0.85, 0.9, 1)
+fog_light_color = Color(0.12, 0.14, 0.18, 1)
+fog_density = 0.04
 
 [node name="LevelSnowblow" type="Node3D" node_paths=PackedStringArray("target_exit_zone")]
 script = ExtResource("1_manager")

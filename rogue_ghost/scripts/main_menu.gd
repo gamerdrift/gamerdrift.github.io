@@ -56,10 +56,13 @@ func _ready() -> void:
 			mission_name = args[args.find(arg) + 1]
 
 		if mission_name != "" and MISSIONS.has(mission_name):
-			selected_mission_key = mission_name
-			selected_level_path = MISSIONS[mission_name]["path"]
-			auto_launch = true
-			break
+			if mission_name == "snowblow":
+				selected_mission_key = mission_name
+				selected_level_path = MISSIONS[mission_name]["path"]
+				auto_launch = true
+				break
+			else:
+				print("⚠️ Blocked auto-launching locked mission: ", mission_name, ". Falling back to menu.")
 
 	if auto_launch:
 		print("🚀 Auto-launching mission directly: ", selected_level_path)
@@ -136,11 +139,26 @@ func _apply_mission_highlight(mission_key: String) -> void:
 	# Update the Subtitle label with mission brief text
 	var subtitle_lbl = get_node_or_null("Panel/HUDPanel/Subtitle") as Label
 	if subtitle_lbl and MISSIONS.has(mission_key):
-		subtitle_lbl.text = MISSIONS[mission_key]["subtitle"]
+		if mission_key == "snowblow":
+			subtitle_lbl.text = MISSIONS[mission_key]["subtitle"]
+		else:
+			subtitle_lbl.text = "🚨 CLASSIFIED OUTPOST // COMING SOON - MISSION SECTOR ACCESS RESTRICTED"
 
 	# Update the TitleLabel with mission name
 	if title_label and MISSIONS.has(mission_key):
-		title_label.text = MISSIONS[mission_key]["label"]
+		if mission_key == "snowblow":
+			title_label.text = MISSIONS[mission_key]["label"]
+		else:
+			title_label.text = MISSIONS[mission_key]["label"] + " [COMING SOON]"
+
+	# Enable/Disable start button based on playability
+	if start_button:
+		if mission_key == "snowblow":
+			start_button.disabled = false
+			start_button.text = "DEPLOY OPERATIVE"
+		else:
+			start_button.disabled = true
+			start_button.text = "LOCKED"
 
 	# Highlight the selected mission button, dim others
 	var mission_buttons = {

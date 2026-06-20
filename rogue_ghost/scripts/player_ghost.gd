@@ -59,6 +59,7 @@ var recoil_yaw: float = 0.0
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var camera: Camera3D = $CameraPivot/Camera3D
 @onready var muzzle: Marker3D = $Muzzle
+@onready var laser_beam: MeshInstance3D = get_node_or_null("Visuals/CarbineRifle/LaserBeam")
 
 func _ready() -> void:
 	# Add to groups for global access
@@ -254,6 +255,25 @@ func _physics_process(delta: float) -> void:
 			camera_pivot.rotate_x(diff_p)
 			camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -deg_to_rad(65.0), deg_to_rad(65.0))
 		rotate_y(diff_y)
+
+	# Dynamic laser sight projection
+	if laser_beam and is_active:
+		var space_state = get_world_3d().direct_space_state
+		var origin = muzzle.global_position
+		var aim_dir = -muzzle.global_transform.basis.z
+		var target = origin + (aim_dir * 50.0)
+		var query = PhysicsRayQueryParameters3D.create(origin, target)
+		query.exclude = [get_rid()]
+		
+		var result = space_state.intersect_ray(query)
+		var distance = 50.0
+		if result:
+			distance = origin.distance_to(result.position)
+		
+		var c_mesh = laser_beam.mesh as CylinderMesh
+		if c_mesh:
+			c_mesh.height = distance
+		laser_beam.position = Vector3(0, 0, -0.6 - (distance / 2.0))
 
 	# Shooting handler (Left Mouse Button)
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):

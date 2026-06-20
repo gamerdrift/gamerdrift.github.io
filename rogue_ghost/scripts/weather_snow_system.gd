@@ -57,13 +57,22 @@ func _update_volumetric_fog() -> void:
 	
 	match environment_type:
 		EnvType.ARCTIC:
-			if env.fog_enabled:
-				env.fog_light_color = Color(0.58, 0.62, 0.68)
-				env.fog_density = base_fog_density * storm_intensity
-			if env.volumetric_fog_enabled:
-				env.volumetric_fog_density = base_fog_density * storm_intensity
-				env.volumetric_fog_emission = Color(0.7, 0.8, 0.9) # Ice blue
-				env.volumetric_fog_albedo = Color(0.8, 0.85, 0.9)
+			if thermal_active:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.0, 0.8, 0.3)
+					env.fog_density = base_fog_density * 0.4
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = base_fog_density * 0.4
+					env.volumetric_fog_emission = Color(0.0, 0.4, 0.15)
+					env.volumetric_fog_albedo = Color(0.0, 0.8, 0.3)
+			else:
+				if env.fog_enabled:
+					env.fog_light_color = Color(0.12, 0.14, 0.18)
+					env.fog_density = base_fog_density * storm_intensity
+				if env.volumetric_fog_enabled:
+					env.volumetric_fog_density = base_fog_density * storm_intensity
+					env.volumetric_fog_emission = Color(0.15, 0.2, 0.25)
+					env.volumetric_fog_albedo = Color(0.12, 0.14, 0.18)
 				
 		EnvType.DESERT:
 			if env.fog_enabled:

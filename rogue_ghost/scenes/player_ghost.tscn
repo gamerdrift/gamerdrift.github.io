@@ -6,9 +6,20 @@
 radius = 0.5
 height = 2.0
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fabric"]
+noise_type = 3
+frequency = 0.25
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture_Fabric"]
+as_normal_map = true
+bump_strength = 0.8
+noise = SubResource("FastNoiseLite_fabric")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_camo"]
 albedo_color = Color(0.18, 0.32, 0.18, 1)
-roughness = 0.8
+roughness = 0.85
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="BoxMesh" id="BoxMesh_torso"]
 material = SubResource("StandardMaterial3D_camo")
@@ -16,7 +27,9 @@ size = Vector3(0.5, 0.7, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vest"]
 albedo_color = Color(0.12, 0.12, 0.14, 1)
-roughness = 0.7
+roughness = 0.9
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="BoxMesh" id="BoxMesh_vest"]
 material = SubResource("StandardMaterial3D_vest")
@@ -110,6 +123,19 @@ height = 0.09
 material = SubResource("StandardMaterial3D_nvg")
 radius = 0.02
 height = 0.04
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_Laser"]
+albedo_color = Color(0.0, 1.0, 0.2, 1)
+transparency = 1
+emission_enabled = true
+emission = Color(0.0, 1.0, 0.2, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Laser"]
+material = SubResource("StandardMaterial3D_Laser")
+top_radius = 0.005
+bottom_radius = 0.005
+height = 1.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_m16_receiver"]
 material = SubResource("StandardMaterial3D_weapon")
@@ -268,6 +294,10 @@ mesh = SubResource("CylinderMesh_m16_barrel")
 [node name="CarryHandle" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.02)
 mesh = SubResource("BoxMesh_m16_handle")
+
+[node name="LaserBeam" type="MeshInstance3D" parent="Visuals/CarbineRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.6)
+mesh = SubResource("CylinderMesh_Laser")
 
 [node name="CameraPivot" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)

@@ -12,8 +12,8 @@ const MISSIONS = [
     name: 'SANDBATH',
     subtitle: 'Desert Military Compound',
     season: 'SEASON 01',
-    status: 'ACTIVE',
-    playable: true,
+    status: 'COMING SOON',
+    playable: false,
     mapImage: '/map_sandbath.png',
     themeColor: '#ff9f00',
     glowColor: 'rgba(255,159,0,0.35)',
@@ -91,8 +91,8 @@ const MISSIONS = [
     name: 'CARGOLOGY',
     subtitle: 'Industrial Cargo Terminal',
     season: 'SEASON 03',
-    status: 'ACTIVE',
-    playable: true,
+    status: 'COMING SOON',
+    playable: false,
     mapImage: '/map_cargology.png',
     themeColor: '#ff6600',
     glowColor: 'rgba(255,102,0,0.35)',
@@ -130,8 +130,8 @@ const MISSIONS = [
     name: 'FORESTFUN',
     subtitle: 'Dense Woodland Combat Zone',
     season: 'SEASON 04',
-    status: 'ACTIVE',
-    playable: true,
+    status: 'COMING SOON',
+    playable: false,
     mapImage: '/map_forestfun.png',
     themeColor: '#4ade80',
     glowColor: 'rgba(74,222,128,0.35)',
@@ -169,8 +169,8 @@ const MISSIONS = [
     name: 'DESERT STORM',
     subtitle: 'Sand Sector — Ruins Breach',
     season: 'SEASON 05',
-    status: 'ACTIVE',
-    playable: true,
+    status: 'COMING SOON',
+    playable: false,
     mapImage: '/map_snowblow.png',
     themeColor: '#f59e0b',
     glowColor: 'rgba(245,158,11,0.35)',
@@ -209,8 +209,8 @@ const MISSIONS = [
     name: 'NIGHT OPS',
     subtitle: 'Midnight Infiltration — Outpost Zero',
     season: 'SEASON 05',
-    status: 'ACTIVE',
-    playable: true,
+    status: 'COMING SOON',
+    playable: false,
     mapImage: '/map_snowblow.png',
     themeColor: '#818cf8',
     glowColor: 'rgba(129,140,248,0.35)',
@@ -384,6 +384,13 @@ export default function RogueGhostPage() {
 
                   {/* Season */}
                   <div className="absolute top-2 left-2 text-[7px] text-slate-500 font-bold tracking-wider">{mission.season}</div>
+
+                  {/* Locked indicator overlay */}
+                  {!mission.playable && (
+                    <div className="absolute inset-0 bg-[#0f172a]/70 backdrop-blur-[1px] flex items-center justify-center z-10">
+                      <span className="text-[9px] font-black tracking-[0.2em] text-red-500/80 border border-red-500/30 px-2.5 py-1 bg-red-950/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]">LOCKED</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card footer */}
@@ -453,6 +460,17 @@ export default function RogueGhostPage() {
                   {m.playable ? '● SECTOR ACTIVE' : '⧖ CLASSIFIED — LOCKED'}
                 </span>
               </div>
+
+              {/* Restricted access overlay */}
+              {!m.playable && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center z-20">
+                  <div className="border border-red-500/30 bg-red-950/20 px-6 py-3 rounded-lg text-center backdrop-blur-sm shadow-[0_0_30px_rgba(239,68,68,0.15)] animate-pulse">
+                    <div className="text-[10px] text-red-500 font-bold tracking-[0.4em] uppercase mb-1">ACCESS RESTRICTED</div>
+                    <div className="text-2xl font-black text-white tracking-[0.25em] uppercase">COMING SOON</div>
+                    <div className="text-[8px] text-slate-500 tracking-widest mt-1">OPERATIVE RECONNAISSANCE PENDING</div>
+                  </div>
+                </div>
+              )}
 
               {/* Bottom: mission title + stats */}
               <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
@@ -667,12 +685,21 @@ export default function RogueGhostPage() {
                 </div>
               )}
 
-              <Link
-                href={`/play/rogue-ghost/?mission=${selectedMission.id}`}
-                className="px-5 py-4 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all hover:border-slate-600 text-slate-500 border-slate-800 whitespace-nowrap"
-              >
-                QUICK LAUNCH →
-              </Link>
+              {m.playable ? (
+                <Link
+                  href={`/play/rogue-ghost/?mission=${selectedMission.id}`}
+                  className="px-5 py-4 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all hover:border-slate-600 hover:text-slate-300 border-slate-800 text-slate-400 whitespace-nowrap"
+                >
+                  QUICK LAUNCH →
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="px-5 py-4 rounded-lg border text-[9px] font-bold uppercase tracking-wider border-slate-900 text-slate-700 cursor-not-allowed whitespace-nowrap"
+                >
+                  LOCKED
+                </button>
+              )}
             </div>
 
           </div>
