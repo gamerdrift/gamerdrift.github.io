@@ -319,10 +319,35 @@ const engine = new Engine(GODOT_CONFIG);
 		}
 	}
 
+	const MISSION_META = {
+		desert: {
+			sector: 'DS-02',
+			map: 'SAND_SECTOR.MAP',
+			shader: 'SAND_BLOOM.SHD',
+			opfor: 'AK-47 DESERT BATTALION',
+			loadLabel: 'DESERT STORM'
+		},
+		night: {
+			sector: 'NO-03',
+			map: 'OUTPOST_ZERO.MAP',
+			shader: 'THERMAL_NIGHT.SHD',
+			opfor: 'NIGHT PATROL UNIT — THERMAL ACTIVE',
+			loadLabel: 'NIGHT OPS'
+		},
+		snowblow: {
+			sector: 'SW-07',
+			map: 'OUTPOST_SNOWBLOW.MAP',
+			shader: 'FOG_BLIZZARD.SHD',
+			opfor: '"THE WHITE REAPER"',
+			loadLabel: 'SNOWBLOW'
+		}
+	};
+	const mm = MISSION_META[mission] || MISSION_META['snowblow'];
+
 	addTerminalLog('ESTABLISHING SECURE CONNECTION TO SATELLITE CORONA-9...', 'info');
 	setTimeout(() => addTerminalLog('HANDSHAKE COMPLETED. ENCRYPTED COMMS TUNNEL STABLE.', 'success'), 350);
 	setTimeout(() => addTerminalLog('GAMERDRIFT NETWORK INTEGRITY CHECK: PASS', 'success'), 700);
-	setTimeout(() => addTerminalLog('DISPATCHING TACTICAL GRID TO SECTOR SW-07...', 'info'), 1050);
+	setTimeout(() => addTerminalLog('DISPATCHING TACTICAL GRID TO SECTOR ' + mm.sector + '...', 'info'), 1050);
 
 	const missing = Engine.getMissingFeatures({
 		threads: GODOT_THREADS_ENABLED,
@@ -376,11 +401,11 @@ const engine = new Engine(GODOT_CONFIG);
 					if (pctText) pctText.textContent = Math.floor(pct) + '%';
 					
 					const statusText = document.getElementById('custom-status-text');
-					if (statusText) statusText.textContent = 'SYS.LOAD: RECONNAISSANCE MAP "SNOWBLOW"';
+					if (statusText) statusText.textContent = 'SYS.LOAD: RECONNAISSANCE MAP "' + mm.loadLabel + '"';
 
 					if (pct >= 15 && !milestone15) {
 						milestone15 = true;
-						addTerminalLog('COMPILING SPATIAL SHADERS: FOG_BLIZZARD.SHD', 'info');
+						addTerminalLog('COMPILING SPATIAL SHADERS: ' + mm.shader, 'info');
 					}
 					if (pct >= 40 && !milestone40) {
 						milestone40 = true;
@@ -388,11 +413,11 @@ const engine = new Engine(GODOT_CONFIG);
 					}
 					if (pct >= 65 && !milestone65) {
 						milestone65 = true;
-						addTerminalLog('RESOLVING ENVIRONMENT COORDINATES: OUTPOST_SNOWBLOW.MAP', 'info');
+						addTerminalLog('RESOLVING ENVIRONMENT COORDINATES: ' + mm.map, 'info');
 					}
 					if (pct >= 85 && !milestone85) {
 						milestone85 = true;
-						addTerminalLog('INITIALIZING OP-FOR RECON AI: "THE WHITE REAPER"', 'warning');
+						addTerminalLog('INITIALIZING OP-FOR RECON AI: ' + mm.opfor, 'warning');
 					}
 					if (pct >= 99 && !milestone100) {
 						milestone100 = true;
