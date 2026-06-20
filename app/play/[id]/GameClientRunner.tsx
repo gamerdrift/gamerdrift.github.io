@@ -29,8 +29,10 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
   const [stage, setStage] = useState(1);
   const [inCover, setInCover] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
     };
@@ -2336,6 +2338,14 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
       }
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="container flex flex-col items-center justify-center py-40 text-white font-mono text-xs">
+        <div className="animate-pulse tracking-[0.25em] text-[#00f0ff] uppercase">UPLINK_ESTABLISHED // LAUNCHING TACTICAL GRID...</div>
+      </div>
+    );
+  }
 
   if (!game) {
     return (
