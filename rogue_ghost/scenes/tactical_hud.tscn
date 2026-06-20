@@ -1,0 +1,233 @@
+[gd_scene load_steps=8 format=3 uid="uid://c9f9r9d"]
+
+[ext_resource type="Script" path="res://scripts/tactical_hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_bg"]
+bg_color = Color(0.04, 0.05, 0.07, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.0, 0.8, 1.0, 0.4)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(1.0, 0.15, 0.35, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.15, 0.05, 0.07, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1.0, 0.15, 0.35, 0.25)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stealth_fill"]
+bg_color = Color(0.0, 0.9, 1.0, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stealth_bg"]
+bg_color = Color(0.0, 0.1, 0.15, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0, 0.9, 1.0, 0.25)
+
+[node name="TacticalHUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HUDContainer" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HealthBox" type="VBoxContainer" parent="Control/HUDContainer"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -100.0
+offset_right = 260.0
+offset_bottom = -40.0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="HealthLabel" type="Label" parent="Control/HUDContainer/HealthBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.2, 0.4, 1)
+theme_override_font_sizes/font_size = 11
+text = "OPERATIVE INTEGRITY: 100%"
+vertical_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="Control/HUDContainer/HealthBox"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="StealthBox" type="VBoxContainer" parent="Control/HUDContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -100.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="StealthLabel" type="Label" parent="Control/HUDContainer/StealthBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0, 0.9, 1.0, 1)
+theme_override_font_sizes/font_size = 11
+text = "TACTICAL COVERTNESS: 100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="StealthBar" type="ProgressBar" parent="Control/HUDContainer/StealthBox"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_stealth_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_stealth_fill")
+value = 100.0
+show_percentage = false
+
+[node name="ObjectiveBox" type="PanelContainer" parent="Control/HUDContainer"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 70.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="ObjectiveLabel" type="Label" parent="Control/HUDContainer/ObjectiveBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 12
+text = "SECURED TARGETS: 0 / 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ThermalOverlay" type="ColorRect" parent="Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0, 1.0, 0.4, 0.15)
+
+[node name="DebriefPanel" type="Panel" parent="Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -200.0
+offset_right = 250.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
+
+[node name="ContentBox" type="VBoxContainer" parent="Control/DebriefPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="Control/DebriefPanel/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "MISSION SUCCESS // TELEMETRY REPORT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Separator" type="ColorRect" parent="Control/DebriefPanel/ContentBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0, 0.8, 1, 0.2)
+
+[node name="StatsLabel" type="Label" parent="Control/DebriefPanel/ContentBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "ELAPSED TIME: 45.2s
+PEAK ALERT LEVEL: 25%
+CLUES SECURED: 3 / 3
+CASUALTIES DETECTED: 0
+COVERT RATING: SHADOW SPECIALIST"
+vertical_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="Control/DebriefPanel/ContentBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1.0, 0.8, 0.0, 1)
+theme_override_font_sizes/font_size = 13
+text = "FINAL SCORE: 12,450   |   XP GRANTED: +1,245"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonContainer" type="HBoxContainer" parent="Control/DebriefPanel/ContentBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="RetryBtn" type="Button" parent="Control/DebriefPanel/ContentBox/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "REDEPLOY (RETRY)"
+
+[node name="ExitBtn" type="Button" parent="Control/DebriefPanel/ContentBox/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "RETURN TO BASE"

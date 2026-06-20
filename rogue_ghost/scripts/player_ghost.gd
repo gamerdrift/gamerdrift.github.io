@@ -46,6 +46,7 @@ var current_zoom_state: int = 0 # 0=normal, 1=ADS, 2=DMR
 var is_holding_breath: bool = false
 var is_thermal_mode: bool = false
 var breath_stamina_decay: float = 25.0
+var footstep_timer: float = 0.0
 
 # Camera variables
 var camera_sensitivity: float = 0.003
@@ -93,6 +94,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_set_prone(!is_prone)
 		elif event.keycode == KEY_T:
 			is_thermal_mode = !is_thermal_mode
+			SoundManager.play("clue")
 			print("🕶️ THERMAL ACTIVE: ", is_thermal_mode)
 
 	# Mouse look rotation
@@ -204,6 +206,28 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# Trigger Footstep SFX
+	var foot_threshold = 2.2
+	if is_prone: foot_threshold = 3.6
+	elif is_crouching: foot_threshold = 2.8
+	elif is_sprinting: foot_threshold = 1.6
+	
+	var horiz_vel = Vector3(velocity.x, 0.0, velocity.z)
+	if is_on_floor() and horiz_vel.length() > 0.1 and not is_sliding:
+		footstep_timer += horiz_vel.length() * delta
+		if footstep_timer >= foot_threshold:
+			footstep_timer = 0.0
+			var is_desert = false
+			var weather_nodes = get_tree().get_nodes_in_group("weather")
+			if weather_nodes.size() > 0:
+				var ws = weather_nodes[0]
+				if is_instance_valid(ws) and ws.get("environment_type") == 1:
+					is_desert = true
+			if is_desert:
+				SoundManager.play("footstep_desert")
+			else:
+				SoundManager.play("footstep_snow")
+
 	# Manage dynamic stealth recovery
 	if velocity.length() < 0.2:
 		# Staying still or crawling restores stealth
@@ -280,6 +304,9 @@ func _shoot_weapon() -> void:
 	
 	fire_cooldown = time + 0.35 # Cooldown period of 350ms
 	
+	# Play shot sound
+	SoundManager.play("shot_silenced")
+	
 	# Add weapon kick recoil
 	recoil_pitch += randf_range(0.05, 0.1)
 	recoil_yaw += randf_range(-0.03, 0.03)
@@ -319,6 +346,9 @@ func take_damage(amount: float) -> void:
 	if health <= 0.0:
 		return
 		
+	# Play damage sound
+	SoundManager.play("damage")
+	
 	# Reduce health
 	health = max(0.0, health - amount)
 	health_changed.emit(health, max_health)

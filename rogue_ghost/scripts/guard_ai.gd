@@ -114,6 +114,7 @@ func _perform_stealth_check(delta: float) -> void:
 		if alert_level >= 100.0 and current_state != State.CHASE:
 			current_state = State.CHASE
 			player_spotted.emit()
+			SoundManager.play_3d("guard_alert", global_position)
 			print("🚨 TARGET LOCKED! Commencing attack sequence.")
 	else:
 		alert_level = max(0.0, alert_level - 18.0 * delta)
@@ -192,6 +193,7 @@ func alert_squad_member(target: PlayerGhost) -> void:
 		current_state = State.CHASE
 		active_target = target
 		alert_level = 100.0
+		SoundManager.play_3d("guard_alert", global_position)
 		if spotlight:
 			spotlight.light_color = Color(1.0, 0.0, 0.0)
 

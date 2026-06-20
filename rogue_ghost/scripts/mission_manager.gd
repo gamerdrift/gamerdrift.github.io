@@ -29,6 +29,13 @@ var player: PlayerGhost = null
 func _ready() -> void:
 	add_to_group("managers")
 	
+	# Instantiate HUD dynamically
+	var hud_class = load("res://scenes/tactical_hud.tscn")
+	if hud_class:
+		var hud = hud_class.instantiate()
+		add_child(hud)
+		print("🖥️ Dynamic Tactical HUD deployed.")
+		
 	# Locate player
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
@@ -80,6 +87,7 @@ func record_hostage_rescue(_hostage: HostageNode) -> void:
 		return
 		
 	rescued_hostages += 1
+	SoundManager.play("rescue")
 	print("🤝 Secured ", rescued_hostages, " / ", total_hostages, " targets.")
 	
 	if player:
@@ -89,6 +97,7 @@ func record_clue_discovery(_clue: ClueEvidence) -> void:
 	if not is_active:
 		return
 	discovered_clues += 1
+	SoundManager.play("clue")
 	print("🔍 Discovered clues: ", discovered_clues, " / ", total_clues)
 
 func record_ranger_casualty() -> void:
@@ -128,6 +137,7 @@ func _on_player_health_changed(current_health: float, _max_val: float) -> void:
 
 func _complete_mission() -> void:
 	is_active = false
+	SoundManager.play("victory")
 	
 	# Calculate score based on speed and stealth indexes
 	var speed_bonus = max(0, int((round_time_limit - elapsed_time) * 10))
@@ -180,5 +190,6 @@ func _complete_mission() -> void:
 
 func _fail_mission(reason: String) -> void:
 	is_active = false
+	SoundManager.play("defeat")
 	mission_failed.emit(reason)
 	print("🚨 MISSION FAILED! Reason: ", reason)

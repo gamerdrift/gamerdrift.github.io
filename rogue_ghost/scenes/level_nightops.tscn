@@ -1,0 +1,175 @@
+[gd_scene load_steps=18 format=3 uid="uid://b7v7r3d"]
+
+[ext_resource type="Script" path="res://scripts/mission_manager.gd" id="1_manager"]
+[ext_resource type="PackedScene" uid="uid://b1v1r3d" path="res://scenes/player_ghost.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://b2v2r3d" path="res://scenes/guard_enemy.tscn" id="3_guard"]
+[ext_resource type="PackedScene" uid="uid://b3v3r3d" path="res://scenes/hostage_node.tscn" id="4_hostage"]
+[ext_resource type="Script" path="res://scripts/clue_evidence.gd" id="5_clue_script"]
+[ext_resource type="Script" path="res://scripts/weather_snow_system.gd" id="6_weather_script"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1"]
+radius = 4.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
+top_radius = 3.8
+bottom_radius = 3.8
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.0, 0.8, 1.0, 0.4)
+transparency = 1
+emission_enabled = true
+emission = Color(0.0, 0.8, 1.0, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_Grass"]
+albedo_color = Color(0.08, 0.16, 0.12, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Material_Wood"]
+albedo_color = Color(0.24, 0.16, 0.12, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Material_Foliage"]
+albedo_color = Color(0.05, 0.18, 0.08, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Material_Steel"]
+albedo_color = Color(0.15, 0.15, 0.18, 1)
+metallic = 0.5
+roughness = 0.6
+
+[sub_resource type="Environment" id="Environment_Night"]
+background_mode = 1
+background_color = Color(0.01, 0.01, 0.03, 1)
+fog_enabled = true
+fog_light_color = Color(0.01, 0.02, 0.05, 1)
+fog_density = 0.04
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_Trunk"]
+top_radius = 0.35
+bottom_radius = 0.35
+height = 5.0
+
+[node name="LevelNightOps" type="Node3D" node_paths=PackedStringArray("target_exit_zone")]
+script = ExtResource("1_manager")
+target_exit_zone = NodePath("ExitZone")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." groups=["world_environments"]]
+environment = SubResource("Environment_Night")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+light_color = Color(0.45, 0.55, 0.7, 1)
+light_energy = 0.05
+shadow_enabled = true
+
+[node name="WeatherSystem" type="Node3D" parent="."]
+script = ExtResource("6_weather_script")
+environment_type = 2
+base_fog_density = 0.04
+
+[node name="MapLayout" type="CSGCombiner3D" parent="."]
+use_collision = true
+
+[node name="GrassGround" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+size = Vector3(120, 1, 120)
+material = SubResource("Material_Grass")
+
+[node name="NorthWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -60)
+size = Vector3(120, 8, 2)
+material = SubResource("Material_Steel")
+
+[node name="SouthWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 60)
+size = Vector3(120, 8, 2)
+material = SubResource("Material_Steel")
+
+[node name="WestWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 4, 0)
+size = Vector3(2, 8, 120)
+material = SubResource("Material_Steel")
+
+[node name="EastWall" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 4, 0)
+size = Vector3(2, 8, 120)
+material = SubResource("Material_Steel")
+
+[node name="OutpostBarrack" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, -10)
+size = Vector3(14, 4, 10)
+material = SubResource("Material_Steel")
+
+[node name="DoorwayCutout" type="CSGBox3D" parent="MapLayout/OutpostBarrack"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+operation = 2
+size = Vector3(3.5, 3.5, 12)
+material = SubResource("Material_Steel")
+
+[node name="PineTree1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 15)
+
+[node name="Trunk" type="MeshInstance3D" parent="PineTree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_Trunk")
+surface_material_override/0 = SubResource("Material_Wood")
+
+[node name="Foliage" type="CSGCylinder3D" parent="PineTree1" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+cone = true
+radius = 3.2
+height = 5.5
+material = SubResource("Material_Foliage")
+
+[node name="PineTree2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 12)
+
+[node name="Trunk" type="MeshInstance3D" parent="PineTree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("CylinderMesh_Trunk")
+surface_material_override/0 = SubResource("Material_Wood")
+
+[node name="Foliage" type="CSGCylinder3D" parent="PineTree2" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+cone = true
+radius = 3.2
+height = 5.5
+material = SubResource("Material_Foliage")
+
+[node name="PlayerGhost" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 42)
+
+[node name="HostageA" parent="." groups=["hostages"] instance=ExtResource("4_hostage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1.0, -10)
+
+[node name="HostageB" parent="." groups=["hostages"] instance=ExtResource("4_hostage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.0, 15)
+
+[node name="NightGuard1" parent="." instance=ExtResource("3_guard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1.0, 2)
+
+[node name="NightGuard2" parent="." instance=ExtResource("3_guard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.0, -5)
+
+[node name="ClueCommsRecorder" type="Area3D" parent="." groups=["clues"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.6, -8)
+script = ExtResource("5_clue_script")
+clue_id = "comms_recorder"
+clue_description = "Fallen tactical operator military comms recorder"
+
+[node name="ClueNvgScope" type="Area3D" parent="." groups=["clues"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.6, 17)
+script = ExtResource("5_clue_script")
+clue_id = "nvg_scope"
+clue_description = "Experimental thermal Night Vision Scope blueprint"
+
+[node name="ExitZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -50)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitZone"]
+shape = SubResource("SphereShape3D_1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ExitZone"]
+mesh = SubResource("CylinderMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
