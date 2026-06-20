@@ -47,6 +47,23 @@ func _physics_process(delta: float) -> void:
 	# Combat loop
 	if active_player and active_player.is_active:
 		_process_combat_phases(delta)
+		
+		var laser = get_node_or_null("Visuals/SniperRifle/LaserBeam")
+		if laser:
+			var can_target = (current_phase in [Phase.TRACKING, Phase.DUEL, Phase.STANDOFF])
+			laser.visible = can_target
+			if can_target:
+				var origin = global_position + Vector3(0.18, 1.2, -0.4)
+				var target = active_player.global_position + Vector3(0, 0.8, 0)
+				var distance = origin.distance_to(target)
+				var c_mesh = laser.mesh as CylinderMesh
+				if c_mesh:
+					c_mesh.height = distance
+				laser.position = Vector3(0, 0.2, -0.6 - (distance / 2.0))
+	else:
+		var laser = get_node_or_null("Visuals/SniperRifle/LaserBeam")
+		if laser:
+			laser.visible = false
 	
 	# Decays and timers
 	if shot_cooldown > 0.0:

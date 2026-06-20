@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/white_reaper_ai.gd" id="6_boss_script"]
 [ext_resource type="Script" path="res://scripts/clue_evidence.gd" id="7_clue_script"]
 [ext_resource type="Script" path="res://scripts/weather_snow_system.gd" id="8_weather_script"]
+[ext_resource type="Script" path="res://scripts/watchtower_searchlight.gd" id="9_searchlight_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 4.0
@@ -104,6 +105,90 @@ fog_enabled = true
 fog_light_color = Color(0.12, 0.14, 0.18, 1)
 fog_density = 0.04
 
+[sub_resource type="StandardMaterial3D" id="Material_Tire"]
+albedo_color = Color(0.08, 0.08, 0.09, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ReaperCamo"]
+albedo_color = Color(0.9, 0.92, 0.95, 1)
+roughness = 0.85
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_SnowNormal")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ReaperVest"]
+albedo_color = Color(0.18, 0.2, 0.22, 1)
+roughness = 0.9
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_SnowNormal")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ReaperGoggles"]
+albedo_color = Color(1, 0, 0, 1)
+transparency = 1
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+emission_energy_multiplier = 5.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_SniperLaser"]
+albedo_color = Color(1, 0, 0, 1)
+transparency = 1
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_SniperLaser"]
+material = SubResource("StandardMaterial3D_SniperLaser")
+top_radius = 0.005
+bottom_radius = 0.005
+height = 1.0
+
+[sub_resource type="BoxMesh" id="Reaper_TorsoMesh"]
+material = SubResource("StandardMaterial3D_ReaperCamo")
+size = Vector3(0.5, 0.7, 0.3)
+
+[sub_resource type="BoxMesh" id="Reaper_VestMesh"]
+material = SubResource("StandardMaterial3D_ReaperVest")
+size = Vector3(0.53, 0.55, 0.33)
+
+[sub_resource type="SphereMesh" id="Reaper_HeadMesh"]
+material = SubResource("StandardMaterial3D_ReaperVest")
+radius = 0.18
+height = 0.36
+
+[sub_resource type="BoxMesh" id="Reaper_GogglesMesh"]
+material = SubResource("StandardMaterial3D_ReaperGoggles")
+size = Vector3(0.24, 0.07, 0.14)
+
+[sub_resource type="CapsuleMesh" id="Reaper_ArmMesh"]
+material = SubResource("StandardMaterial3D_ReaperCamo")
+radius = 0.08
+height = 0.55
+
+[sub_resource type="CapsuleMesh" id="Reaper_LegMesh"]
+material = SubResource("StandardMaterial3D_ReaperCamo")
+radius = 0.1
+height = 0.75
+
+[sub_resource type="StandardMaterial3D" id="Material_SniperWeapon"]
+albedo_color = Color(0.08, 0.08, 0.1, 1)
+metallic = 0.8
+roughness = 0.3
+
+[sub_resource type="BoxMesh" id="Reaper_RifleReceiver"]
+material = SubResource("Material_SniperWeapon")
+size = Vector3(0.05, 0.08, 0.35)
+
+[sub_resource type="CylinderMesh" id="Reaper_RifleBarrel"]
+material = SubResource("Material_SniperWeapon")
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.6
+
+[sub_resource type="CylinderMesh" id="Reaper_RifleScope"]
+material = SubResource("Material_SniperWeapon")
+top_radius = 0.02
+bottom_radius = 0.02
+height = 0.25
+
 [node name="LevelSnowblow" type="Node3D" node_paths=PackedStringArray("target_exit_zone")]
 script = ExtResource("1_manager")
 target_exit_zone = NodePath("ExitZone")
@@ -163,9 +248,39 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 2, -15)
 size = Vector3(15, 4, 25)
 material = SubResource("Material_Rock")
 
+[node name="LeftRock1" type="CSGSphere3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 1.5, -6)
+radius = 3.5
+material = SubResource("Material_Rock")
+
+[node name="LeftRock2" type="CSGSphere3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 2.5, -22)
+radius = 4.2
+material = SubResource("Material_Rock")
+
+[node name="LeftRock3" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, -29, 2.2, -14)
+size = Vector3(8, 5, 8)
+material = SubResource("Material_Rock")
+
 [node name="RightRidge" type="CSGBox3D" parent="MapLayout"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 2, -15)
 size = Vector3(15, 4, 25)
+material = SubResource("Material_Rock")
+
+[node name="RightRock1" type="CSGSphere3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 1.5, -6)
+radius = 3.5
+material = SubResource("Material_Rock")
+
+[node name="RightRock2" type="CSGSphere3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 2.5, -22)
+radius = 4.2
+material = SubResource("Material_Rock")
+
+[node name="RightRock3" type="CSGBox3D" parent="MapLayout"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 29, 2.2, -14)
+size = Vector3(8, 5, 8)
 material = SubResource("Material_Rock")
 
 [node name="SandbagsConvoy" type="CSGBox3D" parent="MapLayout" groups=["cover"]]
@@ -178,14 +293,256 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, 20)
 size = Vector3(5, 1.2, 1)
 material = SubResource("Material_Steel")
 
-[node name="TruckWreck1" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -8, 1.5, 25)
-size = Vector3(3, 3, 7)
+[node name="TruckWreck1" type="CSGCombiner3D" parent="MapLayout"]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -8, 1.2, 25)
+
+[node name="Chassis" type="CSGBox3D" parent="MapLayout/TruckWreck1"]
+size = Vector3(3, 0.4, 7)
 material = SubResource("Material_Steel")
 
-[node name="TruckWreck2" type="CSGBox3D" parent="MapLayout"]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 8, 1.5, 26)
-size = Vector3(3, 3, 7)
+[node name="Cabin" type="CSGBox3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -1.8)
+size = Vector3(2.8, 1.6, 2.2)
+material = SubResource("Material_Steel")
+
+[node name="WindshieldSub" type="CSGBox3D" parent="MapLayout/TruckWreck1/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.8)
+operation = 2
+size = Vector3(2.5, 0.8, 1.0)
+
+[node name="CargoBed" type="CSGBox3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.2)
+size = Vector3(2.9, 1.4, 4.2)
+material = SubResource("Material_Steel")
+
+[node name="CargoHollow" type="CSGBox3D" parent="MapLayout/TruckWreck1/CargoBed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+operation = 2
+size = Vector3(2.6, 1.4, 3.9)
+
+[node name="WheelFL" type="CSGCylinder3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.6, -0.5, -2.0)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelFR" type="CSGCylinder3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.6, -0.5, -2.0)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelML" type="CSGCylinder3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.6, -0.5, 0.8)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelMR" type="CSGCylinder3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.6, -0.5, 0.8)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelRL" type="CSGCylinder3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.6, -0.5, 2.2)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelRR" type="CSGCylinder3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.6, -0.5, 2.2)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="HeadlightL" type="CSGSphere3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0, 0.7, -2.95)
+radius = 0.16
+material = SubResource("StandardMaterial3D_1")
+
+[node name="HeadlightR" type="CSGSphere3D" parent="MapLayout/TruckWreck1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 0.7, -2.95)
+radius = 0.16
+material = SubResource("StandardMaterial3D_1")
+
+[node name="TruckWreck2" type="CSGCombiner3D" parent="MapLayout"]
+transform = Transform3D(0.836516, -0.258819, -0.482963, 0.258819, 0.965926, 0, 0.46649, -0.125, 0.875, 8, 1.0, 26)
+
+[node name="Chassis" type="CSGBox3D" parent="MapLayout/TruckWreck2"]
+size = Vector3(3, 0.4, 7)
+material = SubResource("Material_Steel")
+
+[node name="Cabin" type="CSGBox3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -1.8)
+size = Vector3(2.8, 1.6, 2.2)
+material = SubResource("Material_Steel")
+
+[node name="WindshieldSub" type="CSGBox3D" parent="MapLayout/TruckWreck2/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.8)
+operation = 2
+size = Vector3(2.5, 0.8, 1.0)
+
+[node name="CargoBed" type="CSGBox3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.2)
+size = Vector3(2.9, 1.4, 4.2)
+material = SubResource("Material_Steel")
+
+[node name="CargoHollow" type="CSGBox3D" parent="MapLayout/TruckWreck2/CargoBed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+operation = 2
+size = Vector3(2.6, 1.4, 3.9)
+
+[node name="WheelFL" type="CSGCylinder3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.6, -0.5, -2.0)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelFR" type="CSGCylinder3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.6, -0.5, -2.0)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelML" type="CSGCylinder3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.6, -0.5, 0.8)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelMR" type="CSGCylinder3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.6, -0.5, 0.8)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelRL" type="CSGCylinder3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.6, -0.5, 2.2)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="WheelRR" type="CSGCylinder3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.6, -0.5, 2.2)
+radius = 0.65
+height = 0.45
+material = SubResource("Material_Tire")
+
+[node name="HeadlightL" type="CSGSphere3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0, 0.7, -2.95)
+radius = 0.16
+material = SubResource("StandardMaterial3D_1")
+
+[node name="HeadlightR" type="CSGSphere3D" parent="MapLayout/TruckWreck2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 0.7, -2.95)
+radius = 0.16
+material = SubResource("StandardMaterial3D_1")
+
+[node name="Watchtower" type="CSGCombiner3D" parent="MapLayout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)
+
+[node name="PillarFL" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 3.0, -1.4)
+radius = 0.12
+height = 6.0
+material = SubResource("Material_Steel")
+
+[node name="PillarFR" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 3.0, -1.4)
+radius = 0.12
+height = 6.0
+material = SubResource("Material_Steel")
+
+[node name="PillarBL" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 3.0, 1.4)
+radius = 0.12
+height = 6.0
+material = SubResource("Material_Steel")
+
+[node name="PillarBR" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 3.0, 1.4)
+radius = 0.12
+height = 6.0
+material = SubResource("Material_Steel")
+
+[node name="Floor" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+size = Vector3(3.2, 0.2, 3.2)
+material = SubResource("Material_Steel")
+
+[node name="RailingF" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5, -1.55)
+size = Vector3(3.2, 0.8, 0.08)
+material = SubResource("Material_Steel")
+
+[node name="RailingB" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5, 1.55)
+size = Vector3(3.2, 0.8, 0.08)
+material = SubResource("Material_Steel")
+
+[node name="RailingL" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55, 6.5, 0)
+size = Vector3(0.08, 0.8, 3.2)
+material = SubResource("Material_Steel")
+
+[node name="RailingR" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.55, 6.5, 0)
+size = Vector3(0.08, 0.8, 3.2)
+material = SubResource("Material_Steel")
+
+[node name="RoofPillarFL" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 7.1, -1.4)
+radius = 0.05
+height = 2.0
+material = SubResource("Material_Steel")
+
+[node name="RoofPillarFR" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 7.1, -1.4)
+radius = 0.05
+height = 2.0
+material = SubResource("Material_Steel")
+
+[node name="RoofPillarBL" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 7.1, 1.4)
+radius = 0.05
+height = 2.0
+material = SubResource("Material_Steel")
+
+[node name="RoofPillarBR" type="CSGCylinder3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 7.1, 1.4)
+radius = 0.05
+height = 2.0
+material = SubResource("Material_Steel")
+
+[node name="Roof" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.1, 0)
+size = Vector3(3.4, 0.2, 3.4)
+material = SubResource("Material_Steel")
+
+[node name="LadderBar1" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.0, 1.4)
+size = Vector3(0.4, 0.05, 0.05)
+material = SubResource("Material_Steel")
+
+[node name="LadderBar2" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 2.0, 1.4)
+size = Vector3(0.4, 0.05, 0.05)
+material = SubResource("Material_Steel")
+
+[node name="LadderBar3" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 3.0, 1.4)
+size = Vector3(0.4, 0.05, 0.05)
+material = SubResource("Material_Steel")
+
+[node name="LadderBar4" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 4.0, 1.4)
+size = Vector3(0.4, 0.05, 0.05)
+material = SubResource("Material_Steel")
+
+[node name="LadderBar5" type="CSGBox3D" parent="MapLayout/Watchtower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 5.0, 1.4)
+size = Vector3(0.4, 0.05, 0.05)
 material = SubResource("Material_Steel")
 
 [node name="PineTree1" type="Node3D" parent="."]
@@ -196,11 +553,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 mesh = SubResource("CylinderMesh_1")
 surface_material_override/0 = SubResource("Material_Wood")
 
-[node name="Foliage" type="CSGCylinder3D" parent="PineTree1" groups=["cover"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+[node name="FoliageLow" type="CSGCylinder3D" parent="PineTree1" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 0)
 cone = true
 radius = 3.5
-height = 6.0
+height = 3.0
+material = SubResource("Material_Foliage")
+
+[node name="FoliageMid" type="CSGCylinder3D" parent="PineTree1" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, 0)
+cone = true
+radius = 2.6
+height = 2.5
+material = SubResource("Material_Foliage")
+
+[node name="FoliageHigh" type="CSGCylinder3D" parent="PineTree1" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, 0)
+cone = true
+radius = 1.6
+height = 2.0
 material = SubResource("Material_Foliage")
 
 [node name="PineTree2" type="Node3D" parent="."]
@@ -211,11 +582,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 mesh = SubResource("CylinderMesh_1")
 surface_material_override/0 = SubResource("Material_Wood")
 
-[node name="Foliage" type="CSGCylinder3D" parent="PineTree2" groups=["cover"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+[node name="FoliageLow" type="CSGCylinder3D" parent="PineTree2" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 0)
 cone = true
 radius = 3.5
-height = 6.0
+height = 3.0
+material = SubResource("Material_Foliage")
+
+[node name="FoliageMid" type="CSGCylinder3D" parent="PineTree2" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, 0)
+cone = true
+radius = 2.6
+height = 2.5
+material = SubResource("Material_Foliage")
+
+[node name="FoliageHigh" type="CSGCylinder3D" parent="PineTree2" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, 0)
+cone = true
+radius = 1.6
+height = 2.0
 material = SubResource("Material_Foliage")
 
 [node name="PineTree3" type="Node3D" parent="."]
@@ -226,12 +611,39 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 mesh = SubResource("CylinderMesh_1")
 surface_material_override/0 = SubResource("Material_Wood")
 
-[node name="Foliage" type="CSGCylinder3D" parent="PineTree3" groups=["cover"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+[node name="FoliageLow" type="CSGCylinder3D" parent="PineTree3" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 0)
 cone = true
 radius = 3.5
-height = 6.0
+height = 3.0
 material = SubResource("Material_Foliage")
+
+[node name="FoliageMid" type="CSGCylinder3D" parent="PineTree3" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, 0)
+cone = true
+radius = 2.6
+height = 2.5
+material = SubResource("Material_Foliage")
+
+[node name="FoliageHigh" type="CSGCylinder3D" parent="PineTree3" groups=["cover"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, 0)
+cone = true
+radius = 1.6
+height = 2.0
+material = SubResource("Material_Foliage")
+
+[node name="SearchlightFixture" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, -12)
+
+[node name="WatchtowerLight" type="SpotLight3D" parent="SearchlightFixture"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0)
+script = ExtResource("9_searchlight_script")
+rotation_speed = 0.6
+sweep_angle = 35.0
+light_color = Color(1, 1, 0.9, 1)
+light_energy = 5.0
+spot_range = 35.0
+spot_angle = 20.0
 
 [node name="PlayerGhost" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 42)
@@ -266,6 +678,57 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 1)
 light_color = Color(1, 0, 0, 1)
 light_energy = 0.0
 spot_angle = 15.0
+
+[node name="Visuals" type="Node3D" parent="TheWhiteReaper"]
+
+[node name="Torso" type="MeshInstance3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("Reaper_TorsoMesh")
+
+[node name="TacticalVest" type="MeshInstance3D" parent="TheWhiteReaper/Visuals/Torso"]
+mesh = SubResource("Reaper_VestMesh")
+
+[node name="Head" type="MeshInstance3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.02)
+mesh = SubResource("Reaper_HeadMesh")
+
+[node name="Goggles" type="MeshInstance3D" parent="TheWhiteReaper/Visuals/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.13)
+mesh = SubResource("Reaper_GogglesMesh")
+
+[node name="LeftArm" type="MeshInstance3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.2, 0)
+mesh = SubResource("Reaper_ArmMesh")
+
+[node name="RightArm" type="MeshInstance3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0.35, 0.2, -0.1)
+mesh = SubResource("Reaper_ArmMesh")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, -0.4, 0)
+mesh = SubResource("Reaper_LegMesh")
+
+[node name="RightLeg" type="MeshInstance3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, -0.4, 0)
+mesh = SubResource("Reaper_LegMesh")
+
+[node name="SniperRifle" type="Node3D" parent="TheWhiteReaper/Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.2, -0.4)
+
+[node name="Receiver" type="MeshInstance3D" parent="TheWhiteReaper/Visuals/SniperRifle"]
+mesh = SubResource("Reaper_RifleReceiver")
+
+[node name="Barrel" type="MeshInstance3D" parent="TheWhiteReaper/Visuals/SniperRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.05, -0.4)
+mesh = SubResource("Reaper_RifleBarrel")
+
+[node name="Scope" type="MeshInstance3D" parent="TheWhiteReaper/Visuals/SniperRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.12, -0.05)
+mesh = SubResource("Reaper_RifleScope")
+
+[node name="LaserBeam" type="MeshInstance3D" parent="TheWhiteReaper/Visuals/SniperRifle"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.05, -0.8)
+mesh = SubResource("CylinderMesh_SniperLaser")
 
 [node name="ClueShellCasing" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 30)
