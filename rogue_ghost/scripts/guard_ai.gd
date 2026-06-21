@@ -151,17 +151,32 @@ func _perform_stealth_check(delta: float) -> void:
 			active_target = null
 			print("🔍 Lost trace of target. Returning to patrol grid.")
 
-# Stationary guards (truck + tower): only rotate to face player and fire
+# Stationary guards (truck + tower + helicopter): rotate to face player and fire
 func _process_stationary(delta: float) -> void:
+	# Spin helicopter blades if this is the helicopter node
+	var rotor = get_node_or_null("HelicopterVisuals/MainRotorHub")
+	if rotor:
+		rotor.rotate_y(25.0 * delta)
+		# Periodic helicopter heavy rotor blade wash sound
+		if randf() < 0.04:
+			SoundManager.play_3d("footstep_desert", global_position)
+
 	if active_target and is_instance_valid(active_target) and alert_level >= 80.0:
 		# Aim at player
 		var to_player = active_target.global_position - global_position
-		to_player.y = 0
-		if to_player.length() > 0.1:
-			var target_look = global_position + to_player.normalized()
+		if rotor:
+			# Helicopter tracks yaw and pitch directly
+			var target_look = active_target.global_position + Vector3.UP * 0.8
 			look_at(target_look, Vector3.UP)
-			rotation.x = 0
-			rotation.z = 0
+			# Tilt fuselage down slightly to look aggressive
+			rotation.x += deg_to_rad(6.0)
+		else:
+			to_player.y = 0
+			if to_player.length() > 0.1:
+				var target_look = global_position + to_player.normalized()
+				look_at(target_look, Vector3.UP)
+				rotation.x = 0
+				rotation.z = 0
 
 		# Fire bursts
 		fire_timer -= delta
@@ -249,10 +264,12 @@ func _fire_ak_burst() -> void:
 				active_target.take_damage(8.0)
 
 func _spawn_muzzle_flash() -> void:
-	# Try to find Muzzle marker on this guard
+	# Try to find Muzzle marker on this guard or helicopter
 	var muzzle: Node3D = null
 	if has_node("Visuals/GuardRifle/Barrel/Muzzle"):
 		muzzle = get_node("Visuals/GuardRifle/Barrel/Muzzle")
+	elif has_node("HelicopterVisuals/GuardRifle/Barrel/Muzzle"):
+		muzzle = get_node("HelicopterVisuals/GuardRifle/Barrel/Muzzle")
 
 	var flash_pos = global_position + Vector3(0, 0.8, -0.5)
 	if muzzle:
