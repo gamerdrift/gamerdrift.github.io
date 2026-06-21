@@ -30,6 +30,11 @@ var shake_offset: Vector3 = Vector3.ZERO
 # Suppressor State
 var is_suppressed: bool = true # starts silenced by default
 
+# Weapon Ammo Details
+var max_clip: int = 30
+var current_clip: int = 30
+var is_reloading: bool = false
+
 # Player stats
 var max_health: float = 100.0
 var health: float = 100.0
@@ -157,6 +162,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				is_thermal_mode = false
 			SoundManager.play("clue")
 			print("🕶️ NVG ACTIVE: ", is_nvg_mode)
+		elif event.keycode == KEY_R:
+			reload_weapon()
 
 	# Mouse look rotation
 	if event is InputEventMouseMotion and mouse_captured:
@@ -272,6 +279,8 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	var horiz_vel = Vector3(velocity.x, 0.0, velocity.z)
+
 	# Head-bob and weapon-bob calculations
 	_apply_head_bob(delta, horiz_vel, is_sprinting)
 
@@ -280,8 +289,6 @@ func _physics_process(delta: float) -> void:
 	if is_prone: foot_threshold = 3.6
 	elif is_crouching: foot_threshold = 2.8
 	elif is_sprinting: foot_threshold = 1.6
-	
-	var horiz_vel = Vector3(velocity.x, 0.0, velocity.z)
 	if is_on_floor() and horiz_vel.length() > 0.1 and not is_sliding:
 		footstep_timer += horiz_vel.length() * delta
 		if footstep_timer >= foot_threshold:
@@ -407,6 +414,13 @@ func _apply_zoom() -> void:
 
 var fire_cooldown: float = 0.0
 func _trigger_burst_fire() -> void:
+	# Block fire if reloading or clip empty
+	if is_reloading or current_clip <= 0:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and randf() < 0.05:
+			# Play empty click sound
+			SoundManager.play("hit_marker")
+		return
+
 	var time = Time.get_ticks_msec() / 1000.0
 	if time < fire_cooldown or burst_shots_remaining > 0:
 		return
@@ -425,6 +439,7 @@ func _trigger_burst_fire() -> void:
 
 func _fire_single_bullet() -> void:
 	burst_shots_remaining -= 1
+	current_clip = max(0, current_clip - 1)
 	
 	# Gun kick recoil
 	recoil_pitch += randf_range(0.04, 0.07)
@@ -542,7 +557,7 @@ var bob_time: float = 0.0
 func _apply_head_bob(delta: float, horiz_vel: Vector3, is_sprinting: bool) -> void:
 	if not is_on_floor() or horiz_vel.length() < 0.2:
 		# Return smoothly to default local positions
-		camera_pivot.position.y = lerp(camera_pivot.position.y, is_crouching ? 0.4 : (is_prone ? 0.2 : 0.8), 8.0 * delta)
+		camera_pivot.position.y = lerp(camera_pivot.position.y, 0.4 if is_crouching else (0.2 if is_prone else 0.8), 8.0 * delta)
 		camera_pivot.position.x = lerp(camera_pivot.position.x, 0.0, 8.0 * delta)
 		if carbine_rifle:
 			carbine_rifle.rotation = carbine_rifle.rotation.lerp(Vector3.ZERO, 8.0 * delta)
@@ -555,7 +570,7 @@ func _apply_head_bob(delta: float, horiz_vel: Vector3, is_sprinting: bool) -> vo
 	bob_time += delta * bob_speed
 	
 	# Head vertical and horizontal oscillation
-	var target_y = (is_crouching ? 0.4 : (is_prone ? 0.2 : 0.8)) + sin(bob_time) * bob_amount_y
+	var target_y = (0.4 if is_crouching else (0.2 if is_prone else 0.8)) + sin(bob_time) * bob_amount_y
 	var target_x = cos(bob_time * 0.5) * bob_amount_x
 	
 	camera_pivot.position.y = lerp(camera_pivot.position.y, target_y, 10.0 * delta)
@@ -687,5 +702,19 @@ func _toggle_suppressor() -> void:
 		tween.finished.connect(func(): if is_instance_valid(silencer): silencer.visible = false)
 		# Reset muzzle tip position
 		muzzle.position = Vector3(0.0, 0.0, -0.60)
+
+func reload_weapon() -> void:
+	if is_reloading or current_clip == max_clip:
+		return
+	is_reloading = true
+	print("🔄 RELOADING WEAPON...")
+	SoundManager.play("clue")
+	get_tree().create_timer(1.5).timeout.connect(func():
+		if is_instance_valid(self):
+			current_clip = max_clip
+			is_reloading = false
+			SoundManager.play("rescue")
+			print("✅ WEAPON RELOADED.")
+	)
 
 

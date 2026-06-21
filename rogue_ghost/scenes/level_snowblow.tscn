@@ -1,6 +1,7 @@
 [gd_scene load_steps=18 format=3 uid="uid://b4v4r3d"]
 
 [ext_resource type="Script" path="res://scripts/mission_manager.gd" id="1_manager"]
+[ext_resource type="Script" path="res://scripts/guard_ai.gd" id="1_guard"]
 [ext_resource type="PackedScene" uid="uid://b1v1r3d" path="res://scenes/player_ghost.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://b2v2r3d" path="res://scenes/guard_enemy.tscn" id="3_guard"]
 [ext_resource type="Script" path="res://scripts/ranger_ai.gd" id="5_ranger_script"]
@@ -11,6 +12,14 @@
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 4.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 20.0
+radius = 8.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 1.0
+height = 5.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_1"]
 top_radius = 3.8
@@ -128,6 +137,13 @@ volumetric_fog_gi_inject = 1.5
 [sub_resource type="StandardMaterial3D" id="Material_Tire"]
 albedo_color = Color(0.08, 0.08, 0.09, 1)
 roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_Visor"]
+albedo_color = Color(0.0, 0.45, 0.65, 0.8)
+transparency = 1
+roughness = 0.15
+metallic = 0.8
+
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ReaperCamo"]
 albedo_color = Color(0.9, 0.92, 0.95, 1)
@@ -609,10 +625,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 5.0, 1.4)
 size = Vector3(0.4, 0.05, 0.05)
 material = SubResource("Material_Steel")
 
-# ==============================================================================
-# PINE TREE UPGRADES (ORGANIC SUBDIVIDED BRANCH BLOCKS)
-# ==============================================================================
-
 [node name="PineTree1" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -10)
 
@@ -722,10 +734,6 @@ height = 1.8
 [node name="BranchCard1" type="CSGBox3D" parent="PineTree2/BranchesHigh"]
 size = Vector3(2.6, 0.25, 0.8)
 
-# ==============================================================================
-# ACTIVE THREAT: COMBAT PATROL HELICOPTER (AAA VEHICLE INTEGRATION)
-# ==============================================================================
-
 [node name="PatrolHelicopter" type="CharacterBody3D" parent="." groups=["guards"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.0, 12.0)
 script = ExtResource("1_guard")
@@ -830,9 +838,6 @@ target_position = Vector3(0, -22.0, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PatrolHelicopter"]
 shape = SubResource("CapsuleShape3D_1")
 
-# ==============================================================================
-# GUARD ENEMY INSTANCES (CAMOUFLAGE SOLDIERS)
-# ==============================================================================
 
 # Flank & Center Patrol Guard Soldiers
 [node name="GuardPatrolCenter" parent="." instance=ExtResource("3_guard")]
@@ -857,5 +862,9 @@ is_stationary = true
 [node name="GuardTruckGunner2" parent="." instance=ExtResource("3_guard")]
 transform = Transform3D(0.836516, -0.258819, -0.482963, 0.258819, 0.965926, 0, 0.46649, -0.125, 0.875, 8.0, 2.3, 27.2)
 is_stationary = true
+
+[node name="PlayerGhost" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 42.0)
+
 
 

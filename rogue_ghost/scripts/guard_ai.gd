@@ -358,6 +358,38 @@ func _play_death_animation() -> void:
 	set_physics_process(false)
 	print("💀 Guard neutralized.")
 
+	# Spawn blood particle explosion
+	var blood = CPUParticles3D.new()
+	blood.name = "BloodExplosion"
+	blood.amount = 18
+	blood.lifetime = 0.6
+	blood.one_shot = true
+	blood.explosiveness = 1.0
+	blood.direction = Vector3.UP
+	blood.spread = 45.0
+	blood.initial_velocity_min = 2.0
+	blood.initial_velocity_max = 5.0
+	
+	var blood_mat = StandardMaterial3D.new()
+	blood_mat.albedo_color = Color(0.8, 0.05, 0.05) # dark red blood
+	blood_mat.emission_enabled = true
+	blood_mat.emission = Color(0.8, 0.05, 0.05)
+	blood.material_override = blood_mat
+	
+	# Small sphere particles
+	var sphere = SphereMesh.new()
+	sphere.radius = 0.08
+	sphere.height = 0.16
+	blood.mesh = sphere
+	
+	# Add to scene tree
+	get_tree().root.add_child(blood)
+	blood.global_position = global_position + Vector3.UP * 0.8
+	blood.emitting = true
+	
+	# Auto queue_free after lifetime
+	get_tree().create_timer(0.8).timeout.connect(func(): if is_instance_valid(blood): blood.queue_free())
+
 	# Flash red emissive on all mesh children then collapse
 	var meshes = []
 	_collect_meshes(self, meshes)

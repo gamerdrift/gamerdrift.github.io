@@ -142,9 +142,13 @@ func _process(_delta: float) -> void:
 		compass_node.position = Vector2((viewport_w - 300) / 2.0, 15)
 		compass_node.queue_redraw()
 		
-	if radar_node and $Control/HUDContainer/HealthBox:
-		radar_node.position = Vector2(40, $Control/HUDContainer/HealthBox.position.y - 170)
+	if radar_node and $Control/HUDContainer/StealthBox:
+		# Reposition radar to the right bottom of the screen (above Stealth Box)
+		radar_node.position = Vector2(viewport_w - 190, $Control/HUDContainer/StealthBox.position.y - 170)
 		radar_node.queue_redraw()
+		
+	# Draw procedural Gun details box (Ammo, Reload button) in the left bottom of the screen
+	_draw_gun_details_ui(viewport_w, viewport_h)
 		
 	if scope_node:
 		scope_node.queue_redraw()
@@ -247,6 +251,7 @@ func _on_radar_draw() -> void:
 	
 	var guards = get_tree().get_nodes_in_group("guards")
 	var rangers = get_tree().get_nodes_in_group("rangers")
+	var hostages = get_tree().get_nodes_in_group("hostages")
 	
 	var range_scale = radius / 45.0 # Max range = 45 meters
 	
@@ -254,6 +259,16 @@ func _on_radar_draw() -> void:
 		if not is_instance_valid(g):
 			continue
 		var relative_pos = g.global_position - player_pos
+		var dist = relative_pos.length()
+		
+		# Hidden/unalerted enemies are not to be seen yet if far away unless thermal/nvg is active
+		var is_alert = false
+		if g.get("alert_level") != null and g.alert_level >= 40.0:
+			is_alert = true
+			
+		if dist > 18.0 and not is_alert and not player.is_thermal_mode and not player.is_nvg_mode:
+			continue
+			
 		# Rotate points in inverse direction of player camera heading
 		var rx = relative_pos.x * cos(player_rot_y) - relative_pos.z * sin(player_rot_y)
 		var ry = relative_pos.x * sin(player_rot_y) + relative_pos.z * cos(player_rot_y)
@@ -263,7 +278,7 @@ func _on_radar_draw() -> void:
 		
 		if screen_offset.length() < radius:
 			var color = Color(1.0, 0.0, 0.0, 0.9) # Default red for guard
-			if g.get("alert_level") != null and g.alert_level < 40.0:
+			if not is_alert:
 				color = Color(1.0, 0.7, 0.0, 0.9) # Yellow for passive patrol
 				
 			radar_node.draw_circle(center + screen_offset, 3.5, color)
@@ -278,6 +293,38 @@ func _on_radar_draw() -> void:
 		var screen_offset = Vector2(rx, ry) * range_scale
 		if screen_offset.length() < radius:
 			radar_node.draw_circle(center + screen_offset, 3.5, Color(0.0, 0.8, 1.0, 0.9)) # Cyan for support squad
+
+	# Draw hostages
+	for h in hostages:
+		if not is_instance_valid(h):
+			continue
+		var relative_pos = h.global_position - player_pos
+		var dist = relative_pos.length()
+		
+		# Hostages are not to be seen yet if far away unless thermal/nvg is active
+		if dist > 18.0 and not player.is_thermal_mode and not player.is_nvg_mode:
+			continue
+			
+		var rx = relative_pos.x * cos(player_rot_y) - relative_pos.z * sin(player_rot_y)
+		var ry = relative_pos.x * sin(player_rot_y) + relative_pos.z * cos(player_rot_y)
+		
+		var screen_offset = Vector2(rx, ry) * range_scale
+		if screen_offset.length() < radius:
+			radar_node.draw_circle(center + screen_offset, 3.2, Color(0.0, 1.0, 0.5, 0.95)) # Green for hostages
+
+	# Draw extraction point (ExitZone) on radar
+	if mission_manager and is_instance_valid(mission_manager) and mission_manager.target_exit_zone:
+		var exit_zone = mission_manager.target_exit_zone
+		if is_instance_valid(exit_zone):
+			var relative_pos = exit_zone.global_position - player_pos
+			var rx = relative_pos.x * cos(player_rot_y) - relative_pos.z * sin(player_rot_y)
+			var ry = relative_pos.x * sin(player_rot_y) + relative_pos.z * cos(player_rot_y)
+			
+			var screen_offset = Vector2(rx, ry) * range_scale
+			if screen_offset.length() < radius:
+				var exit_pos = center + screen_offset
+				radar_node.draw_rect(Rect2(exit_pos - Vector2(4, 4), Vector2(8, 8)), Color(1.0, 0.8, 0.0, 0.95), false, 1.5)
+				radar_node.draw_string(ThemeDB.fallback_font, exit_pos + Vector2(-3, 3), "E", HORIZONTAL_ALIGNMENT_CENTER, -1, 8, Color(1.0, 0.8, 0.0, 0.95))
 
 func _on_scope_draw() -> void:
 	if not player or not is_instance_valid(player) or player.current_zoom_state == 0:
@@ -461,4 +508,80 @@ func _on_suppressor_toggled(suppressed: bool) -> void:
 		else:
 			suppressor_label.text = "SUPPRESSOR: DETACHED"
 			suppressor_label.add_theme_color_override("font_color", Color(1.0, 0.4, 0.0, 0.9))
+
+var gun_ui_container: PanelContainer = null
+var gun_ammo_label: Label = null
+var gun_reload_btn: Button = null
+
+func _draw_gun_details_ui(vw: float, vh: float) -> void:
+	if not gun_ui_container:
+		# Build procedural weapon info container on the left bottom (above HealthBox)
+		gun_ui_container = PanelContainer.new()
+		gun_ui_container.name = "GunUIContainer"
+		gun_ui_container.custom_minimum_size = Vector2(220, 60)
+		
+		# Cyberpunk Flat Dark Panel style
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.04, 0.05, 0.07, 0.85)
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(0.0, 0.8, 1.0, 0.3)
+		style.corner_radius_top_left = 4
+		style.corner_radius_top_right = 4
+		style.corner_radius_bottom_left = 4
+		style.corner_radius_bottom_right = 4
+		gun_ui_container.add_theme_stylebox_override("panel", style)
+		
+		var hbox = HBoxContainer.new()
+		hbox.name = "HBox"
+		hbox.add_theme_constant_override("separation", 15)
+		gun_ui_container.add_child(hbox)
+		
+		var vbox = VBoxContainer.new()
+		vbox.name = "VBox"
+		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		vbox.add_theme_constant_override("separation", 2)
+		hbox.add_child(vbox)
+		
+		var title = Label.new()
+		title.text = "CARBINE RIFLE (M16)"
+		title.add_theme_font_size_override("font_size", 10)
+		title.add_theme_color_override("font_color", Color(0.0, 0.8, 1.0, 0.9))
+		vbox.add_child(title)
+		
+		gun_ammo_label = Label.new()
+		gun_ammo_label.text = "AMMO: 30 / 30"
+		gun_ammo_label.add_theme_font_size_override("font_size", 12)
+		gun_ammo_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
+		vbox.add_child(gun_ammo_label)
+		
+		gun_reload_btn = Button.new()
+		gun_reload_btn.name = "ReloadBtn"
+		gun_reload_btn.text = "RELOAD"
+		gun_reload_btn.custom_minimum_size = Vector2(70, 30)
+		gun_reload_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		gun_reload_btn.add_theme_font_size_override("font_size", 10)
+		
+		# Connect reload button
+		gun_reload_btn.pressed.connect(_on_reload_pressed)
+		hbox.add_child(gun_reload_btn)
+		
+		$Control/HUDContainer.add_child(gun_ui_container)
+		
+	# Update positions dynamically
+	gun_ui_container.position = Vector2(40, vh - 180)
+	
+	# Update dynamic ammo values from player script variables
+	if player and is_instance_valid(player):
+		var clip = player.get("current_clip") if player.get("current_clip") != null else 30
+		var max_clip = player.get("max_clip") if player.get("max_clip") != null else 30
+		gun_ammo_label.text = "AMMO: %d / %d" % [clip, max_clip]
+
+func _on_reload_pressed() -> void:
+	if player and is_instance_valid(player) and player.has_method("reload_weapon"):
+		player.reload_weapon()
+
 
