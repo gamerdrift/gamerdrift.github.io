@@ -10,6 +10,7 @@ signal health_changed(current: float, max_val: float)
 signal stealth_changed(current: float, max_val: float)
 signal hostages_changed(rescued: int, total: int)
 signal fired_weapon()
+signal suppressor_toggled(is_suppressed: bool)
 
 # Exported Configuration
 @export var speed: float = 5.0
@@ -20,6 +21,14 @@ signal fired_weapon()
 @export var gravity: float = 9.8
 @export var jump_force: float = 4.5
 @export var stamina_max: float = 100.0
+
+# Screen Shake Variables
+var shake_intensity: float = 0.0
+var shake_decay: float = 8.0
+var shake_offset: Vector3 = Vector3.ZERO
+
+# Suppressor State
+var is_suppressed: bool = true # starts silenced by default
 
 # Player stats
 var max_health: float = 100.0
@@ -133,6 +142,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.keycode == KEY_Z:
 			# Toggle prone posture
 			_set_prone(!is_prone)
+		elif event.keycode == KEY_F:
+			# Toggle Silenced Suppressor
+			_toggle_suppressor()
 		elif event.keycode == KEY_T:
 			is_thermal_mode = !is_thermal_mode
 			if is_thermal_mode:
@@ -163,6 +175,9 @@ func _physics_process(delta: float) -> void:
 	if not is_active:
 		return
 		
+	# Apply camera screen shake decay
+	_process_screen_shake(delta)
+
 	# Apply gravity
 	if not is_on_floor():
 		velocity.y -= gravity * delta
@@ -213,7 +228,9 @@ func _physics_process(delta: float) -> void:
 	
 	if camera:
 		camera.rotation.z = lean_angle
-		camera.position.x = lean_offset
+		camera.position.x = lean_offset + shake_offset.x
+		camera.position.y = shake_offset.y
+		camera.position.z = shake_offset.z
 
 	# Hold breath sway adjustments
 	is_holding_breath = Input.is_key_pressed(KEY_SHIFT) and current_zoom_state > 0 and stamina > 5.0
@@ -396,8 +413,11 @@ func _trigger_burst_fire() -> void:
 		
 	fire_cooldown = time + 0.48 # 480ms cooldown between bursts
 	
-	# Play the synthesized 3-round M16 burst sound!
-	SoundManager.play("shot_m16_burst")
+	# Play the synthesized 3-round burst sound based on suppressor attachment!
+	if is_suppressed:
+		SoundManager.play("shot_silenced")
+	else:
+		SoundManager.play("shot_m16_burst")
 	
 	# Start burst sequence
 	burst_shots_remaining = 3
@@ -410,15 +430,19 @@ func _fire_single_bullet() -> void:
 	recoil_pitch += randf_range(0.04, 0.07)
 	recoil_yaw += randf_range(-0.02, 0.02)
 	
-	# Visual muzzle flash
+	# Dynamic camera screenshake on fire
+	apply_screen_shake(0.22 if is_suppressed else 0.45)
+	
+	# Visual muzzle flash (only if not suppressed or minimal flash)
 	_show_muzzle_flash()
 	
-	# Reduce stealth from gun burst noise
-	stealth_level = clamp(stealth_level - 12.0, 0.0, max_stealth)
+	# Reduce stealth from gun burst noise (suppressed: -2.0, unsuppressed: -15.0)
+	var stealth_penalty = 2.0 if is_suppressed else 15.0
+	stealth_level = clamp(stealth_level - stealth_penalty, 0.0, max_stealth)
 	stealth_changed.emit(stealth_level, max_stealth)
 	fired_weapon.emit()
 	
-	print("💥 DISCHARGING M16 ROUND!")
+	print("💥 DISCHARGING ROUND!")
 	
 	# Instantiate tracer bullet
 	var bullet_class = load("res://scenes/bullet_projectile.tscn")
@@ -453,12 +477,14 @@ func _fire_single_bullet() -> void:
 
 func _show_muzzle_flash() -> void:
 	if flash_mesh and flash_light:
-		flash_mesh.visible = true
-		flash_light.visible = true
-		get_tree().create_timer(0.04).timeout.connect(func():
-			if is_instance_valid(flash_mesh): flash_mesh.visible = false
-			if is_instance_valid(flash_light): flash_light.visible = false
-		)
+		# Suppressed weapons emit almost zero muzzle flash
+		flash_mesh.visible = !is_suppressed
+		flash_light.visible = !is_suppressed
+		if not is_suppressed:
+			get_tree().create_timer(0.04).timeout.connect(func():
+				if is_instance_valid(flash_mesh): flash_mesh.visible = false
+				if is_instance_valid(flash_light): flash_light.visible = false
+			)
 
 func _eject_shell_casing() -> void:
 	var casing_mesh = CylinderMesh.new()
@@ -486,7 +512,12 @@ func _eject_shell_casing() -> void:
 	var target_pos = casing.global_position + velocity * 0.3 + Vector3.DOWN * 0.6
 	tween.tween_property(casing, "global_position", target_pos, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(casing, "rotation", Vector3(randf_range(-TAU, TAU), randf_range(-TAU, TAU), randf_range(-TAU, TAU)), 0.3)
-	tween.finished.connect(func(): if is_instance_valid(casing): casing.queue_free())
+	tween.finished.connect(func():
+		if is_instance_valid(casing):
+			# Play brass hitting ground sound effect
+			SoundManager.play("shell_casing_ping")
+			casing.queue_free()
+	)
 
 func take_damage(amount: float) -> void:
 	if health <= 0.0:
@@ -494,6 +525,9 @@ func take_damage(amount: float) -> void:
 		
 	# Play damage sound
 	SoundManager.play("damage")
+	
+	# Apply camera shake on taking damage
+	apply_screen_shake(0.65)
 	
 	# Reduce health
 	health = max(0.0, health - amount)
@@ -597,4 +631,61 @@ func show_hit_marker() -> void:
 	tween.tween_property(hitmarker_rect, "scale", Vector2(1.0, 1.0), 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(hitmarker_rect, "modulate:a", 0.0, 0.25).set_delay(0.08)
 	tween.finished.connect(func(): hitmarker_rect.visible = false)
+
+func apply_screen_shake(amount: float) -> void:
+	shake_intensity = clamp(shake_intensity + amount, 0.0, 1.2)
+
+func _process_screen_shake(delta: float) -> void:
+	if shake_intensity > 0.01:
+		shake_intensity = move_toward(shake_intensity, 0.0, shake_decay * delta)
+		shake_offset = Vector3(
+			randf_range(-1.0, 1.0) * shake_intensity * 0.18,
+			randf_range(-1.0, 1.0) * shake_intensity * 0.18,
+			randf_range(-1.0, 1.0) * shake_intensity * 0.08
+		)
+	else:
+		shake_intensity = 0.0
+		shake_offset = Vector3.ZERO
+
+func _toggle_suppressor() -> void:
+	is_suppressed = !is_suppressed
+	suppressor_toggled.emit(is_suppressed)
+	SoundManager.play("clue") # Play attachment toggle click
+	print("🔧 SUPPRESSOR STATE CHANGED: Suppressed = ", is_suppressed)
+	
+	# Animate the physical suppressor attachment visual dynamically!
+	var silencer = carbine_rifle.get_node_or_null("SilencerMesh")
+	if not silencer:
+		# Create procedural silencer mesh
+		var c_mesh = CylinderMesh.new()
+		c_mesh.top_radius = 0.015
+		c_mesh.bottom_radius = 0.015
+		c_mesh.height = 0.18
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.05, 0.05, 0.06, 1) # tactical matte black
+		mat.roughness = 0.8
+		c_mesh.material = mat
+		
+		silencer = MeshInstance3D.new()
+		silencer.name = "SilencerMesh"
+		silencer.mesh = c_mesh
+		# Position at the muzzle tip of CarbineRifle
+		silencer.transform = Transform3D().rotated(Vector3.RIGHT, PI / 2.0)
+		silencer.position = Vector3(0.0, 0.0, -0.68)
+		carbine_rifle.add_child(silencer)
+		
+	# Animate attachment
+	var tween = create_tween()
+	if is_suppressed:
+		silencer.visible = true
+		silencer.scale = Vector3.ZERO
+		tween.tween_property(silencer, "scale", Vector3(1.0, 1.0, 1.0), 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		# Relocate muzzle tip forward
+		muzzle.position = Vector3(0.0, 0.0, -0.77)
+	else:
+		tween.tween_property(silencer, "scale", Vector3.ZERO, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		tween.finished.connect(func(): if is_instance_valid(silencer): silencer.visible = false)
+		# Reset muzzle tip position
+		muzzle.position = Vector3(0.0, 0.0, -0.60)
+
 

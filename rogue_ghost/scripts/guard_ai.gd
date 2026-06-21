@@ -58,10 +58,18 @@ func _ready() -> void:
 	initial_position = global_position
 	fire_timer = randf_range(0.0, fire_cooldown)  # stagger so all guards don't fire at once
 
+	# Connect to player fired weapon signal to verify hearing detection range
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0:
+		var p = players[0]
+		if p.has_signal("fired_weapon"):
+			p.fired_weapon.connect(_on_player_fired_weapon)
+
 	if not is_stationary and patrol_points.size() == 0:
 		patrol_points.append(global_position)
 		patrol_points.append(global_position + transform.basis.x * 6.0)
 		patrol_points.append(global_position - transform.basis.x * 6.0)
+
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
@@ -355,3 +363,33 @@ func _collect_meshes(node: Node, result: Array) -> void:
 		result.append(node)
 	for child in node.get_children():
 		_collect_meshes(child, result)
+
+func _on_player_fired_weapon() -> void:
+	if is_dead:
+		return
+		
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() == 0:
+		return
+	var player = players[0] as PlayerGhost
+	
+	# Hearing range check: Suppressed vs Unsuppressed
+	var hear_dist = 10.0 if player.is_suppressed else 55.0
+	var dist = global_position.distance_to(player.global_position)
+	
+	if dist <= hear_dist:
+		# Alert guard instantly
+		active_target = player
+		alert_level = 100.0
+		if current_state != State.CHASE:
+			current_state = State.CHASE
+			SoundManager.play_3d("guard_alert", global_position)
+			print("👂 Guard heard muzzle signature! Target coordinates locked.")
+			
+			# Find cover dynamically
+			if not is_stationary and randf() < 0.8:
+				cover_position = _find_nearest_cover()
+				cover_timer = 4.0
+				is_in_cover = true
+				print("🛡️ Guard scrambling to cover: ", cover_position)
+

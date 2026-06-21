@@ -48,6 +48,7 @@ func _ready() -> void:
 		player.health_changed.connect(_on_health_changed)
 		player.stealth_changed.connect(_on_stealth_changed)
 		player.hostages_changed.connect(_on_hostages_changed)
+		player.suppressor_toggled.connect(_on_suppressor_toggled)
 		
 		# Initial state
 		_on_health_changed(player.health, player.max_health)
@@ -65,7 +66,27 @@ func _ready() -> void:
 	# Initialize custom HUD overlays dynamically
 	_initialize_custom_hud()
 
+var vignette_node: Control = null
+var suppressor_label: Label = null
+
 func _initialize_custom_hud() -> void:
+	# 0. Cinematic Vignette Screen Overlay
+	vignette_node = Control.new()
+	vignette_node.name = "CinematicVignette"
+	vignette_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$Control.add_child(vignette_node)
+	$Control.move_child(vignette_node, 0)
+	vignette_node.set_anchors_preset(Control.PRESET_FULLRECT)
+	vignette_node.draw.connect(_on_vignette_draw)
+	
+	# Suppressor weapon attachment indicator text label
+	suppressor_label = Label.new()
+	suppressor_label.name = "SuppressorLabel"
+	suppressor_label.text = "SUPPRESSOR: ATTACHED"
+	suppressor_label.add_theme_font_size_override("font_size", 10)
+	suppressor_label.add_theme_color_override("font_color", Color(0.0, 0.9, 1.0, 0.85))
+	$Control/HUDContainer.add_child(suppressor_label)
+
 	# 1. Compass tape
 	compass_node = Control.new()
 	compass_node.name = "RollingCompass"
@@ -108,6 +129,15 @@ func _process(_delta: float) -> void:
 	
 	# Reposition and redraw dynamic overlays
 	var viewport_w = get_viewport().get_visible_rect().size.x
+	var viewport_h = get_viewport().get_visible_rect().size.y
+	
+	if vignette_node:
+		vignette_node.queue_redraw()
+		
+	if suppressor_label:
+		# Position suppressor indicator next to weapon or ammo info
+		suppressor_label.position = Vector2(viewport_w - 220, viewport_h - 130)
+		
 	if compass_node:
 		compass_node.position = Vector2((viewport_w - 300) / 2.0, 15)
 		compass_node.queue_redraw()
@@ -407,3 +437,28 @@ func _on_retry_pressed() -> void:
 func _on_exit_pressed() -> void:
 	print("🛰️ RETURNING TO DEPLOYMENT BASE...")
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+func _on_vignette_draw() -> void:
+	if not vignette_node:
+		return
+	var size = vignette_node.size
+	# Draw smooth radial vignette shadow by stacking transparent hollow polygons/borders
+	var steps = 12
+	for i in range(steps):
+		var pct = float(i) / float(steps)
+		# Calculate inset rectangle
+		var width_offset = (size.x * 0.4) * pct
+		var height_offset = (size.y * 0.4) * pct
+		var r = Rect2(width_offset, height_offset, size.x - width_offset * 2.0, size.y - height_offset * 2.0)
+		var color = Color(0.01, 0.01, 0.02, 0.07 * (pct + 0.1))
+		vignette_node.draw_rect(r, color, false, 12.0)
+
+func _on_suppressor_toggled(suppressed: bool) -> void:
+	if suppressor_label:
+		if suppressed:
+			suppressor_label.text = "SUPPRESSOR: ATTACHED"
+			suppressor_label.add_theme_color_override("font_color", Color(0.0, 0.9, 1.0, 0.85))
+		else:
+			suppressor_label.text = "SUPPRESSOR: DETACHED"
+			suppressor_label.add_theme_color_override("font_color", Color(1.0, 0.4, 0.0, 0.9))
+

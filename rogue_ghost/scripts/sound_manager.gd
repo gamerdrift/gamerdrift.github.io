@@ -22,6 +22,7 @@ func _ready() -> void:
 	streams["victory"] = _generate_victory()
 	streams["defeat"] = _generate_defeat()
 	streams["hit_marker"] = _generate_hit_marker()
+	streams["shell_casing_ping"] = _generate_shell_casing_ping()
 	print("🔊 SoundManager: Programmatic audio synthesis matrix initialized.")
 
 # Play sound on a transient child player
@@ -337,4 +338,24 @@ func _generate_hit_marker() -> AudioStreamWAV:
 		bytes.append(byte_val)
 
 	return _create_stream(bytes, mix_rate)
+
+# 13. Metallic shell casing impact ping sound effect
+func _generate_shell_casing_ping() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.15
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		# High-frequency metal ring (2800Hz with 3500Hz resonance overtone)
+		var wave = sin(2.0 * PI * 2800.0 * t) + 0.35 * sin(2.0 * PI * 3500.0 * t)
+		var envelope = exp(-t * 22.0) # fast metallic ring decay
+		var sample = wave * envelope * 0.18
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
 
