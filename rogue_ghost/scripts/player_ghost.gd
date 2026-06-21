@@ -255,6 +255,9 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# Head-bob and weapon-bob calculations
+	_apply_head_bob(delta, horiz_vel, is_sprinting)
+
 	# Trigger Footstep SFX
 	var foot_threshold = 2.2
 	if is_prone: foot_threshold = 3.6
@@ -500,3 +503,98 @@ func take_damage(amount: float) -> void:
 	if health <= 0.0:
 		is_active = false
 		print("💀 Player integrity depleted. Comm-line shut down.")
+
+var bob_time: float = 0.0
+func _apply_head_bob(delta: float, horiz_vel: Vector3, is_sprinting: bool) -> void:
+	if not is_on_floor() or horiz_vel.length() < 0.2:
+		# Return smoothly to default local positions
+		camera_pivot.position.y = lerp(camera_pivot.position.y, is_crouching ? 0.4 : (is_prone ? 0.2 : 0.8), 8.0 * delta)
+		camera_pivot.position.x = lerp(camera_pivot.position.x, 0.0, 8.0 * delta)
+		if carbine_rifle:
+			carbine_rifle.rotation = carbine_rifle.rotation.lerp(Vector3.ZERO, 8.0 * delta)
+		return
+
+	var bob_speed: float = 14.0 if is_sprinting else 10.0
+	var bob_amount_y: float = 0.08 if is_sprinting else 0.04
+	var bob_amount_x: float = 0.04 if is_sprinting else 0.02
+
+	bob_time += delta * bob_speed
+	
+	# Head vertical and horizontal oscillation
+	var target_y = (is_crouching ? 0.4 : (is_prone ? 0.2 : 0.8)) + sin(bob_time) * bob_amount_y
+	var target_x = cos(bob_time * 0.5) * bob_amount_x
+	
+	camera_pivot.position.y = lerp(camera_pivot.position.y, target_y, 10.0 * delta)
+	camera_pivot.position.x = lerp(camera_pivot.position.x, target_x, 10.0 * delta)
+
+	# Dynamic Weapon Sway/Bobbing rotation
+	if carbine_rifle:
+		var target_rot_z = -sin(bob_time * 0.5) * (0.04 if is_sprinting else 0.015)
+		var target_rot_x = -abs(sin(bob_time)) * (0.03 if is_sprinting else 0.01)
+		carbine_rifle.rotation.z = lerp(carbine_rifle.rotation.z, target_rot_z, 10.0 * delta)
+		carbine_rifle.rotation.x = lerp(carbine_rifle.rotation.x, target_rot_x, 10.0 * delta)
+
+func show_hit_marker() -> void:
+	# UI Audio Feedback
+	SoundManager.play("hit_marker")
+	
+	# Instantiate Dynamic UI overlay hitmarker
+	var canvas_layer = get_node_or_null("HitMarkerUI")
+	if not canvas_layer:
+		canvas_layer = CanvasLayer.new()
+		canvas_layer.name = "HitMarkerUI"
+		add_child(canvas_layer)
+		
+	var hitmarker_rect = canvas_layer.get_node_or_null("Indicator")
+	if not hitmarker_rect:
+		hitmarker_rect = TextureRect.new()
+		hitmarker_rect.name = "Indicator"
+		# Set size & layout
+		hitmarker_rect.custom_minimum_size = Vector2(48, 48)
+		hitmarker_rect.size = Vector2(48, 48)
+		hitmarker_rect.anchors_preset = Control.PRESET_CENTER
+		hitmarker_rect.anchor_left = 0.5
+		hitmarker_rect.anchor_right = 0.5
+		hitmarker_rect.anchor_top = 0.5
+		hitmarker_rect.anchor_bottom = 0.5
+		hitmarker_rect.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		hitmarker_rect.grow_vertical = Control.GROW_DIRECTION_BOTH
+		
+		# Generate cross hair texture procedurally using a 64x64 ImageTexture
+		var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+		# Clear image transparent
+		img.fill(Color(0, 0, 0, 0))
+		
+		# Draw hitmarker diagonal indicators (X shape)
+		var red = Color(1.0, 0.0, 0.0, 0.85)
+		for i in range(8, 22):
+			img.set_pixel(i, i, red)
+			img.set_pixel(i, i+1, red)
+			img.set_pixel(i+1, i, red)
+			
+			img.set_pixel(64 - 1 - i, i, red)
+			img.set_pixel(64 - 1 - i, i+1, red)
+			img.set_pixel(64 - 2 - i, i, red)
+			
+			img.set_pixel(i, 64 - 1 - i, red)
+			img.set_pixel(i, 64 - 2 - i, red)
+			img.set_pixel(i+1, 64 - 1 - i, red)
+			
+			img.set_pixel(64 - 1 - i, 64 - 1 - i, red)
+			img.set_pixel(64 - 1 - i, 64 - 2 - i, red)
+			img.set_pixel(64 - 2 - i, 64 - 1 - i, red)
+			
+		var tex = ImageTexture.create_from_image(img)
+		hitmarker_rect.texture = tex
+		canvas_layer.add_child(hitmarker_rect)
+		
+	# Reset state & run pop tween
+	hitmarker_rect.visible = true
+	hitmarker_rect.scale = Vector2(1.5, 1.5)
+	hitmarker_rect.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	
+	var tween = create_tween()
+	tween.tween_property(hitmarker_rect, "scale", Vector2(1.0, 1.0), 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(hitmarker_rect, "modulate:a", 0.0, 0.25).set_delay(0.08)
+	tween.finished.connect(func(): hitmarker_rect.visible = false)
+

@@ -1,149 +1,204 @@
-[gd_scene load_steps=29 format=3 uid="uid://b2v2r3d"]
+[gd_scene load_steps=42 format=3 uid="uid://b2v2r3d"]
 
 [ext_resource type="Script" path="res://scripts/guard_ai.gd" id="1_guard"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
-radius = 0.5
-height = 2.0
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_fabric"]
-noise_type = 3
-frequency = 0.25
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture_Fabric"]
-as_normal_map = true
-bump_strength = 0.8
-noise = SubResource("FastNoiseLite_fabric")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_arctic"]
-albedo_color = Color(0.85, 0.85, 0.9, 1)
-roughness = 0.85
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture_Fabric")
-
-[sub_resource type="BoxMesh" id="BoxMesh_torso"]
-material = SubResource("StandardMaterial3D_arctic")
-size = Vector3(0.5, 0.7, 0.3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hostile_vest"]
-albedo_color = Color(0.18, 0.12, 0.12, 1)
-roughness = 0.9
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture_Fabric")
-
-[sub_resource type="BoxMesh" id="BoxMesh_vest"]
-material = SubResource("StandardMaterial3D_hostile_vest")
-size = Vector3(0.53, 0.55, 0.33)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_balaclava"]
-albedo_color = Color(0.08, 0.08, 0.08, 1)
-roughness = 0.9
-
-[sub_resource type="SphereMesh" id="SphereMesh_head"]
-material = SubResource("StandardMaterial3D_balaclava")
-radius = 0.18
-height = 0.36
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_steel"]
-albedo_color = Color(0.6, 0.6, 0.65, 1)
-roughness = 0.6
-metallic = 0.5
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_helmet"]
-material = SubResource("StandardMaterial3D_steel")
-top_radius = 0.18
-bottom_radius = 0.2
-height = 0.12
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goggles_alert"]
-albedo_color = Color(1, 0.2, 0, 1)
-emission_enabled = true
-emission = Color(1, 0.2, 0, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_goggles"]
-material = SubResource("StandardMaterial3D_goggles_alert")
-size = Vector3(0.24, 0.07, 0.14)
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_arm"]
-material = SubResource("StandardMaterial3D_arctic")
-radius = 0.08
-height = 0.55
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pants"]
-albedo_color = Color(0.12, 0.12, 0.14, 1)
-roughness = 0.8
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_leg"]
-material = SubResource("StandardMaterial3D_pants")
-radius = 0.1
-height = 0.75
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_weapon"]
-albedo_color = Color(0.08, 0.08, 0.1, 1)
-roughness = 0.5
-metallic = 0.7
+radius = 0.45
+height = 1.9
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
 height = 4.0
 radius = 6.0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wood"]
-albedo_color = Color(0.42, 0.24, 0.15, 1)
+[sub_resource type="FastNoiseLite" id="FNL_fabric"]
+noise_type = 3
+frequency = 0.28
+
+[sub_resource type="NoiseTexture2D" id="NTex_fabric"]
+as_normal_map = true
+bump_strength = 1.4
+noise = SubResource("FNL_fabric")
+
+[sub_resource type="StandardMaterial3D" id="Mat_CamoOlive"]
+albedo_color = Color(0.36, 0.33, 0.21, 1)
+roughness = 0.95
+normal_enabled = true
+normal_texture = SubResource("NTex_fabric")
+
+[sub_resource type="StandardMaterial3D" id="Mat_CamoBrown"]
+albedo_color = Color(0.42, 0.29, 0.16, 1)
+roughness = 0.95
+normal_enabled = true
+normal_texture = SubResource("NTex_fabric")
+
+[sub_resource type="StandardMaterial3D" id="Mat_CamoTan"]
+albedo_color = Color(0.60, 0.52, 0.34, 1)
+roughness = 0.90
+normal_enabled = true
+normal_texture = SubResource("NTex_fabric")
+
+[sub_resource type="StandardMaterial3D" id="Mat_TacBlack"]
+albedo_color = Color(0.07, 0.08, 0.09, 1)
 roughness = 0.85
+normal_enabled = true
+normal_texture = SubResource("NTex_fabric")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pouch"]
-albedo_color = Color(0.18, 0.15, 0.15, 1)
-roughness = 0.9
+[sub_resource type="StandardMaterial3D" id="Mat_HelmetOD"]
+albedo_color = Color(0.26, 0.31, 0.17, 1)
+roughness = 0.90
+normal_enabled = true
+normal_texture = SubResource("NTex_fabric")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_black_plastic"]
-albedo_color = Color(0.06, 0.06, 0.08, 1)
-roughness = 0.75
+[sub_resource type="StandardMaterial3D" id="Mat_WeaponMetal"]
+albedo_color = Color(0.08, 0.09, 0.10, 1)
+metallic = 0.85
+roughness = 0.40
+normal_enabled = true
+normal_texture = SubResource("NTex_fabric")
 
-[sub_resource type="BoxMesh" id="BoxMesh_backpack"]
-material = SubResource("StandardMaterial3D_arctic")
-size = Vector3(0.38, 0.45, 0.22)
+[sub_resource type="StandardMaterial3D" id="Mat_WeaponWood"]
+albedo_color = Color(0.40, 0.25, 0.14, 1)
+roughness = 0.88
 
-[sub_resource type="BoxMesh" id="BoxMesh_belt"]
-material = SubResource("StandardMaterial3D_black_plastic")
-size = Vector3(0.54, 0.06, 0.34)
+[sub_resource type="StandardMaterial3D" id="Mat_Skin"]
+albedo_color = Color(0.09, 0.09, 0.10, 1)
+roughness = 0.90
 
-[sub_resource type="BoxMesh" id="BoxMesh_belt_pouch"]
-material = SubResource("StandardMaterial3D_pouch")
-size = Vector3(0.08, 0.1, 0.06)
+[sub_resource type="StandardMaterial3D" id="Mat_Visor"]
+albedo_color = Color(0.14, 0.24, 0.18, 1)
+roughness = 0.10
+metallic = 0.20
+emission_enabled = true
+emission = Color(0.3, 0.7, 0.4, 1)
+emission_energy_multiplier = 1.2
 
-[sub_resource type="BoxMesh" id="BoxMesh_joint_pad"]
-material = SubResource("StandardMaterial3D_black_plastic")
-size = Vector3(0.14, 0.12, 0.05)
+[sub_resource type="SphereMesh" id="Mesh_Head"]
+material = SubResource("Mat_Skin")
+radius = 0.19
+height = 0.38
 
-[sub_resource type="BoxMesh" id="BoxMesh_ak_receiver"]
-material = SubResource("StandardMaterial3D_weapon")
-size = Vector3(0.04, 0.08, 0.26)
+[sub_resource type="CylinderMesh" id="Mesh_HelmetBase"]
+material = SubResource("Mat_HelmetOD")
+top_radius = 0.21
+bottom_radius = 0.23
+height = 0.10
 
-[sub_resource type="BoxMesh" id="BoxMesh_ak_stock"]
-material = SubResource("StandardMaterial3D_wood")
-size = Vector3(0.038, 0.075, 0.22)
+[sub_resource type="SphereMesh" id="Mesh_HelmetDome"]
+material = SubResource("Mat_HelmetOD")
+radius = 0.22
+height = 0.20
 
-[sub_resource type="BoxMesh" id="BoxMesh_ak_grip"]
-material = SubResource("StandardMaterial3D_wood")
-size = Vector3(0.03, 0.07, 0.04)
+[sub_resource type="BoxMesh" id="Mesh_NVGBracket"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.10, 0.04, 0.08)
 
-[sub_resource type="BoxMesh" id="BoxMesh_ak_mag"]
-material = SubResource("StandardMaterial3D_weapon")
-size = Vector3(0.024, 0.15, 0.05)
+[sub_resource type="BoxMesh" id="Mesh_Goggles"]
+material = SubResource("Mat_Visor")
+size = Vector3(0.28, 0.08, 0.05)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_ak_barrel"]
-material = SubResource("StandardMaterial3D_weapon")
-top_radius = 0.01
-bottom_radius = 0.01
-height = 0.24
+[sub_resource type="BoxMesh" id="Mesh_Torso"]
+material = SubResource("Mat_CamoOlive")
+size = Vector3(0.52, 0.72, 0.30)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_ak_handguard"]
-material = SubResource("StandardMaterial3D_wood")
-top_radius = 0.025
-bottom_radius = 0.025
-height = 0.18
+[sub_resource type="BoxMesh" id="Mesh_PlateCarrier"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.54, 0.56, 0.32)
 
+[sub_resource type="BoxMesh" id="Mesh_Backpack"]
+material = SubResource("Mat_CamoTan")
+size = Vector3(0.34, 0.42, 0.18)
 
+[sub_resource type="BoxMesh" id="Mesh_ShoulderPad"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.16, 0.07, 0.26)
+
+[sub_resource type="BoxMesh" id="Mesh_MagPouch"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.085, 0.15, 0.055)
+
+[sub_resource type="BoxMesh" id="Mesh_AdminPouch"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.18, 0.09, 0.055)
+
+[sub_resource type="BoxMesh" id="Mesh_Belt"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.56, 0.065, 0.34)
+
+[sub_resource type="BoxMesh" id="Mesh_BeltPouch"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.09, 0.10, 0.055)
+
+[sub_resource type="CapsuleMesh" id="Mesh_UpperArm"]
+material = SubResource("Mat_CamoBrown")
+radius = 0.085
+height = 0.30
+
+[sub_resource type="CapsuleMesh" id="Mesh_Forearm"]
+material = SubResource("Mat_CamoOlive")
+radius = 0.075
+height = 0.28
+
+[sub_resource type="BoxMesh" id="Mesh_Glove"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.10, 0.10, 0.08)
+
+[sub_resource type="BoxMesh" id="Mesh_ElbowPad"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.15, 0.10, 0.05)
+
+[sub_resource type="CapsuleMesh" id="Mesh_Thigh"]
+material = SubResource("Mat_CamoOlive")
+radius = 0.105
+height = 0.40
+
+[sub_resource type="CapsuleMesh" id="Mesh_Shin"]
+material = SubResource("Mat_CamoBrown")
+radius = 0.082
+height = 0.34
+
+[sub_resource type="BoxMesh" id="Mesh_KneePad"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.13, 0.11, 0.05)
+
+[sub_resource type="BoxMesh" id="Mesh_Boot"]
+material = SubResource("Mat_TacBlack")
+size = Vector3(0.14, 0.12, 0.22)
+
+[sub_resource type="BoxMesh" id="Mesh_CargoPocket"]
+material = SubResource("Mat_CamoTan")
+size = Vector3(0.085, 0.11, 0.05)
+
+[sub_resource type="BoxMesh" id="Mesh_AK_Receiver"]
+material = SubResource("Mat_WeaponMetal")
+size = Vector3(0.042, 0.090, 0.28)
+
+[sub_resource type="BoxMesh" id="Mesh_AK_Stock"]
+material = SubResource("Mat_WeaponWood")
+size = Vector3(0.040, 0.078, 0.24)
+
+[sub_resource type="BoxMesh" id="Mesh_AK_Grip"]
+material = SubResource("Mat_WeaponWood")
+size = Vector3(0.032, 0.075, 0.042)
+
+[sub_resource type="BoxMesh" id="Mesh_AK_Mag"]
+material = SubResource("Mat_WeaponMetal")
+size = Vector3(0.026, 0.16, 0.055)
+
+[sub_resource type="CylinderMesh" id="Mesh_AK_Barrel"]
+material = SubResource("Mat_WeaponMetal")
+top_radius = 0.011
+bottom_radius = 0.011
+height = 0.28
+
+[sub_resource type="CylinderMesh" id="Mesh_AK_Handguard"]
+material = SubResource("Mat_WeaponWood")
+top_radius = 0.026
+bottom_radius = 0.026
+height = 0.20
+
+# ==============================================================================
+# Scene Tree
+# ==============================================================================
 [node name="GuardEnemy" type="CharacterBody3D"]
 script = ExtResource("1_guard")
 
@@ -152,101 +207,184 @@ shape = SubResource("CapsuleShape3D_1")
 
 [node name="Visuals" type="Node3D" parent="."]
 
-[node name="Torso" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
-mesh = SubResource("BoxMesh_torso")
-
-[node name="TacticalVest" type="MeshInstance3D" parent="Visuals/Torso"]
-mesh = SubResource("BoxMesh_vest")
-
-[node name="Backpack" type="MeshInstance3D" parent="Visuals/Torso"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.22)
-mesh = SubResource("BoxMesh_backpack")
-
-[node name="Belt" type="MeshInstance3D" parent="Visuals/Torso"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.32, 0)
-mesh = SubResource("BoxMesh_belt")
-
-[node name="PouchLeft" type="MeshInstance3D" parent="Visuals/Torso"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, -0.32, 0.17)
-mesh = SubResource("BoxMesh_belt_pouch")
-
-[node name="PouchRight" type="MeshInstance3D" parent="Visuals/Torso"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, -0.32, 0.17)
-mesh = SubResource("BoxMesh_belt_pouch")
-
+# --- HEAD & HELMET ---
 [node name="Head" type="MeshInstance3D" parent="Visuals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.02)
-mesh = SubResource("SphereMesh_head")
+mesh = SubResource("Mesh_Head")
 
-[node name="Helmet" type="MeshInstance3D" parent="Visuals/Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0.02)
-mesh = SubResource("CylinderMesh_helmet")
+[node name="HelmetBase" type="MeshInstance3D" parent="Visuals/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0.02)
+mesh = SubResource("Mesh_HelmetBase")
+
+[node name="HelmetDome" type="MeshInstance3D" parent="Visuals/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30, 0.01)
+mesh = SubResource("Mesh_HelmetDome")
+
+[node name="NVGBracket" type="MeshInstance3D" parent="Visuals/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.34, -0.20)
+mesh = SubResource("Mesh_NVGBracket")
 
 [node name="Goggles" type="MeshInstance3D" parent="Visuals/Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.13)
-mesh = SubResource("BoxMesh_goggles")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.18)
+mesh = SubResource("Mesh_Goggles")
 
-[node name="LeftArm" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.2, 0)
-mesh = SubResource("CapsuleMesh_arm")
+# --- TORSO & VEST ---
+[node name="Torso" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("Mesh_Torso")
 
-[node name="ElbowPad" type="MeshInstance3D" parent="Visuals/LeftArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.09)
-mesh = SubResource("BoxMesh_joint_pad")
+[node name="PlateCarrier" type="MeshInstance3D" parent="Visuals/Torso"]
+mesh = SubResource("Mesh_PlateCarrier")
 
-[node name="RightArm" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0.35, 0.2, -0.1)
-mesh = SubResource("CapsuleMesh_arm")
+[node name="ShoulderPadL" type="MeshInstance3D" parent="Visuals/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.34, 0.24, 0)
+mesh = SubResource("Mesh_ShoulderPad")
 
-[node name="ElbowPad" type="MeshInstance3D" parent="Visuals/RightArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.09)
-mesh = SubResource("BoxMesh_joint_pad")
+[node name="ShoulderPadR" type="MeshInstance3D" parent="Visuals/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.34, 0.24, 0)
+mesh = SubResource("Mesh_ShoulderPad")
 
-[node name="LeftLeg" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, -0.4, 0)
-mesh = SubResource("CapsuleMesh_leg")
+[node name="AdminPouch" type="MeshInstance3D" parent="Visuals/Torso/PlateCarrier"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, -0.17)
+mesh = SubResource("Mesh_AdminPouch")
 
-[node name="KneePad" type="MeshInstance3D" parent="Visuals/LeftLeg"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.11)
-mesh = SubResource("BoxMesh_joint_pad")
+[node name="MagPouchL1" type="MeshInstance3D" parent="Visuals/Torso/PlateCarrier"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, -0.02, -0.17)
+mesh = SubResource("Mesh_MagPouch")
 
-[node name="RightLeg" type="MeshInstance3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, -0.4, 0)
-mesh = SubResource("CapsuleMesh_leg")
+[node name="MagPouchL2" type="MeshInstance3D" parent="Visuals/Torso/PlateCarrier"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, -0.02, -0.17)
+mesh = SubResource("Mesh_MagPouch")
 
-[node name="KneePad" type="MeshInstance3D" parent="Visuals/RightLeg"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.11)
-mesh = SubResource("BoxMesh_joint_pad")
+[node name="MagPouchR1" type="MeshInstance3D" parent="Visuals/Torso/PlateCarrier"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09, -0.02, -0.17)
+mesh = SubResource("Mesh_MagPouch")
 
+[node name="Backpack" type="MeshInstance3D" parent="Visuals/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.24)
+mesh = SubResource("Mesh_Backpack")
+
+[node name="Belt" type="MeshInstance3D" parent="Visuals/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.38, 0)
+mesh = SubResource("Mesh_Belt")
+
+[node name="BeltPouchL" type="MeshInstance3D" parent="Visuals/Torso/Belt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20, 0, -0.15)
+mesh = SubResource("Mesh_BeltPouch")
+
+[node name="BeltPouchR" type="MeshInstance3D" parent="Visuals/Torso/Belt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20, 0, -0.15)
+mesh = SubResource("Mesh_BeltPouch")
+
+# --- LEFT ARM ---
+[node name="UpperArmL" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, -0.36, 0.33, 0)
+mesh = SubResource("Mesh_UpperArm")
+
+[node name="ForearmL" type="MeshInstance3D" parent="Visuals/UpperArmL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.30, 0)
+mesh = SubResource("Mesh_Forearm")
+
+[node name="GloveL" type="MeshInstance3D" parent="Visuals/UpperArmL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, 0)
+mesh = SubResource("Mesh_Glove")
+
+[node name="ElbowPadL" type="MeshInstance3D" parent="Visuals/UpperArmL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06, 0.08)
+mesh = SubResource("Mesh_ElbowPad")
+
+# --- RIGHT ARM ---
+[node name="UpperArmR" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, 0.36, 0.33, -0.08)
+mesh = SubResource("Mesh_UpperArm")
+
+[node name="ForearmR" type="MeshInstance3D" parent="Visuals/UpperArmR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.30, 0)
+mesh = SubResource("Mesh_Forearm")
+
+[node name="GloveR" type="MeshInstance3D" parent="Visuals/UpperArmR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, 0)
+mesh = SubResource("Mesh_Glove")
+
+[node name="ElbowPadR" type="MeshInstance3D" parent="Visuals/UpperArmR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06, 0.08)
+mesh = SubResource("Mesh_ElbowPad")
+
+# --- LEFT LEG ---
+[node name="ThighL" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, -0.38, 0)
+mesh = SubResource("Mesh_Thigh")
+
+[node name="ShinL" type="MeshInstance3D" parent="Visuals/ThighL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.38, 0)
+mesh = SubResource("Mesh_Shin")
+
+[node name="KneePadL" type="MeshInstance3D" parent="Visuals/ThighL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.24, -0.12)
+mesh = SubResource("Mesh_KneePad")
+
+[node name="CargoPocketL" type="MeshInstance3D" parent="Visuals/ThighL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, -0.04, -0.13)
+mesh = SubResource("Mesh_CargoPocket")
+
+[node name="BootL" type="MeshInstance3D" parent="Visuals/ThighL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.60, 0.05)
+mesh = SubResource("Mesh_Boot")
+
+# --- RIGHT LEG ---
+[node name="ThighR" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, -0.38, 0)
+mesh = SubResource("Mesh_Thigh")
+
+[node name="ShinR" type="MeshInstance3D" parent="Visuals/ThighR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.38, 0)
+mesh = SubResource("Mesh_Shin")
+
+[node name="KneePadR" type="MeshInstance3D" parent="Visuals/ThighR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.24, -0.12)
+mesh = SubResource("Mesh_KneePad")
+
+[node name="CargoPocketR" type="MeshInstance3D" parent="Visuals/ThighR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, -0.04, -0.13)
+mesh = SubResource("Mesh_CargoPocket")
+
+[node name="BootR" type="MeshInstance3D" parent="Visuals/ThighR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.60, 0.05)
+mesh = SubResource("Mesh_Boot")
+
+# --- WEAPON: AK-47 ---
 [node name="GuardRifle" type="Node3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.2, -0.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.18, -0.42)
 
 [node name="Receiver" type="MeshInstance3D" parent="Visuals/GuardRifle"]
-mesh = SubResource("BoxMesh_ak_receiver")
+mesh = SubResource("Mesh_AK_Receiver")
 
 [node name="Stock" type="MeshInstance3D" parent="Visuals/GuardRifle"]
-transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, -0.02, 0.21)
-mesh = SubResource("BoxMesh_ak_stock")
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, -0.02, 0.24)
+mesh = SubResource("Mesh_AK_Stock")
 
 [node name="Grip" type="MeshInstance3D" parent="Visuals/GuardRifle"]
-transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, -0.06, 0.04)
-mesh = SubResource("BoxMesh_ak_grip")
+transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, -0.055, 0.04)
+mesh = SubResource("Mesh_AK_Grip")
 
 [node name="Magazine" type="MeshInstance3D" parent="Visuals/GuardRifle"]
-transform = Transform3D(1, 0, 0, 0, 0.906308, -0.422618, 0, 0.422618, 0.906308, 0, -0.09, -0.07)
-mesh = SubResource("BoxMesh_ak_mag")
+transform = Transform3D(1, 0, 0, 0, 0.906308, -0.422618, 0, 0.422618, 0.906308, 0, -0.085, -0.065)
+mesh = SubResource("Mesh_AK_Mag")
 
 [node name="Handguard" type="MeshInstance3D" parent="Visuals/GuardRifle"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.005, -0.18)
-mesh = SubResource("CylinderMesh_ak_handguard")
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, -0.005, -0.18)
+mesh = SubResource("Mesh_AK_Handguard")
 
 [node name="Barrel" type="MeshInstance3D" parent="Visuals/GuardRifle"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.35)
-mesh = SubResource("CylinderMesh_ak_barrel")
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -0.38)
+mesh = SubResource("Mesh_AK_Barrel")
 
+[node name="Muzzle" type="Node3D" parent="Visuals/GuardRifle/Barrel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+
+# --- AI COMPONENTS ---
 [node name="VisionArea" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.5, -6)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.5, -6)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="VisionArea"]
 shape = SubResource("CylinderShape3D_1")

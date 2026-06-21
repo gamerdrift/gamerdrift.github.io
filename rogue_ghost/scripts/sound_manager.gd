@@ -11,14 +11,17 @@ func _ready() -> void:
 	# Cache-generate all sound streams at load
 	streams["shot_silenced"] = _generate_silenced_shot()
 	streams["shot_m16_burst"] = _generate_m16_burst()
+	streams["shot_ak_burst"] = _generate_ak_burst()
 	streams["footstep_snow"] = _generate_footstep(0.06, 120.0, 0.12)
 	streams["footstep_desert"] = _generate_footstep(0.05, 240.0, 0.08)
 	streams["guard_alert"] = _generate_guard_alert()
 	streams["damage"] = _generate_damage()
+	streams["enemy_grunt"] = _generate_enemy_grunt()
 	streams["rescue"] = _generate_rescue()
 	streams["clue"] = _generate_clue()
 	streams["victory"] = _generate_victory()
 	streams["defeat"] = _generate_defeat()
+	streams["hit_marker"] = _generate_hit_marker()
 	print("🔊 SoundManager: Programmatic audio synthesis matrix initialized.")
 
 # Play sound on a transient child player
@@ -255,6 +258,81 @@ func _generate_m16_burst() -> AudioStreamWAV:
 
 		total_sample = clamp(total_sample * 0.55, -1.0, 1.0)
 		var byte_val = int(total_sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+# 10. AK-47 Burst: sharper crack, wooden 220Hz body thud, rattle tail
+func _generate_ak_burst() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.50
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+	# 3 rounds spaced 110ms apart (AK rate of fire ~600rpm)
+	var shot_starts = [0.0, 0.11, 0.22]
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var total_sample = 0.0
+
+		for start_t in shot_starts:
+			if t >= start_t:
+				var local_t = t - start_t
+				# Sharp high-frequency crack (fast decay noise)
+				var crack_env = exp(-local_t * 55.0)
+				var crack = randf_range(-1.0, 1.0) * crack_env * 0.55
+				# Warm wooden body resonance at ~220Hz (lower than M16 steel)
+				var freq = lerp(280.0, 60.0, clamp(local_t * 14.0, 0.0, 1.0))
+				var body_env = exp(-local_t * 10.0)
+				var thud = sin(2.0 * PI * freq * local_t) * body_env * 0.48
+				# Mechanical rattle tail (AK bolt carrier)
+				var rattle_env = exp(-local_t * 22.0) * float(local_t > 0.015)
+				var rattle = randf_range(-0.3, 0.3) * rattle_env
+				total_sample += crack + thud + rattle
+
+		total_sample = clamp(total_sample * 0.50, -1.0, 1.0)
+		var byte_val = int(total_sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+# 11. Enemy grunt: short guttural impact noise on hit
+func _generate_enemy_grunt() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.18
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		# Rough vocal formant at ~180Hz with noise texture
+		var freq = lerp(200.0, 90.0, t / duration)
+		var wave = sin(2.0 * PI * freq * t)
+		var noise = randf_range(-0.4, 0.4)
+		var envelope = exp(-t * 14.0)
+		var sample = (wave * 0.55 + noise * 0.45) * envelope * 0.6
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+# 12. Tactical hit-marker indicator click sound
+func _generate_hit_marker() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.05
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		# High frequency sharp tick chime
+		var wave = sin(2.0 * PI * 2000.0 * t)
+		var envelope = exp(-t * 70.0) # ultra-fast decay
+		var sample = wave * envelope * 0.28
+		var byte_val = int(sample * 127.0)
 		if byte_val < 0: byte_val += 256
 		bytes.append(byte_val)
 

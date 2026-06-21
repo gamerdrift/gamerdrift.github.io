@@ -34,6 +34,11 @@ func _on_body_entered(body: Node) -> void:
 	# Deal damage to enemy targets
 	if body.has_method("take_damage"):
 		body.take_damage(damage)
+		var players = get_tree().get_nodes_in_group("player")
+		if players.size() > 0:
+			var p = players[0]
+			if p.has_method("show_hit_marker"):
+				p.show_hit_marker()
 		
 	# Neutralize projectile on impact
 	queue_free()
