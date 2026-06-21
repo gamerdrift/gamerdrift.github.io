@@ -25,85 +25,105 @@ emission = Color(0.0, 1.0, 0.5, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fine"]
 noise_type = 3
-frequency = 0.15
+frequency = 0.22
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture_SnowNormal"]
 as_normal_map = true
-bump_strength = 1.2
+bump_strength = 1.8
 noise = SubResource("FastNoiseLite_fine")
 
 [sub_resource type="StandardMaterial3D" id="Material_Snow"]
-albedo_color = Color(0.92, 0.95, 0.98, 1)
-roughness = 0.9
+albedo_color = Color(0.95, 0.97, 1.0, 1)
+roughness = 0.8
+specular = 0.6
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_SnowNormal")
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.15
+
+[sub_resource type="StandardMaterial3D" id="Material_Ice"]
+albedo_color = Color(0.65, 0.88, 0.95, 0.7)
+transparency = 1
+roughness = 0.05
+metallic = 0.3
+rim_enabled = true
+rim = 0.5
+rim_tint = 0.5
+refraction_enabled = true
+refraction_scale = 0.02
+
+[sub_resource type="StandardMaterial3D" id="Material_Wood"]
+albedo_color = Color(0.24, 0.16, 0.12, 1)
+roughness = 0.95
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_SnowNormal")
 
-[sub_resource type="StandardMaterial3D" id="Material_Ice"]
-albedo_color = Color(0.5, 0.8, 0.9, 0.6)
-transparency = 1
-roughness = 0.1
-refraction_enabled = true
-
-[sub_resource type="StandardMaterial3D" id="Material_Wood"]
-albedo_color = Color(0.3, 0.2, 0.15, 1)
-roughness = 0.95
-
 [sub_resource type="StandardMaterial3D" id="Material_Foliage"]
-albedo_color = Color(0.1, 0.35, 0.15, 1)
-roughness = 0.9
+albedo_color = Color(0.08, 0.26, 0.12, 1)
+roughness = 0.85
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.1
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_metal"]
 noise_type = 3
-frequency = 0.08
+frequency = 0.12
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture_MetalNormal"]
 as_normal_map = true
-bump_strength = 1.8
+bump_strength = 2.2
 noise = SubResource("FastNoiseLite_metal")
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture_MetalRoughness"]
 noise = SubResource("FastNoiseLite_metal")
 
 [sub_resource type="StandardMaterial3D" id="Material_Steel"]
-albedo_color = Color(0.2, 0.22, 0.25, 1)
-metallic = 0.7
-roughness = 0.4
+albedo_color = Color(0.14, 0.15, 0.17, 1)
+metallic = 0.9
+roughness = 0.28
 roughness_texture = SubResource("NoiseTexture_MetalRoughness")
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_MetalNormal")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_rock"]
 noise_type = 3
-frequency = 0.04
+frequency = 0.06
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture_RockNormal"]
 as_normal_map = true
-bump_strength = 3.5
+bump_strength = 4.5
 noise = SubResource("FastNoiseLite_rock")
 
 [sub_resource type="StandardMaterial3D" id="Material_Rock"]
-albedo_color = Color(0.4, 0.42, 0.45, 1)
-roughness = 0.85
+albedo_color = Color(0.32, 0.33, 0.35, 1)
+roughness = 0.9
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_RockNormal")
 
 [sub_resource type="Environment" id="Environment_Snowblow"]
 background_mode = 1
-background_color = Color(0.12, 0.14, 0.18, 1)
+background_color = Color(0.06, 0.08, 0.12, 1)
 tonemap_mode = 3
-tonemap_exposure = 1.15
+tonemap_exposure = 1.25
 tonemap_white = 1.0
 ssao_enabled = true
-ssao_radius = 1.5
-ssao_intensity = 2.0
+ssao_radius = 1.2
+ssao_intensity = 3.0
+ssao_power = 1.5
+ssil_enabled = true
+sdfgi_enabled = true
 glow_enabled = true
-glow_intensity = 0.7
-glow_strength = 1.1
-glow_bloom = 0.12
+glow_intensity = 0.8
+glow_strength = 1.2
+glow_bloom = 0.18
 glow_blend_mode = 1
 fog_enabled = true
-fog_light_color = Color(0.12, 0.14, 0.18, 1)
-fog_density = 0.04
+fog_light_color = Color(0.06, 0.08, 0.12, 1)
+fog_density = 0.035
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.035
+volumetric_fog_albedo = Color(0.08, 0.1, 0.14, 1)
+volumetric_fog_emission = Color(0.01, 0.02, 0.03, 1)
+volumetric_fog_gi_inject = 1.5
 
 [sub_resource type="StandardMaterial3D" id="Material_Tire"]
 albedo_color = Color(0.08, 0.08, 0.09, 1)
