@@ -78,6 +78,22 @@ func _process(delta: float) -> void:
 func start_mission() -> void:
 	elapsed_time = 0.0
 	rescued_hostages = 0
+	# Play an intro cinematic if present; mission will begin afterwards
+	var cine_res = load("res://scenes/intro_cinematic.tscn")
+	if cine_res:
+		var cine = cine_res.instantiate()
+		# Add cinematic to the scene root so its camera can take control
+		get_tree().root.add_child(cine)
+		print("🎬 Intro cinematic launched.")
+		# When cinematic finishes, start the mission proper
+		if cine.has_signal("cinematic_finished"):
+			cine.cinematic_finished.connect(func(): _begin_mission())
+		return
+
+	# Fallback immediate start when no cinematic exists
+	_begin_mission()
+
+func _begin_mission() -> void:
 	is_active = true
 	mission_started.emit()
 	print("🟢 Infiltration grid live. Target hostages to secure: ", total_hostages)

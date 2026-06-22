@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://introcinematic"]
+[ext_resource type="Script" path="res://scripts/intro_cinematic.gd" id="1_intro_script"]
+
+[node name="Cinematic" type="Node3D"]
+script = ExtResource( "1_intro_script" )
+
+[node name="CineCamera" type="Camera3D" parent="."]
+transform = Transform3D( 0.999847, 0.0, 0.0174524, 0.0, 1.0, 0.0, -0.0174524, 0.0, 0.999847, 0.0, 2.0, 12.0 )
+current = true
