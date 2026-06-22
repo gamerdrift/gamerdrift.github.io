@@ -31,6 +31,16 @@ var compass_node: Control = null
 var radar_node: Control = null
 var scope_node: Control = null
 var nvg_node: Control = null
+var combat_alert_label: Label = null
+var damage_flash: float = 0.0
+var alert_timer: float = 0.0
+@onready var top_right_panel: Panel = $Control/HUDContainer/TopRightControlTabs
+@onready var pause_button: Button = $Control/HUDContainer/TopRightControlTabs/TopRightVBox/TopButtonRow/PauseResumeBtn
+@onready var fullscreen_button: Button = $Control/HUDContainer/TopRightControlTabs/TopRightVBox/TopButtonRow/FullscreenBtn
+@onready var info_button: Button = $Control/HUDContainer/TopRightControlTabs/TopRightVBox/TopButtonRow/InfoTabBtn
+@onready var info_panel: Panel = $Control/HUDContainer/TopRightControlTabs/TopRightVBox/InfoPanel
+@onready var info_label: Label = $Control/HUDContainer/TopRightControlTabs/TopRightVBox/InfoPanel/InfoLabel
+var is_game_paused: bool = false
 
 func _ready() -> void:
 	# Hide debrief card on start
@@ -89,6 +99,23 @@ func _initialize_custom_hud() -> void:
 	suppressor_label.add_theme_color_override("font_color", Color(0.0, 0.9, 1.0, 0.85))
 	$Control/HUDContainer.add_child(suppressor_label)
 
+	combat_alert_label = Label.new()
+	combat_alert_label.name = "CombatAlertLabel"
+	combat_alert_label.text = ""
+	combat_alert_label.add_theme_font_size_override("font_size", 14)
+	combat_alert_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.1, 0.95))
+	combat_alert_label.horizontal_alignment = Label.HORIZONTAL_ALIGNMENT_CENTER
+	combat_alert_label.anchor_left = 0.25
+	combat_alert_label.anchor_top = 0.0
+	combat_alert_label.anchor_right = 0.75
+	combat_alert_label.anchor_bottom = 0.0
+	combat_alert_label.margin_top = 18
+	combat_alert_label.margin_left = 0
+	combat_alert_label.margin_right = 0
+	combat_alert_label.margin_bottom = 26
+	combat_alert_label.visible = false
+	$Control/HUDContainer.add_child(combat_alert_label)
+
 	# 1. Compass tape
 	compass_node = Control.new()
 	compass_node.name = "RollingCompass"
@@ -121,6 +148,48 @@ func _initialize_custom_hud() -> void:
 	$Control.move_child(nvg_node, 0)
 	nvg_node.draw.connect(_on_nvg_draw)
 	nvg_node.set_anchors_preset(Control.PRESET_FULLRECT)
+
+	if pause_button:
+		pause_button.pressed.connect(_on_pause_pressed)
+	if fullscreen_button:
+		fullscreen_button.pressed.connect(_on_fullscreen_pressed)
+	if info_button:
+		info_button.pressed.connect(_on_info_pressed)
+	if info_panel:
+		info_panel.visible = false
+	if info_label:
+		info_label.autowrap = true
+		info_label.text = "MISSION OBJECTIVE: Stealth infiltrate and extract hostages. Avoid alarms and neutralise high-value targets.\n\nWEB CONTROLS: Mouse aim, LMB shoot, R reload, Q gadget, M map, ESC toggles fullscreen.\n\nMOBILE CONTROLS: Tap to fire, drag to look, pinch to zoom, on-screen buttons for actions."
+
+func _on_pause_pressed() -> void:
+	is_game_paused = not is_game_paused
+	get_tree().paused = is_game_paused
+	if pause_button:
+		pause_button.text = is_game_paused ? "RESUME" : "PAUSE"
+	if is_game_paused:
+		print("🎮 Tactical pause engaged. Press RESUME to continue.")
+	else:
+		print("▶️ Mission resumed.")
+	if info_panel:
+		info_panel.visible = false
+
+func _on_fullscreen_pressed() -> void:
+	var currently_fs = OS.window_fullscreen
+	if currently_fs:
+		DisplayServer.window_set_mode(DisplayServer.WindowMode.WINDOWED)
+		OS.window_fullscreen = false
+		fullscreen_button.text = "FULLSCREEN"
+		print("🪟 Windowed mode activated.")
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WindowMode.FULLSCREEN)
+		OS.window_fullscreen = true
+		fullscreen_button.text = "EXIT FS"
+		print("🖥️ Fullscreen mode activated.")
+
+func _on_info_pressed() -> void:
+	if info_panel:
+		info_panel.visible = not info_panel.visible
+		print("ℹ️ Tactical info panel " + (info_panel.visible ? "shown." : "hidden."))
 
 func _process(_delta: float) -> void:
 	if not player or not is_instance_valid(player):
@@ -158,6 +227,15 @@ func _process(_delta: float) -> void:
 		
 	if nvg_node:
 		nvg_node.queue_redraw()
+
+	# Damage flash and alert text fade
+	if damage_flash > 0.0:
+		damage_flash = max(0.0, damage_flash - (_delta * 1.8))
+
+	if alert_timer > 0.0:
+		alert_timer = max(0.0, alert_timer - _delta)
+		if alert_timer == 0.0 and combat_alert_label:
+			combat_alert_label.visible = false
 
 func _on_compass_draw() -> void:
 	if not player or not is_instance_valid(player):
@@ -413,6 +491,9 @@ func _on_health_changed(current: float, max_val: float) -> void:
 		health_bar.value = (current / max_val) * 100.0
 	if health_label:
 		health_label.text = "OPERATIVE INTEGRITY: %d%%" % int(current)
+	if current < max_val:
+		_flash_damage()
+		show_alert("DAMAGE TAKEN", 1.4)
 
 func _on_stealth_changed(current: float, max_val: float) -> void:
 	if stealth_bar:
@@ -502,6 +583,11 @@ func _on_vignette_draw() -> void:
 		var r = Rect2(width_offset, height_offset, size.x - width_offset * 2.0, size.y - height_offset * 2.0)
 		var color = Color(0.01, 0.01, 0.02, 0.07 * (pct + 0.1))
 		vignette_node.draw_rect(r, color, false, 12.0)
+
+	# Damage flash overlay
+	if damage_flash > 0.01:
+		var bleed = Color(0.85, 0.12, 0.08, 0.14 * damage_flash)
+		vignette_node.draw_rect(Rect2(Vector2.ZERO, size), bleed, true, 0.0)
 
 func _on_suppressor_toggled(suppressed: bool) -> void:
 	if suppressor_label:
@@ -605,6 +691,15 @@ func _draw_gun_details_ui(vw: float, vh: float) -> void:
 func _on_reload_pressed() -> void:
 	if player and is_instance_valid(player) and player.has_method("reload_weapon"):
 		player.reload_weapon()
+
+func _flash_damage() -> void:
+	damage_flash = 0.72
+
+func show_alert(message: String, duration: float = 2.0) -> void:
+	if combat_alert_label:
+		combat_alert_label.text = message
+		combat_alert_label.visible = true
+		alert_timer = duration
 
 func _update_hud_labels(vw: float, vh: float) -> void:
 	if controls_label:

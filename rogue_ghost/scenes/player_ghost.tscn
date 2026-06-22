@@ -16,8 +16,12 @@ bump_strength = 0.8
 noise = SubResource("FastNoiseLite_fabric")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_camo"]
-albedo_color = Color(0.18, 0.32, 0.18, 1)
-roughness = 0.85
+albedo_color = Color(0.16, 0.28, 0.16, 1)
+roughness = 0.72
+metallic = 0.08
+specular = 0.28
+clearcoat = 0.05
+anisotropy = 0.22
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_Fabric")
 
@@ -26,8 +30,11 @@ material = SubResource("StandardMaterial3D_camo")
 size = Vector3(0.5, 0.7, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vest"]
-albedo_color = Color(0.12, 0.12, 0.14, 1)
-roughness = 0.9
+albedo_color = Color(0.10, 0.10, 0.11, 1)
+roughness = 0.78
+metallic = 0.08
+specular = 0.32
+clearcoat = 0.08
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_Fabric")
 
@@ -36,8 +43,10 @@ material = SubResource("StandardMaterial3D_vest")
 size = Vector3(0.53, 0.55, 0.33)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_balaclava"]
-albedo_color = Color(0.08, 0.08, 0.08, 1)
-roughness = 0.9
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+roughness = 0.92
+metallic = 0.02
+clearcoat = 0.02
 
 [sub_resource type="SphereMesh" id="SphereMesh_head"]
 material = SubResource("StandardMaterial3D_balaclava")
@@ -45,9 +54,12 @@ radius = 0.18
 height = 0.36
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_steel"]
-albedo_color = Color(0.2, 0.22, 0.2, 1)
-roughness = 0.6
-metallic = 0.5
+albedo_color = Color(0.18, 0.20, 0.22, 1)
+roughness = 0.24
+metallic = 0.95
+specular = 0.82
+clearcoat = 0.12
+anisotropy = 0.18
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_helmet"]
 material = SubResource("StandardMaterial3D_steel")
@@ -56,9 +68,13 @@ bottom_radius = 0.2
 height = 0.12
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goggles"]
-albedo_color = Color(0, 0.8, 1, 1)
+albedo_color = Color(0.04, 0.18, 0.22, 0.18)
+transparency = 1
+roughness = 0.12
+metallic = 0.12
 emission_enabled = true
-emission = Color(0, 0.8, 1, 1)
+emission = Color(0.04, 0.12, 0.14, 1)
+emission_energy_multiplier = 1.4
 
 [sub_resource type="BoxMesh" id="BoxMesh_goggles"]
 material = SubResource("StandardMaterial3D_goggles")
@@ -72,8 +88,12 @@ radial_segments = 24
 rings = 12
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pants"]
-albedo_color = Color(0.15, 0.15, 0.18, 1)
-roughness = 0.8
+albedo_color = Color(0.16, 0.18, 0.18, 1)
+roughness = 0.80
+metallic = 0.04
+specular = 0.18
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_leg"]
 material = SubResource("StandardMaterial3D_pants")
@@ -81,26 +101,38 @@ radius = 0.1
 height = 0.75
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_weapon"]
-albedo_color = Color(0.1, 0.1, 0.12, 1)
-roughness = 0.25
-metallic = 0.85
-clearcoat = 0.08
-anisotropy = 0.12
+albedo_color = Color(0.07, 0.08, 0.10, 1)
+roughness = 0.18
+metallic = 0.95
+specular = 0.88
+clearcoat = 0.16
+anisotropy = 0.24
 normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nvg"]
-albedo_color = Color(0.0, 1.0, 0.2, 1)
+albedo_color = Color(0.0, 0.75, 0.18, 1)
 emission_enabled = true
-emission = Color(0.0, 1.0, 0.2, 1)
-emission_energy_multiplier = 3.0
+emission = Color(0.0, 0.75, 0.18, 1)
+emission_energy_multiplier = 2.8
+roughness = 0.28
+specular = 0.34
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_black_plastic"]
-albedo_color = Color(0.08, 0.08, 0.09, 1)
-roughness = 0.75
+albedo_color = Color(0.04, 0.05, 0.06, 1)
+roughness = 0.72
+metallic = 0.04
+specular = 0.22
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark_pouch"]
-albedo_color = Color(0.14, 0.15, 0.14, 1)
-roughness = 0.9
+albedo_color = Color(0.11, 0.12, 0.11, 1)
+roughness = 0.78
+metallic = 0.0
+specular = 0.18
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="BoxMesh" id="BoxMesh_belt_pouch"]
 material = SubResource("StandardMaterial3D_dark_pouch")
@@ -175,12 +207,20 @@ material = SubResource("StandardMaterial3D_weapon")
 size = Vector3(0.02, 0.035, 0.18)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_skin"]
-albedo_color = Color(0.82, 0.62, 0.48, 1)
-roughness = 0.75
+albedo_color = Color(0.84, 0.70, 0.55, 1)
+roughness = 0.68
+metallic = 0.0
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.22
+specular = 0.28
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gloves"]
-albedo_color = Color(0.12, 0.12, 0.14, 1)
-roughness = 0.9
+albedo_color = Color(0.10, 0.10, 0.12, 1)
+roughness = 0.82
+metallic = 0.03
+specular = 0.22
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_Fabric")
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_forearm"]
 material = SubResource("StandardMaterial3D_skin")
@@ -200,10 +240,15 @@ height = 0.12
 radial_segments = 8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lens"]
-albedo_color = Color(0.0, 0.6, 1.0, 1)
+albedo_color = Color(0.06, 0.20, 0.32, 0.24)
+transparency = 1
+roughness = 0.08
+metallic = 0.26
 emission_enabled = true
-emission = Color(0.0, 0.4, 0.8, 1)
-emission_energy_multiplier = 2.0
+emission = Color(0.02, 0.08, 0.12, 1)
+emission_energy_multiplier = 1.8
+refraction_enabled = true
+refraction_scale = 0.02
 
 [sub_resource type="SphereMesh" id="SphereMesh_scope_lens"]
 material = SubResource("StandardMaterial3D_lens")

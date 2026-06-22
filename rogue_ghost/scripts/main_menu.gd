@@ -44,6 +44,7 @@ var pulse_time: float = 0.0
 @onready var preview_blade: MeshInstance3D = $Panel/ViewportContainer/SubViewport/PreviewSoldier/PreviewBlade
 
 func _ready() -> void:
+	_ensure_fullscreen()
 	# Check command line arguments to bypass menu and launch directly
 	var args = OS.get_cmdline_args()
 	print("OS Args: ", args)
@@ -171,6 +172,12 @@ func _apply_mission_highlight(mission_key: String) -> void:
 		if btn:
 			var mod = Color(1.0, 0.8, 0.0, 1.0) if key == mission_key else Color(0.6, 0.6, 0.65, 1.0)
 			btn.modulate = mod
+
+func _ensure_fullscreen() -> void:
+	if not OS.window_fullscreen:
+		OS.window_fullscreen = true
+	DisplayServer.window_set_mode(DisplayServer.WindowMode.FULLSCREEN)
+	print("🖥️ Game window set to fullscreen mode.")
 
 func _connect_selection_buttons() -> void:
 	# Weapon buttons

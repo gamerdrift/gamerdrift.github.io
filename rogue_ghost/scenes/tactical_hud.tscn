@@ -183,6 +183,67 @@ text = "CONTROL GRID:\nR = Reload   Z = Prone   F = Suppressor\nT = Thermal   N 
 horizontal_alignment = 0
 vertical_alignment = 1
 
+[node name="TopRightControlTabs" type="PanelContainer" parent="Control/HUDContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -320.0
+offset_top = 20.0
+offset_right = -10.0
+offset_bottom = 190.0
+custom_minimum_size = Vector2(300, 170)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
+
+[node name="TopRightVBox" type="VBoxContainer" parent="Control/HUDContainer/TopRightControlTabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(300, 170)
+
+[node name="TopButtonRow" type="HBoxContainer" parent="Control/HUDContainer/TopRightControlTabs/TopRightVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(300, 40)
+
+[node name="PauseResumeBtn" type="Button" parent="Control/HUDContainer/TopRightControlTabs/TopRightVBox/TopButtonRow"]
+layout_mode = 2
+text = "PAUSE"
+size_flags_horizontal = 3
+
+[node name="FullscreenBtn" type="Button" parent="Control/HUDContainer/TopRightControlTabs/TopRightVBox/TopButtonRow"]
+layout_mode = 2
+text = "FULLSCREEN"
+size_flags_horizontal = 3
+
+[node name="InfoTabBtn" type="Button" parent="Control/HUDContainer/TopRightControlTabs/TopRightVBox/TopButtonRow"]
+layout_mode = 2
+text = "INFO"
+size_flags_horizontal = 3
+
+[node name="InfoPanel" type="PanelContainer" parent="Control/HUDContainer/TopRightControlTabs/TopRightVBox"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(300, 110)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
+
+[node name="InfoLabel" type="Label" parent="Control/HUDContainer/TopRightControlTabs/TopRightVBox/InfoPanel"]
+layout_mode = 2
+autowrap = true
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 0.95)
+theme_override_font_sizes/font_size = 12
+text = "MISSION OBJECTIVE: Stealth infiltrate and extract hostages. Avoid alarms and neutralise high-value targets.\n\nWEB CONTROLS: Mouse aim, LMB shoot, R reload, Q gadget, M map, ESC toggles fullscreen.\n\nMOBILE CONTROLS: Tap to fire, drag to look, pinch to zoom, on-screen buttons for actions."
+margin_left = 12
+margin_top = 10
+margin_right = -12
+margin_bottom = -10
+
 [node name="ThermalOverlay" type="ColorRect" parent="Control"]
 visible = false
 layout_mode = 1

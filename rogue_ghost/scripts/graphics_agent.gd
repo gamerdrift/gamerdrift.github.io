@@ -14,6 +14,7 @@ func _ready() -> void:
 
     _apply_environment_preset()
     _spawn_reflection_probe()
+    _upgrade_scene_lighting()
     _upgrade_character_materials()
     _upgrade_weapon_visuals()
 
@@ -36,10 +37,27 @@ func _apply_environment_preset() -> void:
     env.ambient_light_color = Color(0.35, 0.38, 0.43)
 
     env.glow_enabled = true
-    env.glow_intensity = 1.2
-    env.glow_strength = 1.6
-    env.glow_bloom = 0.22
+    env.glow_intensity = 1.3
+    env.glow_strength = 1.8
+    env.glow_bloom = 0.26
     env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
+
+    if env.has_property("motion_blur_enabled"):
+        env.motion_blur_enabled = true
+        env.motion_blur_amount = 0.18
+        env.motion_blur_quality = 3
+
+    if env.has_property("vignette_enabled"):
+        env.vignette_enabled = true
+        env.vignette_energy = 0.42
+
+    if env.has_property("grain_enabled"):
+        env.grain_enabled = true
+        env.grain_amount = 0.08
+        env.grain_scale = 1.8
+
+    if env.has_property("contrast"):
+        env.contrast = max(env.contrast, 1.12)
 
     env.ssao_enabled = true
     env.ssao_radius = 1.1
@@ -80,8 +98,36 @@ func _spawn_reflection_probe() -> void:
     probe.interior_ambient = 0.7
     add_child(probe)
 
+func _upgrade_scene_lighting() -> void:
+    var root = get_tree().get_root()
+    _apply_lighting_improvements(root)
+
+func _apply_lighting_improvements(node: Node) -> void:
+    if node is DirectionalLight3D:
+        node.light_energy = max(node.light_energy, 1.0)
+        node.shadow_enabled = true
+        node.shadow_bias = 0.02
+        node.shadow_normal_bias = 0.3
+        node.shadow_max_distance = 90.0
+        node.light_affects_transparent = true
+    elif node is SpotLight3D:
+        node.light_energy = max(node.light_energy, 4.0)
+        node.shadow_enabled = true
+        node.shadow_bias = 0.03
+        node.shadow_normal_bias = 0.4
+        node.spot_angle = min(node.spot_angle, 60.0)
+    elif node is OmniLight3D:
+        node.light_energy = max(node.light_energy, 2.0)
+        node.shadow_enabled = true
+        node.shadow_bias = 0.03
+        node.shadow_normal_bias = 0.4
+
+    for child in node.get_children():
+        if child is Node:
+            _apply_lighting_improvements(child)
+
 func _upgrade_character_materials() -> void:
-    for group_name in ["player", "guards"]:
+    for group_name in ["player", "guards", "bosses", "rangers"]:
         var group_nodes = get_tree().get_nodes_in_group(group_name)
         for node in group_nodes:
             if node is Node3D:

@@ -15,6 +15,7 @@ enum EnvType { ARCTIC, DESERT, NIGHT }
 var elapsed_time: float = 0.0
 var active_environment: WorldEnvironment = null
 var player: PlayerGhost = null
+var ambient_timer: float = 0.0
 
 func _ready() -> void:
 	add_to_group("weather")
@@ -42,8 +43,12 @@ func _physics_process(delta: float) -> void:
 	storm_intensity = clamp(1.0 * wind_mod, 0.5, 1.6)
 	
 	# Periodically play dynamic weather sound (simulated wind/storm volume)
-	# SoundManager can just handle play, but we focus on rendering updates here
-	
+	ambient_timer -= delta
+	if ambient_timer <= 0.0:
+		ambient_timer = randf_range(2.2, 4.8)
+		if Engine.has_singleton("SoundManager"):
+			SoundManager.play_3d("wind_howl", global_position)
+
 	_update_volumetric_fog()
 
 func _update_volumetric_fog() -> void:

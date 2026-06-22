@@ -15,6 +15,10 @@ func _ready() -> void:
 	streams["shot_silenced"] = _generate_silenced_shot()
 	streams["shot_m16_burst"] = _generate_m16_burst()
 	streams["shot_ak_burst"] = _generate_ak_burst()
+	streams["shot_rifle_punch"] = _generate_rifle_punch()
+	streams["metal_ricochet"] = _generate_metal_ricochet()
+	streams["wind_howl"] = _generate_wind_howl()
+	streams["battle_ambience"] = _generate_battle_ambience()
 	streams["footstep_snow"] = _generate_footstep(0.06, 120.0, 0.12)
 	streams["footstep_desert"] = _generate_footstep(0.05, 240.0, 0.08)
 	streams["guard_alert"] = _generate_guard_alert()
@@ -476,6 +480,76 @@ func _generate_ak_burst() -> AudioStreamWAV:
 
 		total_sample = clamp(total_sample * 0.50, -1.0, 1.0)
 		var byte_val = int(total_sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_rifle_punch() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.16
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var wave = sin(2.0 * PI * lerp(140.0, 70.0, t / duration) * t)
+		var envelope = exp(-t * 14.0)
+		var sample = wave * envelope * 0.7
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_metal_ricochet() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 0.18
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var noise = randf_range(-1.0, 1.0) * exp(-t * 40.0)
+		var ring = sin(2.0 * PI * 2400.0 * t) * exp(-t * 18.0)
+		var sample = clamp((noise * 0.5 + ring * 0.35) * 0.5, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_wind_howl() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 2.0
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var noise = randf_range(-1.0, 1.0)
+		var band = sin(2.0 * PI * 120.0 * t) * 0.18
+		var filter = exp(-pow(t - 1.0, 2) * 3.0)
+		var sample = noise * filter * 0.35 + band * 0.2
+		var byte_val = int(clamp(sample, -1.0, 1.0) * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_battle_ambience() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var duration = 3.0
+	var mix_rate = 22050
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var low_drum = sin(2.0 * PI * 55.0 * t) * 0.14
+		var distant_noise = randf_range(-1.0, 1.0) * exp(-t * 1.8) * 0.2
+		var pulsing = sin(2.0 * PI * 0.8 * t) * 0.08
+		var sample = clamp((low_drum + distant_noise + pulsing) * 0.35, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
 		if byte_val < 0: byte_val += 256
 		bytes.append(byte_val)
 

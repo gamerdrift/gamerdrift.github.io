@@ -43,36 +43,47 @@ bump_strength = 1.8
 noise = SubResource("FastNoiseLite_fine")
 
 [sub_resource type="StandardMaterial3D" id="Material_Snow"]
-albedo_color = Color(0.95, 0.97, 1.0, 1)
-roughness = 0.8
-specular = 0.6
+albedo_color = Color(0.96, 0.97, 1.0, 1)
+roughness = 0.84
+specular = 0.7
+metallic = 0.04
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_SnowNormal")
 subsurf_scatter_enabled = true
-subsurf_scatter_strength = 0.15
+subsurf_scatter_strength = 0.18
+reflection_enabled = true
+reflection = 0.12
 
 [sub_resource type="StandardMaterial3D" id="Material_Ice"]
-albedo_color = Color(0.65, 0.88, 0.95, 0.7)
+albedo_color = Color(0.68, 0.91, 0.98, 0.82)
 transparency = 1
-roughness = 0.05
-metallic = 0.3
+roughness = 0.04
+metallic = 0.35
+specular = 0.92
 rim_enabled = true
-rim = 0.5
-rim_tint = 0.5
+rim = 0.28
+rim_tint = 0.12
 refraction_enabled = true
-refraction_scale = 0.02
+refraction_scale = 0.04
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_SnowNormal")
 
 [sub_resource type="StandardMaterial3D" id="Material_Wood"]
-albedo_color = Color(0.24, 0.16, 0.12, 1)
-roughness = 0.95
+albedo_color = Color(0.22, 0.14, 0.10, 1)
+roughness = 0.88
+metallic = 0.06
+specular = 0.22
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_SnowNormal")
 
 [sub_resource type="StandardMaterial3D" id="Material_Foliage"]
-albedo_color = Color(0.08, 0.26, 0.12, 1)
-roughness = 0.85
+albedo_color = Color(0.08, 0.24, 0.10, 1)
+roughness = 0.82
+metallic = 0.02
 subsurf_scatter_enabled = true
-subsurf_scatter_strength = 0.1
+subsurf_scatter_strength = 0.12
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture_SnowNormal")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_metal"]
 noise_type = 3
@@ -87,10 +98,12 @@ noise = SubResource("FastNoiseLite_metal")
 noise = SubResource("FastNoiseLite_metal")
 
 [sub_resource type="StandardMaterial3D" id="Material_Steel"]
-albedo_color = Color(0.14, 0.15, 0.17, 1)
-metallic = 0.9
-roughness = 0.28
+albedo_color = Color(0.16, 0.17, 0.19, 1)
+metallic = 0.95
+roughness = 0.24
 roughness_texture = SubResource("NoiseTexture_MetalRoughness")
+specular = 0.88
+clearcoat = 0.14
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_MetalNormal")
 
@@ -104,8 +117,10 @@ bump_strength = 4.5
 noise = SubResource("FastNoiseLite_rock")
 
 [sub_resource type="StandardMaterial3D" id="Material_Rock"]
-albedo_color = Color(0.32, 0.33, 0.35, 1)
-roughness = 0.9
+albedo_color = Color(0.30, 0.31, 0.33, 1)
+roughness = 0.86
+metallic = 0.02
+specular = 0.24
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_RockNormal")
 
@@ -143,25 +158,34 @@ dof_blur_far_transition = 9.0
 dof_blur_far_amount = 0.36
 
 [sub_resource type="StandardMaterial3D" id="Material_Tire"]
-albedo_color = Color(0.08, 0.08, 0.09, 1)
-roughness = 0.9
+albedo_color = Color(0.06, 0.06, 0.07, 1)
+roughness = 0.88
+metallic = 0.03
+specular = 0.2
 
 [sub_resource type="StandardMaterial3D" id="Mat_Visor"]
-albedo_color = Color(0.0, 0.45, 0.65, 0.8)
+albedo_color = Color(0.04, 0.18, 0.28, 0.25)
 transparency = 1
-roughness = 0.15
-metallic = 0.8
+roughness = 0.12
+metallic = 0.25
+emission_enabled = true
+emission = Color(0.02, 0.06, 0.10, 1)
+emission_energy_multiplier = 1.1
 
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ReaperCamo"]
-albedo_color = Color(0.9, 0.92, 0.95, 1)
-roughness = 0.85
+albedo_color = Color(0.88, 0.90, 0.94, 1)
+roughness = 0.78
+metallic = 0.02
+specular = 0.18
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_SnowNormal")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ReaperVest"]
-albedo_color = Color(0.18, 0.2, 0.22, 1)
-roughness = 0.9
+albedo_color = Color(0.16, 0.18, 0.20, 1)
+roughness = 0.82
+metallic = 0.05
+specular = 0.22
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture_SnowNormal")
 
@@ -213,9 +237,12 @@ radius = 0.1
 height = 0.75
 
 [sub_resource type="StandardMaterial3D" id="Material_SniperWeapon"]
-albedo_color = Color(0.08, 0.08, 0.1, 1)
-metallic = 0.8
-roughness = 0.3
+albedo_color = Color(0.06, 0.06, 0.08, 1)
+metallic = 1.0
+roughness = 0.26
+specular = 0.92
+clearcoat = 0.14
+anisotropy = 0.18
 
 [sub_resource type="BoxMesh" id="Reaper_RifleReceiver"]
 material = SubResource("Material_SniperWeapon")

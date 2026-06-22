@@ -26,6 +26,7 @@ signal suppressor_toggled(is_suppressed: bool)
 var shake_intensity: float = 0.0
 var shake_decay: float = 8.0
 var shake_offset: Vector3 = Vector3.ZERO
+var shake_rotation: Vector3 = Vector3.ZERO
 
 # Suppressor State
 var is_suppressed: bool = true # starts silenced by default
@@ -234,7 +235,8 @@ func _physics_process(delta: float) -> void:
 	lean_offset = move_toward(lean_offset, target_lean_offset, 6.0 * delta)
 	
 	if camera:
-		camera.rotation.z = lean_angle
+		camera.rotation.x = shake_rotation.x
+		camera.rotation.z = lean_angle + shake_rotation.z
 		camera.position.x = lean_offset + shake_offset.x
 		camera.position.y = shake_offset.y
 		camera.position.z = shake_offset.z
@@ -446,7 +448,14 @@ func _fire_single_bullet() -> void:
 	recoil_yaw += randf_range(-0.02, 0.02)
 	
 	# Dynamic camera screenshake on fire
-	apply_screen_shake(0.22 if is_suppressed else 0.45)
+	apply_screen_shake(0.22 if is_suppressed else 0.55, 0.06 if is_suppressed else 0.14)
+
+	# Play weapon audio from the muzzle position for more spatial impact
+	if muzzle and is_instance_valid(muzzle):
+		if is_suppressed:
+			SoundManager.play_3d("shot_silenced", muzzle.global_position)
+		else:
+			SoundManager.play_3d("shot_m16_burst", muzzle.global_position)
 	
 	# Visual muzzle flash (only if not suppressed or minimal flash)
 	_show_muzzle_flash()
@@ -542,7 +551,7 @@ func take_damage(amount: float) -> void:
 	SoundManager.play("damage")
 	
 	# Apply camera shake on taking damage
-	apply_screen_shake(0.65)
+	apply_screen_shake(0.75, 0.22)
 	
 	# Reduce health
 	health = max(0.0, health - amount)
@@ -647,20 +656,27 @@ func show_hit_marker() -> void:
 	tween.parallel().tween_property(hitmarker_rect, "modulate:a", 0.0, 0.25).set_delay(0.08)
 	tween.finished.connect(func(): hitmarker_rect.visible = false)
 
-func apply_screen_shake(amount: float) -> void:
-	shake_intensity = clamp(shake_intensity + amount, 0.0, 1.2)
+func apply_screen_shake(amount: float, roll: float = 0.0) -> void:
+	shake_intensity = clamp(shake_intensity + amount, 0.0, 1.5)
+	shake_rotation.z = clamp(shake_rotation.z + roll, -0.24, 0.24)
 
 func _process_screen_shake(delta: float) -> void:
 	if shake_intensity > 0.01:
 		shake_intensity = move_toward(shake_intensity, 0.0, shake_decay * delta)
 		shake_offset = Vector3(
-			randf_range(-1.0, 1.0) * shake_intensity * 0.18,
-			randf_range(-1.0, 1.0) * shake_intensity * 0.18,
-			randf_range(-1.0, 1.0) * shake_intensity * 0.08
+			randf_range(-1.0, 1.0) * shake_intensity * 0.25,
+			randf_range(-1.0, 1.0) * shake_intensity * 0.25,
+			randf_range(-1.0, 1.0) * shake_intensity * 0.10
+		)
+		shake_rotation = Vector3(
+			randf_range(-1.0, 1.0) * shake_intensity * 0.04,
+			randf_range(-1.0, 1.0) * shake_intensity * 0.04,
+		clamp(shake_rotation.z * (1.0 - delta * 2.5), -0.24, 0.24)
 		)
 	else:
 		shake_intensity = 0.0
 		shake_offset = Vector3.ZERO
+		shake_rotation = Vector3.ZERO
 
 func _toggle_suppressor() -> void:
 	is_suppressed = !is_suppressed

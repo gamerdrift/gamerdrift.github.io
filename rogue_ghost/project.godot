@@ -26,6 +26,8 @@ SoundManager="*res://scripts/sound_manager.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/fullscreen=true
+window/resizeable=false
 window/stretch/mode="canvas_items"
 
 [rendering]
