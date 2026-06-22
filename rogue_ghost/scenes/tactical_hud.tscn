@@ -143,6 +143,46 @@ text = "SECURED TARGETS: 0 / 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ExtractionBox" type="PanelContainer" parent="Control/HUDContainer"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 80.0
+offset_right = 200.0
+offset_bottom = 110.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="ExtractionLabel" type="Label" parent="Control/HUDContainer/ExtractionBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1.0, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "EXTRACTION POINT: UNKNOWN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ControlHints" type="PanelContainer" parent="Control/HUDContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 0.0
+anchor_top = 0.0
+offset_left = 30.0
+offset_top = -90.0
+offset_right = 280.0
+offset_bottom = -30.0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="ControlsLabel" type="Label" parent="Control/HUDContainer/ControlHints"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 1.0, 0.95)
+theme_override_font_sizes/font_size = 10
+text = "CONTROL GRID:\nR = Reload   Z = Prone   F = Suppressor\nT = Thermal   N = NVG   RMB = Aim   MMB = Cycle Zoom"
+horizontal_alignment = 0
+vertical_alignment = 1
+
 [node name="ThermalOverlay" type="ColorRect" parent="Control"]
 visible = false
 layout_mode = 1

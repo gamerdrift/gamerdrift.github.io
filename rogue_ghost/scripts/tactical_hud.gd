@@ -10,6 +10,8 @@ extends CanvasLayer
 @onready var stealth_bar: ProgressBar = $Control/HUDContainer/StealthBox/StealthBar
 @onready var stealth_label: Label = $Control/HUDContainer/StealthBox/StealthLabel
 @onready var objective_label: Label = $Control/HUDContainer/ObjectiveBox/ObjectiveLabel
+@onready var extraction_label: Label = $Control/HUDContainer/ExtractionBox/ExtractionLabel
+@onready var controls_label: Label = $Control/HUDContainer/ControlHints/ControlsLabel
 @onready var thermal_overlay: ColorRect = $Control/ThermalOverlay
 
 # Debrief Card references
@@ -149,6 +151,7 @@ func _process(_delta: float) -> void:
 		
 	# Draw procedural Gun details box (Ammo, Reload button) in the left bottom of the screen
 	_draw_gun_details_ui(viewport_w, viewport_h)
+	_update_hud_labels(viewport_w, viewport_h)
 		
 	if scope_node:
 		scope_node.queue_redraw()
@@ -512,6 +515,7 @@ func _on_suppressor_toggled(suppressed: bool) -> void:
 var gun_ui_container: PanelContainer = null
 var gun_ammo_label: Label = null
 var gun_reload_btn: Button = null
+var aim_state_label: Label = null
 
 func _draw_gun_details_ui(vw: float, vh: float) -> void:
 	if not gun_ui_container:
@@ -558,6 +562,12 @@ func _draw_gun_details_ui(vw: float, vh: float) -> void:
 		gun_ammo_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
 		vbox.add_child(gun_ammo_label)
 		
+		aim_state_label = Label.new()
+		aim_state_label.text = "AIM MODE: HIP"
+		aim_state_label.add_theme_font_size_override("font_size", 10)
+		aim_state_label.add_theme_color_override("font_color", Color(0.5, 0.9, 1.0, 0.85))
+		vbox.add_child(aim_state_label)
+		
 		gun_reload_btn = Button.new()
 		gun_reload_btn.name = "ReloadBtn"
 		gun_reload_btn.text = "RELOAD"
@@ -579,9 +589,31 @@ func _draw_gun_details_ui(vw: float, vh: float) -> void:
 		var clip = player.get("current_clip") if player.get("current_clip") != null else 30
 		var max_clip = player.get("max_clip") if player.get("max_clip") != null else 30
 		gun_ammo_label.text = "AMMO: %d / %d" % [clip, max_clip]
+		if aim_state_label:
+			var zoom_state = player.get("current_zoom_state") if player.get("current_zoom_state") != null else 0
+			var zoom_text = "HIP"
+			if zoom_state == 1:
+				zoom_text = "ADS x4"
+			elif zoom_state == 2:
+				zoom_text = "DMR x10"
+			aim_state_label.text = "AIM MODE: %s" % zoom_text
+		if gun_reload_btn:
+			var reloading = player.get("is_reloading") if player.get("is_reloading") != null else false
+			gun_reload_btn.disabled = reloading
+			gun_reload_btn.text = "RELOADING..." if reloading else "RELOAD"
 
 func _on_reload_pressed() -> void:
 	if player and is_instance_valid(player) and player.has_method("reload_weapon"):
 		player.reload_weapon()
+
+func _update_hud_labels(vw: float, vh: float) -> void:
+	if controls_label:
+		controls_label.text = "CONTROL GRID:\nR = Reload   Z = Prone   F = Suppressor\nT = Thermal   N = NVG   RMB = Aim   MMB = Cycle Zoom"
+	if extraction_label and mission_manager and is_instance_valid(mission_manager) and mission_manager.target_exit_zone:
+		var dist = player.global_position.distance_to(mission_manager.target_exit_zone.global_position)
+		extraction_label.text = "EXTRACTION POINT: %.1fm" % dist
+	else:
+		if extraction_label:
+			extraction_label.text = "EXTRACTION POINT: UNKNOWN"
 
 
