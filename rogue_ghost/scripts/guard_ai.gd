@@ -26,6 +26,11 @@ enum State { PATROL, CHASE, RETURN }
 @export var is_stationary: bool = false
 ## Longer range for elevated tower sniper
 @export var fire_cooldown: float = 2.0
+@export var cover_seek_distance: float = 20.0
+@export var cover_fire_distance: float = 26.0
+@export var suppressive_fire_probability: float = 0.27
+@export var min_cover_time: float = 2.8
+@export var max_cover_time: float = 4.6
 
 # AI States
 var current_state: State = State.PATROL
@@ -113,15 +118,8 @@ func _perform_stealth_check(delta: float) -> void:
 	var inside_cone = dist < vision_range and angle_to_player < vision_angle_deg
 	var player_spotted_now = false
 
-	if inside_cone:
-		if raycast:
-			raycast.global_position = global_position + Vector3.UP * 0.8
-			raycast.target_position = raycast.to_local(player.global_position + Vector3.UP * 0.8)
-			raycast.force_raycast_update()
-			if raycast.is_colliding():
-				var collider = raycast.get_collider()
-				if collider == player:
-					player_spotted_now = true
+	if inside_cone and _has_line_of_sight(player):
+		player_spotted_now = true
 
 	if player_spotted_now:
 		active_target = player
@@ -212,6 +210,7 @@ func _process_chase(delta: float) -> void:
 	var to_player = active_target.global_position - global_position
 	to_player.y = 0
 	var dist = to_player.length()
+	var has_los = _has_line_of_sight(active_target)
 
 	var move_dir = to_player.normalized()
 	if is_in_cover:
@@ -221,21 +220,35 @@ func _process_chase(delta: float) -> void:
 		else:
 			move_dir = (cover_position - global_position).normalized()
 			move_dir.y = 0
+	elif has_los and dist <= cover_seek_distance and randf() < 0.42:
+		is_in_cover = true
+		cover_position = _find_nearest_cover()
+		cover_timer = randf_range(min_cover_time, max_cover_time)
+		move_dir = (cover_position - global_position).normalized()
 
 	velocity.x = move_toward(velocity.x, move_dir.x * chase_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, move_dir.z * chase_speed, acceleration * delta)
 
-	var target_look = global_position + move_dir
-	look_at(target_look, Vector3.UP)
+	if move_dir.length() > 0.05:
+		var target_look = global_position + move_dir
+		look_at(target_look, Vector3.UP)
+	else:
+		look_at(active_target.global_position, Vector3.UP)
 	rotation.x = 0
 	rotation.z = 0
 
-	# Fire at player when close enough
 	fire_timer -= delta
-	if fire_timer <= 0.0 and dist < 20.0:
+	var should_fire = false
+	if has_los and dist < cover_fire_distance:
+		if is_in_cover:
+			if randf() < 0.9:
+				should_fire = true
+		else:
+			should_fire = true
+
+	if fire_timer <= 0.0 and should_fire:
 		fire_timer = fire_cooldown + randf_range(-0.2, 0.4)
 		_fire_ak_burst()
-		# Only deal contact damage when very close
 		if dist < 5.0:
 			active_target.take_damage(damage_per_sec * delta * 3.0)
 
@@ -314,6 +327,17 @@ func _find_nearest_cover() -> Vector3:
 			min_dist = d
 			nearest = c.global_position
 	return nearest
+
+func _has_line_of_sight(target: PlayerGhost) -> bool:
+	if not raycast or not target:
+		return false
+	raycast.global_position = global_position + Vector3.UP * 1.0
+	raycast.target_position = raycast.to_local(target.global_position + Vector3.UP * 1.0)
+	raycast.force_raycast_update()
+	if not raycast.is_colliding():
+		return false
+	var collider = raycast.get_collider()
+	return collider == target
 
 func _process_return(delta: float) -> void:
 	var return_pt = patrol_points[current_patrol_idx]
