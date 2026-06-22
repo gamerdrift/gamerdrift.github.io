@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/clue_evidence.gd" id="7_clue_script"]
 [ext_resource type="Script" path="res://scripts/weather_snow_system.gd" id="8_weather_script"]
 [ext_resource type="Script" path="res://scripts/watchtower_searchlight.gd" id="9_searchlight_script"]
+[ext_resource type="Script" path="res://scripts/graphics_agent.gd" id="10_graphics_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 4.0
@@ -118,6 +119,9 @@ ssao_enabled = true
 ssao_radius = 1.2
 ssao_intensity = 3.0
 ssao_power = 1.5
+ssr_enabled = true
+ssr_max_roughness = 0.78
+ssr_quality = 2
 ssil_enabled = true
 sdfgi_enabled = true
 glow_enabled = true
@@ -133,6 +137,10 @@ volumetric_fog_density = 0.035
 volumetric_fog_albedo = Color(0.08, 0.1, 0.14, 1)
 volumetric_fog_emission = Color(0.01, 0.02, 0.03, 1)
 volumetric_fog_gi_inject = 1.5
+dof_blur_far_enabled = true
+dof_blur_far_distance = 22.0
+dof_blur_far_transition = 9.0
+dof_blur_far_amount = 0.36
 
 [sub_resource type="StandardMaterial3D" id="Material_Tire"]
 albedo_color = Color(0.08, 0.08, 0.09, 1)
@@ -238,8 +246,16 @@ light_color = Color(0.8, 0.88, 0.95, 1)
 light_energy = 0.6
 shadow_enabled = true
 
+[node name="ReflectionProbe" type="ReflectionProbe3D" parent="."]
+extents = Vector3(60, 18, 60)
+intensity = 1.1
+update_mode = 1
+
 [node name="WeatherSystem" type="Node3D" parent="."]
 script = ExtResource("8_weather_script")
+
+[node name="GraphicsAgent" type="Node3D" parent="."]
+script = ExtResource("10_graphics_script")
 
 [node name="MapLayout" type="CSGCombiner3D" parent="."]
 use_collision = true

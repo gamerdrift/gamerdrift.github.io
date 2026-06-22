@@ -32,21 +32,21 @@ AGENTS = {
     },
     "level": {
         "name": "Level Designer",
-        "role": "Map Generator, Layout Blocks & Checkpoints Setup",
+        "role": "Map Generator, Layout Blocks & Tactical Cover Setup",
         "target": "scenes/level_snowblow.tscn",
-        "description": "Creates outposts, ventilation paths, corridors, obstacles, and hostage rescue vaults."
+        "description": "Builds modern, realistic mission environments with tactical cover, chokepoints, and CoD-style combat flow."
     },
     "ai": {
         "name": "Enemy AI Agent",
         "role": "Guard Behavior, Cover Steering, & Patrol Routines",
         "target": "scripts/guard_ai.gd",
-        "description": "Implements visual cones, squad alert communication, cover search, and player hunting behaviors."
+        "description": "Implements vision cones, squad alert communication, realistic cover usage, suppressive fire, and player hunting behaviors."
     },
     "weapon": {
         "name": "Weapon Agent",
         "role": "Guns, Recoil, Fire rates, Sway, & Ballistics Engineer",
         "target": "scripts/player_ghost.gd",
-        "description": "Controls vertical recoil drift, bullet drop, silencer attachment status, and fire cooldowns."
+        "description": "Controls weapon handling, realistic recoil, fire modes, suppressor behavior, and first-person viewmodel response."
     },
     "cinematic": {
         "name": "Cinematic Agent",
@@ -59,6 +59,12 @@ AGENTS = {
         "role": "Terrain, Lighting, Skyboxes, Weather & Volumetric Fog",
         "target": "scenes/level_snowblow.tscn",
         "description": "Sets colors, fog densities, sand/snow/rain particle triggers, and direct sun positions."
+    },
+    "graphics": {
+        "name": "Graphics Agent",
+        "role": "High-Fidelity Art, PBR Materials & Visual Effects",
+        "target": "scenes/level_snowblow.tscn",
+        "description": "Upgrades the player, enemies, weapons, and environment from primitive meshes to imported PBR models and configures reflection probes, bloom, DOF, and realistic lighting."
     },
     "optimization": {
         "name": "Optimization Agent",

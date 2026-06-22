@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b3v3r3d" path="res://scenes/hostage_node.tscn" id="4_hostage"]
 [ext_resource type="Script" path="res://scripts/clue_evidence.gd" id="5_clue_script"]
 [ext_resource type="Script" path="res://scripts/weather_snow_system.gd" id="6_weather_script"]
+[ext_resource type="Script" path="res://scripts/graphics_agent.gd" id="10_graphics_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 4.0
@@ -41,9 +42,27 @@ roughness = 0.5
 [sub_resource type="Environment" id="Environment_Desert"]
 background_mode = 1
 background_color = Color(0.65, 0.52, 0.38, 1)
+tonemap_mode = 3
+tonemap_exposure = 1.15
+tonemap_white = 1.0
+ssao_enabled = true
+ssao_radius = 1.05
+ssao_intensity = 2.5
+ssao_power = 1.4
+ssr_enabled = true
+ssr_max_roughness = 0.86
+ssr_quality = 2
 fog_enabled = true
 fog_light_color = Color(0.65, 0.52, 0.38, 1)
 fog_density = 0.05
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.05
+volumetric_fog_albedo = Color(0.64, 0.50, 0.36, 1)
+volumetric_fog_emission = Color(0.08, 0.04, 0.02, 1)
+dof_blur_far_enabled = true
+dof_blur_far_distance = 24.0
+dof_blur_far_transition = 10.0
+dof_blur_far_amount = 0.38
 
 [node name="LevelDesertStorm" type="Node3D" node_paths=PackedStringArray("target_exit_zone")]
 script = ExtResource("1_manager")
@@ -58,10 +77,18 @@ light_color = Color(1.0, 0.9, 0.78, 1)
 light_energy = 1.3
 shadow_enabled = true
 
+[node name="ReflectionProbe" type="ReflectionProbe3D" parent="."]
+extents = Vector3(60, 18, 60)
+intensity = 1.1
+update_mode = 1
+
 [node name="WeatherSystem" type="Node3D" parent="."]
 script = ExtResource("6_weather_script")
 environment_type = 1
 base_fog_density = 0.055
+
+[node name="GraphicsAgent" type="Node3D" parent="."]
+script = ExtResource("10_graphics_script")
 
 [node name="MapLayout" type="CSGCombiner3D" parent="."]
 use_collision = true

@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b3v3r3d" path="res://scenes/hostage_node.tscn" id="4_hostage"]
 [ext_resource type="Script" path="res://scripts/clue_evidence.gd" id="5_clue_script"]
 [ext_resource type="Script" path="res://scripts/weather_snow_system.gd" id="6_weather_script"]
+[ext_resource type="Script" path="res://scripts/graphics_agent.gd" id="10_graphics_script"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1"]
 radius = 4.0
@@ -41,9 +42,27 @@ roughness = 0.6
 [sub_resource type="Environment" id="Environment_Night"]
 background_mode = 1
 background_color = Color(0.01, 0.01, 0.03, 1)
+tonemap_mode = 3
+tonemap_exposure = 1.05
+tonemap_white = 1.0
+ssao_enabled = true
+ssao_radius = 1.1
+ssao_intensity = 2.2
+ssao_power = 1.5
+ssr_enabled = true
+ssr_max_roughness = 0.78
+ssr_quality = 2
 fog_enabled = true
 fog_light_color = Color(0.01, 0.02, 0.05, 1)
 fog_density = 0.04
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.04
+volumetric_fog_albedo = Color(0.04, 0.06, 0.08, 1)
+volumetric_fog_emission = Color(0.01, 0.02, 0.05, 1)
+dof_blur_far_enabled = true
+dof_blur_far_distance = 20.0
+dof_blur_far_transition = 9.0
+dof_blur_far_amount = 0.32
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_Trunk"]
 top_radius = 0.35
@@ -63,10 +82,18 @@ light_color = Color(0.45, 0.55, 0.7, 1)
 light_energy = 0.05
 shadow_enabled = true
 
+[node name="ReflectionProbe" type="ReflectionProbe3D" parent="."]
+extents = Vector3(60, 18, 60)
+intensity = 1.0
+update_mode = 1
+
 [node name="WeatherSystem" type="Node3D" parent="."]
 script = ExtResource("6_weather_script")
 environment_type = 2
 base_fog_density = 0.04
+
+[node name="GraphicsAgent" type="Node3D" parent="."]
+script = ExtResource("10_graphics_script")
 
 [node name="MapLayout" type="CSGCombiner3D" parent="."]
 use_collision = true
