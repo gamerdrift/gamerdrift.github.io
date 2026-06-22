@@ -6,6 +6,9 @@ extends Node
 
 # Audio stream dictionary
 var streams: Dictionary = {}
+var music_streams: Dictionary = {}
+var current_music_name: String = ""
+var music_player: AudioStreamPlayer = null
 
 func _ready() -> void:
 	# Cache-generate all sound streams at load
@@ -24,6 +27,21 @@ func _ready() -> void:
 	streams["hit_marker"] = _generate_hit_marker()
 	streams["shell_casing_ping"] = _generate_shell_casing_ping()
 	print("🔊 SoundManager: Programmatic audio synthesis matrix initialized.")
+
+	# Attempt to load optional longer-form music tracks from res://audio/
+	var music_files = {
+		"intro": "res://audio/intro_theme.ogg",
+		"boss_defeat": "res://audio/boss_defeat.ogg",
+		"hostage_rescue": "res://audio/hostage_rescue.ogg",
+		"extraction": "res://audio/extraction.ogg",
+		"helicopter": "res://audio/helicopter.ogg"
+	}
+
+	for name in music_files.keys():
+		var path = music_files[name]
+		if ResourceLoader.exists(path):
+			music_streams[name] = load(path)
+			print("🔉 SoundManager: loaded music:", name, "->", path)
 
 # Play sound on a transient child player
 func play(sound_name: String) -> void:
@@ -56,6 +74,36 @@ func play_3d(sound_name: String, global_pos: Vector3, parent: Node = null) -> vo
 
 	player.play()
 	player.finished.connect(func(): player.queue_free())
+
+# Play background music by key (from music_streams). If not found, no-op.
+func play_music(name: String, loop: bool = true) -> void:
+	if not music_streams.has(name):
+		print("⚠️ SoundManager: music '", name, "' not found in music_streams.")
+		return
+
+	# Stop existing music immediately
+	if music_player and is_instance_valid(music_player):
+		music_player.stop()
+		music_player.queue_free()
+
+	music_player = AudioStreamPlayer.new()
+	music_player.stream = music_streams[name]
+	music_player.bus = "Master"
+	music_player.playback_speed = 1.0
+	music_player.stream_paused = false
+	music_player.loop = loop
+	add_child(music_player)
+	music_player.play()
+	current_music_name = name
+	print("▶️ SoundManager: playing music:", name)
+
+func stop_music() -> void:
+	if music_player and is_instance_valid(music_player):
+		music_player.stop()
+		music_player.queue_free()
+		music_player = null
+		current_music_name = ""
+		print("⏹️ SoundManager: music stopped")
 
 # Core helper — correct class name is AudioStreamWAV (all caps WAV) in Godot 4
 func _create_stream(bytes: PackedByteArray, mix_rate: int) -> AudioStreamWAV:

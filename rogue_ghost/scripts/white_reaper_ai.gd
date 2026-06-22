@@ -199,4 +199,7 @@ func take_damage(amount: float) -> void:
 			
 	if health <= 0.0:
 		print("💀 THE WHITE REAPER IS ELIMINATED! The sector is secure.")
+		# Trigger post-boss music cue if available
+		if Engine.has_singleton("SoundManager"):
+			SoundManager.play_music("boss_defeat")
 		queue_free()
