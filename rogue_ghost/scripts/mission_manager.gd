@@ -96,6 +96,7 @@ func start_mission() -> void:
 func _begin_mission() -> void:
 	is_active = true
 	mission_started.emit()
+	SoundManager.play_music("battle", true)
 	print("🟢 Infiltration grid live. Target hostages to secure: ", total_hostages)
 
 func record_hostage_rescue(_hostage: HostageNode) -> void:
@@ -106,8 +107,7 @@ func record_hostage_rescue(_hostage: HostageNode) -> void:
 	SoundManager.play("rescue")
 	# If all hostages are secured, start the hostage rescue theme
 	if rescued_hostages == total_hostages:
-		if Engine.has_singleton("SoundManager"):
-			SoundManager.play_music("hostage_rescue", true)
+		SoundManager.play_music("hostage_rescue", true)
 	print("🤝 Secured ", rescued_hostages, " / ", total_hostages, " targets.")
 	
 	if player:
@@ -149,9 +149,8 @@ func _on_exit_zone_entered(body: Node) -> void:
 			print("⚠️ Extraction denied. Ranger distress records and sniper intelligence remain uncollected.")
 			return
 			
-		# Begin extraction music and helicopter theme if available
-		if Engine.has_singleton("SoundManager"):
-			SoundManager.play_music("extraction", true)
+		# Begin extraction music and helicopter theme
+		SoundManager.play_music("extraction", true)
 		_complete_mission()
 
 func _on_player_health_changed(current_health: float, _max_val: float) -> void:

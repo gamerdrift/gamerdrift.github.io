@@ -28,9 +28,10 @@ func _ready() -> void:
 	streams["shell_casing_ping"] = _generate_shell_casing_ping()
 	print("🔊 SoundManager: Programmatic audio synthesis matrix initialized.")
 
-	# Attempt to load optional longer-form music tracks from res://audio/
+	# Attempt to load optional longer-form music tracks from res://audio/ when present.
 	var music_files = {
 		"intro": "res://audio/intro_theme.ogg",
+		"battle": "res://audio/battle.ogg",
 		"boss_defeat": "res://audio/boss_defeat.ogg",
 		"hostage_rescue": "res://audio/hostage_rescue.ogg",
 		"extraction": "res://audio/extraction.ogg",
@@ -42,6 +43,15 @@ func _ready() -> void:
 		if ResourceLoader.exists(path):
 			music_streams[name] = load(path)
 			print("🔉 SoundManager: loaded music:", name, "->", path)
+		else:
+			match name:
+				"intro": music_streams[name] = _generate_intro_music()
+				"battle": music_streams[name] = _generate_battle_music()
+				"boss_defeat": music_streams[name] = _generate_boss_defeat_music()
+				"hostage_rescue": music_streams[name] = _generate_hostage_rescue_music()
+				"extraction": music_streams[name] = _generate_extraction_music()
+				"helicopter": music_streams[name] = _generate_helicopter_music()
+			print("🎵 SoundManager: generated music:", name)
 
 # Play sound on a transient child player
 func play(sound_name: String) -> void:
@@ -113,7 +123,131 @@ func _create_stream(bytes: PackedByteArray, mix_rate: int) -> AudioStreamWAV:
 	stream.stereo = false
 	stream.data = bytes
 	return stream
+func _generate_intro_music() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var mix_rate = 22050
+	var duration = 14.0
+	var sample_count = int(duration * mix_rate)
 
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var drone = sin(2.0 * PI * 55.0 * t) * 0.22 + sin(2.0 * PI * 110.0 * t) * 0.12
+		var pulse = sin(2.0 * PI * 88.0 * t) * 0.14 * pow(sin(PI * 0.8 * t), 2)
+		var step = int(t * 1.6) % 8
+		var lead_freq = 220.0
+		match step:
+			0: lead_freq = 220.0
+			1: lead_freq = 196.0
+			2: lead_freq = 246.94
+			3: lead_freq = 261.63
+			4: lead_freq = 164.81
+			5: lead_freq = 196.0
+			6: lead_freq = 220.0
+			_: lead_freq = 174.61
+		var lead = sin(2.0 * PI * lead_freq * t) * 0.18
+		var ar = float(int((t * 1.6) * 3.0) % 3) * 0.0
+		var env = clamp(1.0 - abs((t - duration * 0.5) / (duration * 0.5)), 0.12, 1.0)
+		var sample = clamp((drone + pulse + lead * env) * 0.32, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_battle_music() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var mix_rate = 22050
+	var duration = 12.0
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var bass = sin(2.0 * PI * 65.0 * t) * 0.24
+		var pulse = sin(2.0 * PI * 160.0 * t) * 0.08 * pow(sin(PI * 2.4 * t), 4)
+		var stab = sin(2.0 * PI * 195.0 * t) * 0.12 * (sin(PI * 0.75 * t) * 0.5 + 0.5)
+		var arp_step = int(t * 2.2) % 6
+		var arp_freq = [220.0, 246.94, 261.63, 246.94, 220.0, 196.0][arp_step]
+		var arp = sin(2.0 * PI * arp_freq * t) * 0.16 * exp(-fract(t * 2.2) * 3.0)
+		var sample = clamp((bass + pulse + stab + arp) * 0.30, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_boss_defeat_music() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var mix_rate = 22050
+	var duration = 10.0
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var motion = sin(2.0 * PI * 50.0 * t) * 0.18
+		var arp_index = int(t * 1.8) % 7
+		var arp_notes = [220.0, 261.63, 293.66, 329.63, 349.23, 392.0, 440.0]
+		var lead = sin(2.0 * PI * arp_notes[arp_index] * t) * 0.24 * exp(-fract(t * 1.8) * 2.2)
+		var swell = sin(2.0 * PI * 440.0 * t) * 0.08 * (sin(PI * 0.4 * t) * 0.5 + 0.5)
+		var sample = clamp((motion + lead + swell) * 0.34, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_hostage_rescue_music() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var mix_rate = 22050
+	var duration = 10.0
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var warm = sin(2.0 * PI * 110.0 * t) * 0.22
+		var shimmer = sin(2.0 * PI * 330.0 * t) * 0.14 * pow(sin(PI * 0.6 * t), 2)
+		var chord = sin(2.0 * PI * 164.81 * t) + sin(2.0 * PI * 207.65 * t) + sin(2.0 * PI * 246.94 * t)
+		var sample = clamp((warm + chord * 0.08 + shimmer) * 0.28, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_extraction_music() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var mix_rate = 22050
+	var duration = 12.0
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var pulse = sin(2.0 * PI * 80.0 * t) * 0.22 * pow(sin(PI * 1.75 * t), 4)
+		var lead = sin(2.0 * PI * 220.0 * t) * 0.14 * (sin(PI * 0.8 * t) * 0.5 + 0.5)
+		var pad = sin(2.0 * PI * 110.0 * t) * 0.16
+		var sample = clamp((pulse + lead + pad) * 0.31, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
+
+func _generate_helicopter_music() -> AudioStreamWAV:
+	var bytes = PackedByteArray()
+	var mix_rate = 22050
+	var duration = 8.0
+	var sample_count = int(duration * mix_rate)
+
+	for i in range(sample_count):
+		var t = float(i) / mix_rate
+		var rotor = sin(2.0 * PI * 35.0 * t) * 0.28
+		var wind = sin(2.0 * PI * 120.0 * t) * 0.10
+		var shimmer = sin(2.0 * PI * 440.0 * t) * 0.05 * (sin(PI * 0.35 * t) * 0.5 + 0.5)
+		var sample = clamp((rotor + wind + shimmer) * 0.26, -1.0, 1.0)
+		var byte_val = int(sample * 127.0)
+		if byte_val < 0: byte_val += 256
+		bytes.append(byte_val)
+
+	return _create_stream(bytes, mix_rate)
 # 1. Silenced M16 shot: short white noise with fast decay
 func _generate_silenced_shot() -> AudioStreamWAV:
 	var bytes = PackedByteArray()

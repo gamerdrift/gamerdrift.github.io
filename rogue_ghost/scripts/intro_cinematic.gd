@@ -90,17 +90,17 @@ func _fade_out_ui() -> void:
 		t.tween_property(title_label, "modulate:a", 0.0, 0.6)
 
 func _play_music() -> void:
-	# Play optional background music if present
-	if music_path == "":
+	# Play optional background music if present; fallback to SoundManager intro music.
+	if music_path != "" and ResourceLoader.exists(music_path):
+		var res = load(music_path)
+		audio_player = AudioStreamPlayer.new()
+		audio_player.stream = res
+		audio_player.autoplay = true
+		add_child(audio_player)
+		audio_player.play()
 		return
-	var res = ResourceLoader.exists(music_path) ? load(music_path) : null
-	if not res:
-		return
-	audio_player = AudioStreamPlayer.new()
-	audio_player.stream = res
-	audio_player.autoplay = true
-	add_child(audio_player)
-	audio_player.play()
+	
+	SoundManager.play_music("intro", true)
 
 func _stop_music() -> void:
 	if audio_player and audio_player.playing:
