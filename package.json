@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "export": "next export",
+    "export:godot": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/build_godot.ps1",
     "start": "next start",
     "clean": "npx rimraf .next out",
     "lint": "eslint",

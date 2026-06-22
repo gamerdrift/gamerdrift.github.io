@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useGames, GameComment } from '../../../lib/state/GameContext';
 import { useUser } from '../../../lib/state/UserContext';
 
@@ -65,12 +66,22 @@ export default function GameClientRunner({ gameId }: { gameId: string }) {
     gainXP(25); // Reward XP for review
   };
 
+  const searchParams = useSearchParams();
+
   // Add game to play history on start
   useEffect(() => {
     if (isPlaying) {
       addToHistory(gameId);
     }
   }, [isPlaying, gameId]);
+
+  // Auto-launch when arriving from a deploy link on the Rogue Ghost tile
+  useEffect(() => {
+    if (!mounted) return;
+    if (!isPlaying && searchParams?.get('mission')) {
+      startGame();
+    }
+  }, [mounted, isPlaying, searchParams]);
 
   const startGame = () => {
     setIsPlaying(true);

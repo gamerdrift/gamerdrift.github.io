@@ -231,7 +231,7 @@ export default function GamingHeroTablet() {
 
           {/* Deploy CTA */}
           <Link
-            href="/play/rogue-ghost/"
+            href={`/play/rogue-ghost/?mission=${activeMap.id}`}
             className="text-[7.5px] font-extrabold uppercase px-3 py-1 tracking-wider transition-all hover:opacity-80"
             style={{
               border: `1px solid ${activeMap.themeColor}`,
