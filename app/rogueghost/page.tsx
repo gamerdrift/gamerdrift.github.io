@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useUser } from '../../lib/state/UserContext';
+import { getPlayUrl } from '../../lib/routes';
 
 // ─── MAP DATA ───────────────────────────────────────────────────────────────
 const MISSIONS = [
@@ -294,7 +295,7 @@ export default function RogueGhostPage() {
         p = 100;
         clearInterval(interval);
         if (user) gainXP(50);
-        window.location.href = `/play/rogue-ghost/?mission=${selectedMission.id}`;
+        window.location.href = getPlayUrl('rogue-ghost', selectedMission.id);
       }
       setLaunchProgress(Math.min(100, p));
     }, 120);
@@ -687,7 +688,7 @@ export default function RogueGhostPage() {
 
               {m.playable ? (
                 <Link
-                  href={`/play/rogue-ghost/?mission=${selectedMission.id}`}
+                  href={getPlayUrl('rogue-ghost', selectedMission.id)}
                   className="px-5 py-4 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all hover:border-slate-600 hover:text-slate-300 border-slate-800 text-slate-400 whitespace-nowrap"
                 >
                   QUICK LAUNCH →

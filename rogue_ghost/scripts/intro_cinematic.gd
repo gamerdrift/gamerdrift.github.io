@@ -23,7 +23,7 @@ func _play_camera_path() -> void:
 		queue_free()
 		return
 
- 	# Prepare tween-driven path animation
+	# Prepare tween-driven path animation
 	var tween = create_tween()
 	var total = path_points.size()
 	if total == 0:
@@ -40,7 +40,7 @@ func _play_camera_path() -> void:
 		else:
 			tween.tween_property(cam, "global_transform:origin", target.origin, seg).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
- 	tween.finished.connect(_on_cinematic_done)
+	tween.finished.connect(_on_cinematic_done)
 	# Setup UI and audio, then start transitions
 	_setup_ui()
 	_play_music()

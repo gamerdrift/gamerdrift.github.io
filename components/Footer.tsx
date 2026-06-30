@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { getPlayUrl, ROGUE_GHOST_DEFAULT_MISSION } from '../lib/routes';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -38,7 +39,7 @@ export default function Footer() {
 
   const intelLinks = [
     { name: 'RogueGhost Operations', href: '/rogueghost' },
-    { name: 'Deploy Mission', href: '/play/rogue-ghost/' },
+    { name: 'Deploy Mission', href: getPlayUrl('rogue-ghost', ROGUE_GHOST_DEFAULT_MISSION) },
     { name: 'Leaderboards Matrix', href: '/leaderboard' },
     { name: 'Tournaments Grid', href: '/tournaments' }
   ];

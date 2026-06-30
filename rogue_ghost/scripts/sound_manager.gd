@@ -171,7 +171,8 @@ func _generate_battle_music() -> AudioStreamWAV:
 		var stab = sin(2.0 * PI * 195.0 * t) * 0.12 * (sin(PI * 0.75 * t) * 0.5 + 0.5)
 		var arp_step = int(t * 2.2) % 6
 		var arp_freq = [220.0, 246.94, 261.63, 246.94, 220.0, 196.0][arp_step]
-		var arp = sin(2.0 * PI * arp_freq * t) * 0.16 * exp(-fract(t * 2.2) * 3.0)
+		var arp_phase = t * 2.2 - floor(t * 2.2)
+		var arp = sin(2.0 * PI * arp_freq * t) * 0.16 * exp(-arp_phase * 3.0)
 		var sample = clamp((bass + pulse + stab + arp) * 0.30, -1.0, 1.0)
 		var byte_val = int(sample * 127.0)
 		if byte_val < 0: byte_val += 256
@@ -190,7 +191,8 @@ func _generate_boss_defeat_music() -> AudioStreamWAV:
 		var motion = sin(2.0 * PI * 50.0 * t) * 0.18
 		var arp_index = int(t * 1.8) % 7
 		var arp_notes = [220.0, 261.63, 293.66, 329.63, 349.23, 392.0, 440.0]
-		var lead = sin(2.0 * PI * arp_notes[arp_index] * t) * 0.24 * exp(-fract(t * 1.8) * 2.2)
+		var arp_phase = t * 1.8 - floor(t * 1.8)
+		var lead = sin(2.0 * PI * arp_notes[arp_index] * t) * 0.24 * exp(-arp_phase * 2.2)
 		var swell = sin(2.0 * PI * 440.0 * t) * 0.08 * (sin(PI * 0.4 * t) * 0.5 + 0.5)
 		var sample = clamp((motion + lead + swell) * 0.34, -1.0, 1.0)
 		var byte_val = int(sample * 127.0)

@@ -46,3 +46,5 @@ next-env.d.ts
 /gamerdrift_clean3/
 /rogue_ghost/.godot/
 
+# Agent customization memory
+/.agents/

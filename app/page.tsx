@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useUser } from '../lib/state/UserContext';
 import TacticalRadar3D from '../components/TacticalRadar3D';
 import GamingHeroTablet from '../components/GamingHeroTablet';
+import { getPlayUrl, ROGUE_GHOST_DEFAULT_MISSION } from '../lib/routes';
 import initialArticlesRaw from '../data/newsData.json';
 
 interface Article {
@@ -107,7 +108,7 @@ export default function Home() {
 
                 <div className="flex flex-wrap gap-2 pt-1">
                   <Link
-                    href="/play/rogue-ghost/?mission=snowblow"
+                    href={getPlayUrl('rogue-ghost', ROGUE_GHOST_DEFAULT_MISSION)}
                     className="px-4 py-2.5 bg-[#00f0ff] hover:bg-[#00f0ff]/80 text-black font-sans font-bold tracking-widest text-[9px] uppercase shadow-[0_0_10px_rgba(0,240,255,0.25)] transition-all"
                   >
                     ▶ DEPLOY NOW
@@ -208,7 +209,7 @@ export default function Home() {
 
               <div className="flex gap-3 flex-wrap">
                 <Link
-                  href="/play/rogue-ghost/?mission=snowblow"
+                  href={getPlayUrl('rogue-ghost', ROGUE_GHOST_DEFAULT_MISSION)}
                   className="px-6 py-3 bg-[#00f0ff] text-black font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-[#00f0ff]/80 shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all"
                 >
                   ▶ DEPLOY_MISSION

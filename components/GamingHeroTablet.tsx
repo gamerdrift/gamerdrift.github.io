@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { getPlayUrl } from '../lib/routes';
 
 const MAPS = [
   {
@@ -231,7 +232,7 @@ export default function GamingHeroTablet() {
 
           {/* Deploy CTA */}
           <Link
-            href={`/play/rogue-ghost/?mission=${activeMap.id}`}
+            href={getPlayUrl('rogue-ghost', activeMap.id)}
             className="text-[7.5px] font-extrabold uppercase px-3 py-1 tracking-wider transition-all hover:opacity-80"
             style={{
               border: `1px solid ${activeMap.themeColor}`,
