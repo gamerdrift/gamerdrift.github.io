@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import GridBeams from "../components/GridBeams";
 import { GameProvider } from "../lib/state/GameContext";
 import { UserProvider } from "../lib/state/UserContext";
+import { CasinoProvider } from "../lib/state/CasinoContext";
 import { ChatProvider } from "../lib/state/ChatContext";
 
 export const metadata: Metadata = {
@@ -24,22 +25,24 @@ export default function RootLayout({
       className="h-full antialiased dark">
       <body className="min-h-full flex flex-col bg-cyber-bg text-text-primary transition-colors duration-300">
         <UserProvider>
-          <GameProvider>
-            <ChatProvider>
-              <GridBeams />
-              <Header />
-              {process.env.NEXT_PUBLIC_GA_ID && (
-                <>
-                  <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
-                  <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}} />
-                </>
-              )}
-              <main className="flex-grow flex flex-col">
-                {children}
-              </main>
-              <Footer />
-            </ChatProvider>
-          </GameProvider>
+          <CasinoProvider>
+            <GameProvider>
+              <ChatProvider>
+                <GridBeams />
+                <Header />
+                {process.env.NEXT_PUBLIC_GA_ID && (
+                  <>
+                    <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
+                    <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}} />
+                  </>
+                )}
+                <main className="flex-grow flex flex-col">
+                  {children}
+                </main>
+                <Footer />
+              </ChatProvider>
+            </GameProvider>
+          </CasinoProvider>
         </UserProvider>
       </body>
     </html>

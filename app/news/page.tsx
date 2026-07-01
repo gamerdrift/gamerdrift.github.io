@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import SponsorTerminal from '../../components/SponsorTerminal';
 
 import initialArticlesRaw from '../../data/newsData.json';
 
@@ -61,43 +62,54 @@ export default function NewsPage() {
           ))}
         </div>
 
-        {/* News list */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredArticles.map(art => (
-            <div 
-              key={art.id}
-              className="hud-panel cursor-pointer flex flex-col h-full hover:-translate-y-1"
-              onClick={() => setActiveArticle(art)}
-            >
-              <div className="relative h-48 w-full bg-slate-950 overflow-hidden border-b border-slate-900">
-                <img 
-                  src={art.imageUrl} 
-                  alt={art.title} 
-                  className="w-full h-full object-cover opacity-75 hover:scale-105 transition-transform duration-500" 
-                />
-                <span className="absolute top-3 left-3 bg-black/85 border border-[#ff9f00]/30 text-[#ff9f00] text-[9px] font-mono px-2 py-0.5 uppercase tracking-wider">
-                  {art.category}
-                </span>
-              </div>
-
-              <div className="p-5 flex flex-col flex-grow">
-                <div className="flex justify-between items-center text-[9px] font-mono text-slate-500 mb-2">
-                  <span>{art.date}</span>
-                  <span>{art.readTime}</span>
+        {/* Newsroom Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Main Column: News Articles */}
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredArticles.map(art => (
+                <div 
+                  key={art.id}
+                  className="hud-panel cursor-pointer flex flex-col h-full hover:-translate-y-1"
+                  onClick={() => setActiveArticle(art)}
+                >
+                  <div className="relative h-48 w-full bg-slate-950 overflow-hidden border-b border-slate-900">
+                    <img 
+                      src={art.imageUrl} 
+                      alt={art.title} 
+                      className="w-full h-full object-cover opacity-75 hover:scale-105 transition-transform duration-500" 
+                    />
+                    <span className="absolute top-3 left-3 bg-black/85 border border-[#ff9f00]/30 text-[#ff9f00] text-[9px] font-mono px-2 py-0.5 uppercase tracking-wider">
+                      {art.category}
+                    </span>
+                  </div>
+     
+                  <div className="p-5 flex flex-col flex-grow">
+                    <div className="flex justify-between items-center text-[9px] font-mono text-slate-500 mb-2">
+                      <span>{art.date}</span>
+                      <span>{art.readTime}</span>
+                    </div>
+                    <h2 className="text-base font-bold text-white font-mono mb-2 hover:text-[#00f0ff] transition-colors uppercase leading-snug">
+                      {art.title}
+                    </h2>
+                    <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-4">
+                      {art.summary}
+                    </p>
+                    <div className="mt-auto pt-4 border-t border-slate-900 flex justify-between items-center text-[9px] font-mono text-[#00f0ff]">
+                      <span>READ_FULL_COMMISSION &gt;</span>
+                      <span className="text-slate-600">ID: {art.id.toUpperCase()}</span>
+                    </div>
+                  </div>
                 </div>
-                <h2 className="text-base font-bold text-white font-mono mb-2 hover:text-[#00f0ff] transition-colors uppercase leading-snug">
-                  {art.title}
-                </h2>
-                <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-4">
-                  {art.summary}
-                </p>
-                <div className="mt-auto pt-4 border-t border-slate-900 flex justify-between items-center text-[9px] font-mono text-[#00f0ff]">
-                  <span>READ_FULL_COMMISSION &gt;</span>
-                  <span className="text-slate-600">ID: {art.id.toUpperCase()}</span>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Sidebar Column: Sponsor Terminal */}
+          <div className="lg:col-span-4 space-y-6 sticky top-24">
+            <SponsorTerminal />
+          </div>
         </div>
 
         {/* Modal expand article */}

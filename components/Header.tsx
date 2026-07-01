@@ -18,12 +18,14 @@ export default function Header() {
   const primaryLinks = [
     { name: 'Home', href: '/' },
     { name: 'RogueGhost', href: '/rogueghost' },
+    { name: 'GhostDaddy_Casino', href: '/ghostdaddy-casino' },
     { name: 'More Games', href: '/moregames' },
     { name: 'News', href: '/news' },
     { name: 'Community', href: '/community' },
     { name: 'Leaderboards', href: '/leaderboard' },
     { name: 'Tournaments', href: '/tournaments' },
     { name: 'Store', href: '/store' },
+    { name: 'VIP Pass', href: '/vip' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' }
   ];
@@ -243,19 +245,44 @@ export default function Header() {
         <div className="relative" ref={profileRef}>
           {user ? (
             <div className="flex items-center gap-2">
+              {/* Live Coin Balance Indicator */}
+              <div className="flex items-center gap-1.5 bg-[#ff9f00]/10 border border-[#ff9f00]/30 rounded px-2.5 py-1 text-[#ff9f00] font-mono text-[10px] select-none hover:bg-[#ff9f00]/15 transition-all">
+                <span className="inline-block animate-pulse">🪙</span>
+                <span className="font-extrabold tracking-wider">{user.driftCoins ?? 0}</span>
+                <span className="text-[7.5px] text-[#ff9f00]/60 uppercase tracking-widest ml-0.5">Coins</span>
+              </div>
+
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="h-9 px-3 border border-[#00f0ff] bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 text-[#00f0ff] font-mono text-[10px] tracking-wider uppercase flex items-center gap-2 transition-all shadow-[0_0_8px_rgba(0,240,255,0.2)]"
+                className="h-9 px-3 border bg-black/60 text-white font-mono text-[10px] tracking-wider uppercase flex items-center gap-2 transition-all"
+                style={{
+                  borderColor: user.isVIP ? '#ff9f00' : '#00f0ff',
+                  boxShadow: user.isVIP ? '0 0 10px rgba(255,159,0,0.2)' : '0 0 8px rgba(0,240,255,0.15)'
+                }}
               >
-                <span>{user.username.toUpperCase()}</span>
+                {user.isVIP && <span className="text-[#ff9f00] font-bold">⚡</span>}
+                <span className={user.isVIP ? "text-[#ff9f00] font-extrabold" : "text-[#00f0ff]"}>
+                  {user.username.toUpperCase()}
+                </span>
                 <span className="bg-[#ff9f00] text-black font-bold px-1 text-[8px] rounded">L{user.level}</span>
               </button>
 
               {profileOpen && (
                 <div className="absolute top-11 right-0 w-52 bg-[#0c0f16] border border-[#00f0ff]/30 p-3 shadow-[0_10px_25px_rgba(0,240,255,0.2)] z-50 flex flex-col gap-3 font-mono text-[10px] text-slate-300">
-                  <div className="border-b border-[#00f0ff]/10 pb-2">
-                    <div className="font-extrabold text-white text-xs">{user.username}</div>
-                    <div className="text-[8px] text-[#ff9f00] mt-0.5 uppercase">{user.role} INTERFACE ACTIVE</div>
+                  <div className="border-b border-[#00f0ff]/10 pb-2 flex justify-between items-start">
+                    <div>
+                      <div className={`font-extrabold text-xs ${user.isVIP ? 'text-[#ff9f00]' : 'text-white'}`}>
+                        {user.username} {user.isVIP && '⚡'}
+                      </div>
+                      <div className="text-[8px] text-slate-500 mt-0.5 uppercase">
+                        {user.isVIP ? 'VIP DRIFT PASS ACTIVE' : `${user.role} INTERFACE ACTIVE`}
+                      </div>
+                    </div>
+                    {user.isVIP && (
+                      <span className="bg-[#ff9f00]/10 text-[#ff9f00] border border-[#ff9f00]/40 font-extrabold px-1.5 py-0.5 text-[7px] tracking-wider rounded uppercase">
+                        VIP
+                      </span>
+                    )}
                   </div>
                   
                   <div className="flex flex-col gap-1">
@@ -364,9 +391,19 @@ export default function Header() {
             {user ? (
               <div className="flex flex-col gap-2 bg-slate-900/40 p-3 border border-[#00f0ff]/10">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-white text-xs">{user.username}</span>
+                  <span className={`font-bold text-xs ${user.isVIP ? 'text-[#ff9f00]' : 'text-white'}`}>
+                    {user.isVIP && '⚡ '}
+                    {user.username}
+                  </span>
                   <span className="bg-[#ff9f00] text-black font-bold px-1.5 py-0.5 text-[9px] rounded">L{user.level}</span>
                 </div>
+                
+                {/* Mobile Coin Display */}
+                <div className="flex justify-between items-center bg-black/40 border border-slate-800 p-2 text-[9px]">
+                  <span className="text-slate-500 uppercase">DRIFT COINS:</span>
+                  <span className="text-[#ff9f00] font-black">🪙 {user.driftCoins ?? 0}</span>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="py-2 bg-black/40 border border-slate-800 text-center text-[10px] hover:text-[#00f0ff]">Command Deck</Link>
                   <button

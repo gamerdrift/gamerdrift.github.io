@@ -32,6 +32,8 @@ export interface UserProfile {
   badges: string[];
   achievements: Achievement[];
   registeredAt: string;
+  driftCoins: number;
+  isVIP: boolean;
 }
 
 interface UserContextType {
@@ -44,6 +46,9 @@ interface UserContextType {
   triggerLevelUp: () => void;
   unlockedAchievementAlert: string | null;
   clearAchievementAlert: () => void;
+  addCoins: (amount: number) => void;
+  buyVIP: () => Promise<boolean>;
+  claimDailyBonus: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -73,11 +78,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             level: 12,
             xp: 450,
             xpToNextLevel: 1000,
-            badges: ['Sysop', 'Founder', 'Glitch Master'],
+            badges: ['Sysop', 'Founder', 'Glitch Master', 'VIP Drifter'],
             achievements: [
               { title: 'Server Genesis', description: 'Initialize the main gaming deck.', unlockedAt: new Date('2026-05-01').toLocaleDateString(), xpReward: 500 }
             ],
-            registeredAt: new Date('2026-05-01').toISOString()
+            registeredAt: new Date('2026-05-01').toISOString(),
+            driftCoins: 1000,
+            isVIP: true
           },
           {
             username: 'NeoCreator',
@@ -89,7 +96,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             achievements: [
               { title: 'Ingest Successful', description: 'Upload your first HTML5 gaming node.', unlockedAt: new Date('2026-05-15').toLocaleDateString(), xpReward: 200 }
             ],
-            registeredAt: new Date('2026-05-15').toISOString()
+            registeredAt: new Date('2026-05-15').toISOString(),
+            driftCoins: 150,
+            isVIP: false
           },
           {
             username: 'Hex_Netrunner',
@@ -99,7 +108,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             xpToNextLevel: 1000,
             badges: ['Drifter Leader', '8K Enthusiast'],
             achievements: [],
-            registeredAt: new Date('2026-05-18').toISOString()
+            registeredAt: new Date('2026-05-18').toISOString(),
+            driftCoins: 300,
+            isVIP: false
           }
         ];
         localStorage.setItem('gamerdrift_users_db', JSON.stringify(dbUsers));
@@ -127,7 +138,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
               xpToNextLevel: d.xpToNextLevel || 100,
               badges: d.badges || [],
               achievements: d.achievements || [],
-              registeredAt: d.registeredAt || new Date().toISOString()
+              registeredAt: d.registeredAt || new Date().toISOString(),
+              driftCoins: d.driftCoins || 200,
+              isVIP: d.isVIP || false
             });
           });
           setAllUsers(users);
@@ -182,7 +195,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           xpToNextLevel: d.xpToNextLevel || 100,
           badges: d.badges || [],
           achievements: d.achievements || [],
-          registeredAt: d.registeredAt || new Date().toISOString()
+          registeredAt: d.registeredAt || new Date().toISOString(),
+          driftCoins: d.driftCoins || 200,
+          isVIP: d.isVIP || false
         };
         setUser(activeProfile);
         localStorage.setItem('gamerdrift_active_user', JSON.stringify(activeProfile));
@@ -200,7 +215,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           xpToNextLevel: 100,
           badges: ['Drifter Node'],
           achievements: [],
-          registeredAt: new Date().toISOString()
+          registeredAt: new Date().toISOString(),
+          driftCoins: 200,
+          isVIP: false
         };
         await setDoc(doc(db, 'users', trimmed.toLowerCase()), {
           ...newProfile,
@@ -246,7 +263,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             xpReward: 50
           }
         ],
-        registeredAt: new Date().toISOString()
+        registeredAt: new Date().toISOString(),
+        driftCoins: 200,
+        isVIP: false
       };
 
       const updatedDb = [...allUsers, newUser];
@@ -287,7 +306,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             xpReward: 50
           }
         ],
-        registeredAt: new Date().toISOString()
+        registeredAt: new Date().toISOString(),
+        driftCoins: 200,
+        isVIP: false
       };
 
       // Create Firestore User Document
@@ -327,7 +348,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const gainXP = async (amount: number) => {
     if (!user) return;
 
-    let newXp = user.xp + amount;
+    const multiplier = user.isVIP ? 2 : 1;
+    const finalXpGained = amount * multiplier;
+    const coinsEarned = Math.floor(finalXpGained / 2);
+
+    let newXp = user.xp + finalXpGained;
     let newLevel = user.level;
     let newXpToNext = user.xpToNextLevel;
     let levelUpOccurred = false;
@@ -345,6 +370,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       xp: newXp,
       level: newLevel,
       xpToNextLevel: newXpToNext,
+      driftCoins: (user.driftCoins || 0) + coinsEarned,
       badges: levelUpOccurred && newLevel === 5 
         ? [...user.badges, 'Elite Hacker']
         : levelUpOccurred && newLevel === 10
@@ -390,6 +416,70 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUnlockedAchievementAlert(null);
   };
 
+  const addCoins = async (amount: number) => {
+    if (!user) return;
+    const updatedUser: UserProfile = {
+      ...user,
+      driftCoins: (user.driftCoins || 0) + amount
+    };
+    setUser(updatedUser);
+    localStorage.setItem('gamerdrift_active_user', JSON.stringify(updatedUser));
+
+    if (isFirebaseMock) {
+      setAllUsers(prevDb => {
+        const updatedDb = prevDb.map(u => u.username.toLowerCase() === user.username.toLowerCase() ? updatedUser : u);
+        localStorage.setItem('gamerdrift_users_db', JSON.stringify(updatedDb));
+        return updatedDb;
+      });
+    } else {
+      try {
+        const userRef = doc(db, 'users', user.username.toLowerCase());
+        await updateDoc(userRef, {
+          driftCoins: updatedUser.driftCoins
+        });
+      } catch (e) {
+        console.error("Firestore coins sync failed:", e);
+      }
+    }
+  };
+
+  const buyVIP = async (): Promise<boolean> => {
+    if (!user) return false;
+    const updatedUser: UserProfile = {
+      ...user,
+      isVIP: true,
+      badges: user.badges.includes('VIP Drifter') ? user.badges : [...user.badges, 'VIP Drifter']
+    };
+    setUser(updatedUser);
+    localStorage.setItem('gamerdrift_active_user', JSON.stringify(updatedUser));
+
+    if (isFirebaseMock) {
+      setAllUsers(prevDb => {
+        const updatedDb = prevDb.map(u => u.username.toLowerCase() === user.username.toLowerCase() ? updatedUser : u);
+        localStorage.setItem('gamerdrift_users_db', JSON.stringify(updatedDb));
+        return updatedDb;
+      });
+    } else {
+      try {
+        const userRef = doc(db, 'users', user.username.toLowerCase());
+        await updateDoc(userRef, {
+          isVIP: true,
+          badges: updatedUser.badges
+        });
+      } catch (e) {
+        console.error("Firestore VIP sync failed:", e);
+      }
+    }
+    setUnlockedAchievementAlert(`Drift VIP Pass Activated! Welcome to the elite grid.`);
+    return true;
+  };
+
+  const claimDailyBonus = () => {
+    if (!user) return;
+    addCoins(100);
+    setUnlockedAchievementAlert(`Daily Uplink Bonus! Earned 100 Drift Coins.`);
+  };
+
   return (
     <UserContext.Provider value={{
       user,
@@ -400,7 +490,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       gainXP,
       triggerLevelUp,
       unlockedAchievementAlert,
-      clearAchievementAlert
+      clearAchievementAlert,
+      addCoins,
+      buyVIP,
+      claimDailyBonus
     }}>
       {children}
     </UserContext.Provider>

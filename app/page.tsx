@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useUser } from '../lib/state/UserContext';
 import TacticalRadar3D from '../components/TacticalRadar3D';
+import SponsorTerminal from '../components/SponsorTerminal';
 import GamingHeroTablet from '../components/GamingHeroTablet';
 import { getPlayUrl, ROGUE_GHOST_DEFAULT_MISSION } from '../lib/routes';
 import initialArticlesRaw from '../data/newsData.json';
@@ -151,11 +152,12 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Column: Radar Map */}
-          <div className="lg:col-span-6 w-full lg:mt-0 mt-4">
+          {/* Right Column: Radar Map & Sponsor Terminal */}
+          <div className="lg:col-span-6 w-full lg:mt-0 mt-4 space-y-4">
             <div className="hud-panel p-2">
               <TacticalRadar3D />
             </div>
+            <SponsorTerminal />
           </div>
         </section>
 

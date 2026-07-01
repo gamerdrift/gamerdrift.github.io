@@ -1,21 +1,64 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../../lib/state/UserContext';
 
 interface Product {
   id: string;
   name: string;
-  category: 'Gaming Chairs' | 'Racing Wheels' | 'Gaming PCs' | 'Graphics Cards' | 'Keyboards' | 'Mice' | 'Headsets' | 'Controllers' | 'Streaming Equipment';
+  category: 'Gaming Chairs' | 'Racing Wheels' | 'Gaming PCs' | 'Keyboards' | 'Mice' | 'Digital Vault';
   price: number;
+  coinPrice?: number;
   rating: number;
   reviewCount: number;
   imageUrl: string;
   affiliateUrl: string;
   features: string[];
   isDeal?: boolean;
+  isDigital?: boolean;
 }
 
 const mockProducts: Product[] = [
+  {
+    id: 'digital-1',
+    name: 'Cyber-Ghost Elite Character Skin (RogueGhost)',
+    category: 'Digital Vault',
+    price: 9.99,
+    coinPrice: 300,
+    rating: 4.9,
+    reviewCount: 312,
+    imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80',
+    affiliateUrl: '#',
+    features: ['Glowing cyber-mesh details', 'Exclusive reload animations', 'Premium audio feedback'],
+    isDigital: true
+  },
+  {
+    id: 'digital-2',
+    name: 'Sandbath Map Expansion Key',
+    category: 'Digital Vault',
+    price: 4.99,
+    coinPrice: 150,
+    rating: 4.8,
+    reviewCount: 187,
+    imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80',
+    affiliateUrl: '#',
+    features: ['Unlocks Sector 5: Sand Dunes', '2 extra stealth objectives', 'Desert camo skin pack'],
+    isDigital: true,
+    isDeal: true
+  },
+  {
+    id: 'digital-3',
+    name: 'Tactical Amber Theme License',
+    category: 'Digital Vault',
+    price: 2.99,
+    coinPrice: 100,
+    rating: 4.7,
+    reviewCount: 95,
+    imageUrl: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&w=400&q=80',
+    affiliateUrl: '#',
+    features: ['Activates warm amber HUD console theme', 'Imperial HUD logo badge', 'Premium ambient sounds'],
+    isDigital: true
+  },
   {
     id: 'prod-1',
     name: 'GamerDrift Nitro-Throne Command Chair',
@@ -76,25 +119,128 @@ const mockProducts: Product[] = [
 ];
 
 export default function StorePage() {
+  const { user, addCoins, gainXP } = useUser();
   const [selectedCat, setSelectedCat] = useState<string>('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  
+  // Custom checkout options
+  const [paymentOption, setPaymentOption] = useState<'coins' | 'stripe'>('coins');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCVC, setCardCVC] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const categories = ['All', 'Gaming Chairs', 'Racing Wheels', 'Gaming PCs', 'Graphics Cards', 'Keyboards', 'Mice', 'Headsets', 'Controllers', 'Streaming Equipment'];
+  const categories = ['All', 'Digital Vault', 'Gaming Chairs', 'Racing Wheels', 'Gaming PCs', 'Keyboards', 'Mice'];
 
   const filteredProducts = selectedCat === 'All'
     ? mockProducts
     : mockProducts.filter(p => p.category === selectedCat);
 
+  // Set default payment method when a product is clicked
+  useEffect(() => {
+    if (selectedProduct) {
+      setPaymentOption(selectedProduct.isDigital ? 'coins' : 'stripe');
+      setCardNumber('');
+      setCardExpiry('');
+      setCardCVC('');
+      setCardName('');
+      setErrorMsg('');
+    }
+  }, [selectedProduct]);
+
+  // Credit card formatting
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || '';
+    const parts = [];
+
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+
+    setCardNumber(parts.length > 0 ? parts.join(' ') : v);
+  };
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+    if (v.length >= 2) {
+      setCardExpiry(`${v.substring(0, 2)}/${v.substring(2, 4)}`);
+    } else {
+      setCardExpiry(v);
+    }
+  };
+
+  const playTickSound = (high = false) => {
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.setValueAtTime(high ? 900 : 400, ctx.currentTime);
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 0.1);
+    } catch {}
+  };
+
   const handleOrderSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsOrdering(true);
-    setTimeout(() => {
-      setIsOrdering(false);
-      setOrderComplete(true);
-      setTimeout(() => setOrderComplete(false), 4000);
-    }, 2000);
+    if (!user) {
+      setErrorMsg("UPLINK_ERROR: Sign in to establish drifter transaction links.");
+      playTickSound(false);
+      return;
+    }
+
+    if (paymentOption === 'coins') {
+      const cost = selectedProduct?.coinPrice || Math.floor((selectedProduct?.price || 0) * 50);
+      if (user.driftCoins < cost) {
+        setErrorMsg(`INSUFFICIENT DRIFT_COINS: Need ${cost} coins, balance is ${user.driftCoins}.`);
+        playTickSound(false);
+        return;
+      }
+
+      setIsOrdering(true);
+      setErrorMsg('');
+      playTickSound(true);
+
+      setTimeout(() => {
+        addCoins(-cost);
+        gainXP(30);
+        setIsOrdering(false);
+        setOrderComplete(true);
+        setTimeout(() => {
+          setOrderComplete(false);
+          setSelectedProduct(null);
+        }, 3000);
+      }, 2000);
+    } else {
+      // Mock Stripe Card transaction
+      if (!cardNumber || !cardExpiry || !cardCVC || !cardName) {
+        setErrorMsg("CREDENTIAL_ERROR: Fill in all credit telemetry credentials.");
+        playTickSound(false);
+        return;
+      }
+
+      setIsOrdering(true);
+      setErrorMsg('');
+      playTickSound(true);
+
+      setTimeout(() => {
+        gainXP(50);
+        setIsOrdering(false);
+        setOrderComplete(true);
+        setTimeout(() => {
+          setOrderComplete(false);
+          setSelectedProduct(null);
+        }, 3000);
+      }, 2500);
+    }
   };
 
   return (
@@ -152,7 +298,11 @@ export default function StorePage() {
                 {p.isDeal && (
                   <span className="absolute top-2.5 left-2.5 bg-[#ff9f00] text-black font-bold text-[8px] px-1.5 py-0.5 uppercase">DEAL</span>
                 )}
-                <span className="absolute bottom-2.5 right-2.5 bg-black/85 text-white font-bold border border-slate-800 text-[10px] px-2 py-0.5">${p.price}</span>
+                {p.isDigital ? (
+                  <span className="absolute bottom-2.5 right-2.5 bg-black/85 text-[#ff9f00] font-bold border border-[#ff9f00]/40 text-[10px] px-2 py-0.5">🪙 {p.coinPrice} COINS</span>
+                ) : (
+                  <span className="absolute bottom-2.5 right-2.5 bg-black/85 text-white font-bold border border-slate-800 text-[10px] px-2 py-0.5">${p.price}</span>
+                )}
               </div>
               
               <div className="flex flex-col flex-grow">
@@ -175,20 +325,13 @@ export default function StorePage() {
                   <span>({p.reviewCount} verified drifters)</span>
                 </div>
 
-                {/* Affiliate & Purchase button */}
-                <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-900">
-                  <a 
-                    href={p.affiliateUrl} 
-                    target="_blank"
-                    className="border border-[#00f0ff]/40 bg-transparent text-[#00f0ff] hover:bg-[#00f0ff]/10 text-center py-2 text-[9px] uppercase font-bold tracking-wider"
-                  >
-                    AMAZON_LINK
-                  </a>
+                {/* Purchase Button */}
+                <div className="grid grid-cols-1 mt-4 pt-4 border-t border-slate-900">
                   <button 
                     onClick={() => setSelectedProduct(p)}
-                    className="bg-[#ff9f00] text-black hover:bg-[#ff9f00]/80 text-center py-2 text-[9px] uppercase font-bold tracking-wider"
+                    className="bg-[#00f0ff] hover:bg-[#00f0ff]/80 text-black text-center py-2 text-[9px] uppercase font-bold tracking-widest shadow-[0_0_8px_rgba(0,240,255,0.15)] hover:scale-[1.02] active:scale-95 transition-all"
                   >
-                    DIRECT_UPLINK
+                    {p.isDigital ? '🔓 REDEEM DIGITAL ITEM' : '💳 ACQUIRE HARDWARE LINK'}
                   </button>
                 </div>
               </div>
@@ -241,8 +384,8 @@ export default function StorePage() {
 
         {/* Dropshipping/Order checkout modal */}
         {selectedProduct && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="hud-panel max-w-md w-full bg-[#0c0f16] p-6 relative">
+          <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="hud-panel max-w-md w-full bg-[#0c0f16]/95 border border-[#00f0ff]/30 p-6 relative font-mono text-[10px]">
               <button 
                 onClick={() => setSelectedProduct(null)}
                 className="absolute top-4 right-4 w-7 h-7 border border-[#ff9f00]/30 text-[#ff9f00] flex items-center justify-center font-bold hover:bg-[#ff9f00]/10"
@@ -250,51 +393,180 @@ export default function StorePage() {
                 ✕
               </button>
 
-              <h2 className="text-sm font-extrabold text-white border-b border-slate-900 pb-2 mb-4 uppercase tracking-wider">
-                DIRECT_DROPSHIP_INTAKE
+              <h2 className="text-sm font-extrabold text-white border-b border-slate-900 pb-2 mb-4 uppercase tracking-widest">
+                {selectedProduct.isDigital ? '🔐 DIGITAL VAULT DECRYPTOR' : '🚛 DIRECT DROPSHIP INTAKE'}
               </h2>
 
-              <div className="mb-4 bg-black/40 border border-slate-800 p-3">
-                <span className="text-[9px] text-slate-500 uppercase block">Selected Module</span>
-                <span className="text-white font-bold uppercase block">{selectedProduct.name}</span>
-                <span className="text-[#00f0ff] font-bold block mt-1">${selectedProduct.price}</span>
+              {errorMsg && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-2.5 mb-4 uppercase font-bold">
+                  ⚠️ WARNING: {errorMsg}
+                </div>
+              )}
+
+              {/* Product preview card */}
+              <div className="mb-4 bg-black/60 border border-slate-800 p-3.5 flex justify-between items-center rounded">
+                <div>
+                  <span className="text-[8px] text-slate-500 uppercase block">Selected Module</span>
+                  <span className="text-white font-bold uppercase block text-xs mt-0.5">{selectedProduct.name}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[8px] text-slate-500 uppercase block">Cost</span>
+                  <span className="text-[#00f0ff] font-black text-xs block mt-0.5">
+                    {paymentOption === 'coins' 
+                      ? `🪙 ${selectedProduct.coinPrice || Math.floor(selectedProduct.price * 50)} Coins` 
+                      : `$${selectedProduct.price}`}
+                  </span>
+                </div>
               </div>
 
               {!orderComplete ? (
-                <form onSubmit={handleOrderSubmit} className="flex flex-col gap-4 font-mono text-[10px]">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[#ff9f00] font-bold uppercase">Drifter Delivery Address *</label>
-                    <input 
-                      type="text" 
-                      required 
-                      className="bg-black/60 border border-slate-800 px-3 py-2 text-white placeholder-slate-700" 
-                      placeholder="e.g. Sector 4, Neo-Tokyo, Grid 9" 
-                    />
+                <div className="space-y-4">
+                  
+                  {/* Payment option tabs */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentOption('coins')}
+                      className={`py-2 text-[8px] font-bold uppercase border transition-all ${
+                        paymentOption === 'coins' 
+                          ? 'border-[#ff9f00] bg-[#ff9f00]/10 text-[#ff9f00]' 
+                          : 'border-slate-800 text-slate-500 hover:text-slate-400'
+                      }`}
+                    >
+                      🪙 DRIFT COINS
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentOption('stripe')}
+                      className={`py-2 text-[8px] font-bold uppercase border transition-all ${
+                        paymentOption === 'stripe' 
+                          ? 'border-[#00f0ff] bg-[#00f0ff]/10 text-[#00f0ff]' 
+                          : 'border-slate-800 text-slate-500 hover:text-slate-400'
+                      }`}
+                    >
+                      💳 STRIPE CREDIT
+                    </button>
                   </div>
 
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[#00f0ff] font-bold uppercase">Secure Transaction Token *</label>
-                    <input 
-                      type="password" 
-                      required 
-                      className="bg-black/60 border border-slate-800 px-3 py-2 text-white placeholder-slate-700" 
-                      placeholder="••••••••••••••••" 
-                    />
-                  </div>
+                  <form onSubmit={handleOrderSubmit} className="space-y-4 font-mono text-[10px]">
+                    {paymentOption === 'coins' ? (
+                      <div className="space-y-3 bg-black/30 border border-slate-900 p-3 rounded">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-500 uppercase text-[8px]">YOUR WALLET BALANCE:</span>
+                          <span className="text-[#ff9f00] font-black">🪙 {user?.driftCoins || 0} COINS</span>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-slate-900 pt-2 text-slate-400">
+                          <span>DEDUCTION AMOUNT:</span>
+                          <span className="font-bold text-[#ff9f00]">🪙 {selectedProduct.coinPrice || Math.floor(selectedProduct.price * 50)} COINS</span>
+                        </div>
+                        <p className="text-[8px] text-slate-500 leading-relaxed uppercase pt-1 border-t border-slate-900">
+                          Confirming the transaction will deduct virtual coins from your client session database and generate immediate download coordinates.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {/* Live debit card graphic */}
+                        <div className="w-full h-28 rounded-lg bg-gradient-to-br from-[#0c0f16] to-[#04060a] border border-[#00f0ff]/40 p-3 relative flex flex-col justify-between overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
+                          <div className="flex justify-between items-start">
+                            <span className="text-[#00f0ff] font-bold tracking-widest text-[8px]">DRIFT_DECK CARD</span>
+                            <span className="text-slate-600 font-black">💳</span>
+                          </div>
+                          
+                          <div className="text-white text-xs font-mono tracking-[0.25em] text-center my-2 select-none">
+                            {cardNumber || '•••• •••• •••• ••••'}
+                          </div>
 
-                  <button 
-                    type="submit" 
-                    disabled={isOrdering}
-                    className="w-full bg-[#ff9f00] text-black font-extrabold py-3 uppercase tracking-widest mt-2 hover:bg-[#ff9f00]/80 disabled:opacity-50"
-                  >
-                    {isOrdering ? 'TRANSMITTING_ORDER_REQUISITION...' : 'FINALIZE_DROPSHIP_UPLINK'}
-                  </button>
-                </form>
+                          <div className="flex justify-between items-center text-[7.5px] text-slate-500">
+                            <div>
+                              <span className="block text-[6px] uppercase tracking-wider text-slate-600">CARDHOLDER</span>
+                              <span className="text-slate-300 font-bold uppercase">{cardName || 'NEO NETRUNNER'}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="block text-[6px] uppercase tracking-wider text-slate-600">EXPIRY</span>
+                              <span className="text-slate-300 font-bold">{cardExpiry || 'MM/YY'}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card input forms */}
+                        <div className="space-y-2.5 pt-1.5">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-slate-500 text-[8px] uppercase">CARDHOLDER NAME</label>
+                            <input 
+                              type="text" 
+                              required 
+                              value={cardName}
+                              onChange={(e) => setCardName(e.target.value)}
+                              className="bg-black/60 border border-slate-800 focus:border-[#00f0ff] px-3 py-1.5 text-white placeholder-slate-700 focus:outline-none uppercase" 
+                              placeholder="e.g. NEO NETRUNNER" 
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label className="text-slate-500 text-[8px] uppercase">CARD NUMBER</label>
+                            <input 
+                              type="text" 
+                              required 
+                              maxLength={19}
+                              value={cardNumber}
+                              onChange={handleCardNumberChange}
+                              className="bg-black/60 border border-slate-800 focus:border-[#00f0ff] px-3 py-1.5 text-white placeholder-slate-700 focus:outline-none" 
+                              placeholder="e.g. 4000 1234 5678 9010" 
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="flex flex-col gap-1">
+                              <label className="text-slate-500 text-[8px] uppercase">EXPIRY (MM/YY)</label>
+                              <input 
+                                type="text" 
+                                required 
+                                maxLength={5}
+                                value={cardExpiry}
+                                onChange={handleExpiryChange}
+                                className="bg-black/60 border border-slate-800 focus:border-[#00f0ff] px-3 py-1.5 text-white placeholder-slate-700 focus:outline-none text-center" 
+                                placeholder="12/29" 
+                              />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <label className="text-slate-500 text-[8px] uppercase">CVC CODE</label>
+                              <input 
+                                type="password" 
+                                required 
+                                maxLength={4}
+                                value={cardCVC}
+                                onChange={(e) => setCardCVC(e.target.value.replace(/[^0-9]/g, ''))}
+                                className="bg-black/60 border border-slate-800 focus:border-[#00f0ff] px-3 py-1.5 text-white placeholder-slate-700 focus:outline-none text-center" 
+                                placeholder="***" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <button 
+                      type="submit" 
+                      disabled={isOrdering}
+                      className="w-full bg-[#00f0ff] text-black font-extrabold py-3 uppercase tracking-widest mt-2 hover:bg-[#00f0ff]/80 disabled:opacity-50 transition-all flex justify-center items-center"
+                      style={{
+                        backgroundColor: paymentOption === 'coins' ? '#ff9f00' : '#00f0ff',
+                        boxShadow: paymentOption === 'coins' ? '0 0 10px rgba(255,159,0,0.15)' : '0 0 10px rgba(0,240,255,0.15)'
+                      }}
+                    >
+                      {isOrdering ? 'TRANSMITTING_ORDER_TELEMETRY...' : 'FINALIZE_TRANSACTION_LINK'}
+                    </button>
+                  </form>
+                </div>
               ) : (
                 <div className="text-center py-6 flex flex-col items-center gap-3">
                   <div className="w-12 h-12 rounded-full border-2 border-[#39ff14] flex items-center justify-center text-xl text-[#39ff14] animate-bounce">✓</div>
                   <h3 className="text-xs font-bold text-white uppercase">ORDER PACKETS TRANSMITTED</h3>
-                  <p className="text-[10px] text-slate-400 leading-relaxed uppercase">Dropshipping requisition established. Tracking codes logged to system. Check drifter communications logs.</p>
+                  <p className="text-[10px] text-[#39ff14] leading-relaxed uppercase">
+                    {selectedProduct.isDigital 
+                      ? 'TELEMETRY DECRYPTED SUCCESSFUL: Vault download coordinates logged to system.'
+                      : 'Dropshipping requisition established. Tracking codes logged to system. Check drifter communication logs.'}
+                  </p>
                 </div>
               )}
             </div>
