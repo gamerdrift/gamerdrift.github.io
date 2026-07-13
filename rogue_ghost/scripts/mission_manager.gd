@@ -14,6 +14,7 @@ signal alert_level_updated(max_alert: float)
 # Mission Parameters
 @export var round_time_limit: float = 300.0 # 5 minutes
 @export var target_exit_zone: Area3D
+@export var mission_title: String = "Rogue Ghost: Desertstorm"
 
 # Telemetry registers
 var total_hostages: int = 0
@@ -25,6 +26,7 @@ var elapsed_time: float = 0.0
 var max_alert_level: float = 0.0
 var is_active: bool = false
 var player: PlayerGhost = null
+var current_objective: String = ""
 
 func _ready() -> void:
 	add_to_group("managers")
@@ -78,6 +80,7 @@ func _process(delta: float) -> void:
 func start_mission() -> void:
 	elapsed_time = 0.0
 	rescued_hostages = 0
+	_set_objective("Infiltrate the AO, secure the hostages, recover the intel, and exfil safely.")
 	# Play an intro cinematic if present; mission will begin afterwards
 	var cine_res = load("res://scenes/intro_cinematic.tscn")
 	if cine_res:
@@ -97,7 +100,8 @@ func _begin_mission() -> void:
 	is_active = true
 	mission_started.emit()
 	SoundManager.play_music("battle", true)
-	print("🟢 Infiltration grid live. Target hostages to secure: ", total_hostages)
+	_set_objective("Primary objective: secure " + str(total_hostages) + " hostages and recover all intel before extraction.")
+	print("🟢 ", mission_title, " live. Hostages to secure: ", total_hostages)
 
 func record_hostage_rescue(_hostage: HostageNode) -> void:
 	if not is_active:
@@ -105,6 +109,7 @@ func record_hostage_rescue(_hostage: HostageNode) -> void:
 		
 	rescued_hostages += 1
 	SoundManager.play("rescue")
+	_set_objective("Hostage extraction in progress: " + str(rescued_hostages) + " / " + str(total_hostages) + " secured.")
 	# If all hostages are secured, start the hostage rescue theme
 	if rescued_hostages == total_hostages:
 		SoundManager.play_music("hostage_rescue", true)
@@ -118,6 +123,7 @@ func record_clue_discovery(_clue: ClueEvidence) -> void:
 		return
 	discovered_clues += 1
 	SoundManager.play("clue")
+	_set_objective("Intel recovered: " + str(discovered_clues) + " / " + str(total_clues) + " files secured.")
 	print("🔍 Discovered clues: ", discovered_clues, " / ", total_clues)
 
 func record_ranger_casualty() -> void:
@@ -125,6 +131,10 @@ func record_ranger_casualty() -> void:
 		return
 	ranger_casualties += 1
 	print("🚨 Ranger Casualty recorded! Casualties count: ", ranger_casualties)
+
+func _set_objective(text: String) -> void:
+	current_objective = text
+	print("🎯 Objective: ", text)
 
 func _on_exit_zone_entered(body: Node) -> void:
 	if not is_active:
@@ -135,17 +145,20 @@ func _on_exit_zone_entered(body: Node) -> void:
 		# Win check: Sniper must be eliminated
 		var sniper_alive = get_tree().get_nodes_in_group("bosses").size() > 0
 		if sniper_alive:
+			_set_objective("Extraction denied. Eliminate the high-value target before exfil.")
 			print("⚠️ Extraction denied. The White Reaper is still tracking you in the forest!")
 			return
 			
 		# At least one ranger must survive
 		var ranger_alive = get_tree().get_nodes_in_group("rangers").size() > 0
 		if not ranger_alive:
+			_set_objective("Extraction denied. Preserve the squad and secure the exfil route.")
 			_fail_mission("CRITICAL ERROR: ALL RANGERS KIA")
 			return
 			
 		# Intel/Clues must be fully checked
 		if discovered_clues < total_clues:
+			_set_objective("Extraction denied. Recover the remaining intel before the exfil window closes.")
 			print("⚠️ Extraction denied. Ranger distress records and sniper intelligence remain uncollected.")
 			return
 			

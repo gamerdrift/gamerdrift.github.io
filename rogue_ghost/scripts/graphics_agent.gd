@@ -135,18 +135,97 @@ func _upgrade_weapon_visuals() -> void:
 
 func _apply_material_improvements(node: Node) -> void:
     if node is MeshInstance3D:
-        var material = node.get_active_material(0)
-        if material and material is StandardMaterial3D:
-            material.roughness = clamp(material.roughness * 0.65, 0.1, 0.9)
-            material.metallic = clamp(material.metallic + 0.18, 0.0, 1.0)
-            material.clearcoat = max(material.clearcoat, 0.08)
-            material.anisotropy = clamp(material.anisotropy + 0.15, 0.0, 1.0)
-            if material.albedo_color.a < 1.0:
-                material.unshaded = false
-            node.material_override = material
+        var mesh_instance := node as MeshInstance3D
+        _apply_premium_material(mesh_instance)
+        _upgrade_mesh_detail(mesh_instance)
 
     for child in node.get_children():
         _apply_material_improvements(child)
+
+func _apply_premium_material(mesh_instance: MeshInstance3D) -> void:
+    var node_name := mesh_instance.name.to_lower()
+    var premium_mat: StandardMaterial3D = null
+
+    if node_name.find("head") >= 0 or node_name.find("face") >= 0 or node_name.find("neck") >= 0 or node_name.find("skin") >= 0:
+        premium_mat = StandardMaterial3D.new()
+        premium_mat.albedo_color = Color(0.86, 0.74, 0.62, 1.0)
+        premium_mat.roughness = 0.60
+        premium_mat.metallic = 0.0
+        premium_mat.specular = 0.28
+        premium_mat.clearcoat = 0.16
+        premium_mat.subsurf_scatter_enabled = true
+        premium_mat.subsurf_scatter_strength = 0.24
+        premium_mat.ao_enabled = true
+        premium_mat.ao_light_affect = 0.35
+    elif node_name.find("helmet") >= 0 or node_name.find("armor") >= 0 or node_name.find("plate") >= 0 or node_name.find("shoulder") >= 0 or node_name.find("vest") >= 0:
+        premium_mat = StandardMaterial3D.new()
+        premium_mat.albedo_color = Color(0.12, 0.14, 0.16, 1.0)
+        premium_mat.roughness = 0.28
+        premium_mat.metallic = 0.42
+        premium_mat.specular = 0.76
+        premium_mat.clearcoat = 0.24
+        premium_mat.anisotropy = 0.16
+    elif node_name.find("visor") >= 0 or node_name.find("lens") >= 0 or node_name.find("glass") >= 0 or node_name.find("goggle") >= 0:
+        premium_mat = StandardMaterial3D.new()
+        premium_mat.albedo_color = Color(0.02, 0.06, 0.09, 0.28)
+        premium_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+        premium_mat.roughness = 0.08
+        premium_mat.metallic = 0.20
+        premium_mat.specular = 0.58
+        premium_mat.emission_enabled = true
+        premium_mat.emission = Color(0.03, 0.07, 0.09, 1.0)
+        premium_mat.emission_energy_multiplier = 1.2
+        premium_mat.refraction_enabled = true
+        premium_mat.refraction_scale = 0.02
+    elif node_name.find("weapon") >= 0 or node_name.find("receiver") >= 0 or node_name.find("barrel") >= 0 or node_name.find("stock") >= 0 or node_name.find("mag") >= 0 or node_name.find("scope") >= 0 or node_name.find("grip") >= 0:
+        premium_mat = StandardMaterial3D.new()
+        premium_mat.albedo_color = Color(0.08, 0.09, 0.12, 1.0)
+        premium_mat.roughness = 0.16
+        premium_mat.metallic = 0.96
+        premium_mat.specular = 0.90
+        premium_mat.clearcoat = 0.24
+        premium_mat.anisotropy = 0.26
+    elif node_name.find("pouch") >= 0 or node_name.find("belt") >= 0 or node_name.find("strap") >= 0 or node_name.find("bag") >= 0 or node_name.find("backpack") >= 0:
+        premium_mat = StandardMaterial3D.new()
+        premium_mat.albedo_color = Color(0.10, 0.11, 0.13, 1.0)
+        premium_mat.roughness = 0.62
+        premium_mat.metallic = 0.04
+        premium_mat.specular = 0.24
+        premium_mat.clearcoat = 0.10
+    else:
+        var material = mesh_instance.get_active_material(0)
+        if material and material is StandardMaterial3D:
+            material.roughness = clamp(material.roughness * 0.65, 0.1, 0.9)
+            material.metallic = clamp(material.metallic + 0.16, 0.0, 1.0)
+            material.clearcoat = max(material.clearcoat, 0.10)
+            material.anisotropy = clamp(material.anisotropy + 0.12, 0.0, 1.0)
+            if material.albedo_color.a < 1.0:
+                material.unshaded = false
+            mesh_instance.material_override = material
+            return
+
+    if premium_mat != null:
+        premium_mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+        premium_mat.ao_enabled = true
+        mesh_instance.material_override = premium_mat
+
+func _upgrade_mesh_detail(mesh_instance: MeshInstance3D) -> void:
+    var mesh = mesh_instance.mesh
+    if mesh is BoxMesh:
+        mesh.subdivide_width = max(mesh.subdivide_width, 2)
+        mesh.subdivide_height = max(mesh.subdivide_height, 2)
+        mesh.subdivide_depth = max(mesh.subdivide_depth, 2)
+    elif mesh is CylinderMesh:
+        mesh.radial_segments = max(mesh.radial_segments, 24)
+        mesh.rings = max(mesh.rings, 6)
+    elif mesh is SphereMesh:
+        mesh.radial_segments = max(mesh.radial_segments, 32)
+        mesh.rings = max(mesh.rings, 16)
+    elif mesh is CapsuleMesh:
+        mesh.radial_segments = max(mesh.radial_segments, 24)
+        mesh.rings = max(mesh.rings, 12)
+
+    mesh_instance.mesh = mesh
 
 func _apply_mesh_fidelity(mesh_instance: MeshInstance3D) -> void:
     var mesh = mesh_instance.mesh
