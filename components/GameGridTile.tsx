@@ -3,6 +3,37 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
+const derivePosterStyle = (game: GameMetadata) => {
+  const text = `${game.name} ${game.subtitle}`.toLowerCase();
+  let icon = '⚡';
+  let label = 'AAA HD';
+
+  if (/cyber|neon|matrix|hacker|ai|data|core/i.test(text)) {
+    icon = '⚙️';
+    label = 'CYBERPUNK';
+  } else if (/space|star|galaxy|orbit|cosmos|nebula|void|planet/i.test(text)) {
+    icon = '☄️';
+    label = 'SPACE OPS';
+  } else if (/fantasy|dragon|magic|rune|myth|realm|valhalla|ancient/i.test(text)) {
+    icon = '🗡️';
+    label = 'FANTASY';
+  } else if (/racing|car|race|drift|speed|track/i.test(text)) {
+    icon = '🏎️';
+    label = 'RACING';
+  } else if (/tactical|shoot|military|assault|defense|stealth|hostage|sabotage|sniper|ghost|infiltration/i.test(text)) {
+    icon = '🎯';
+    label = 'TACTICAL';
+  } else if (/puzzle|platform|glitch|system|matrix|hack/i.test(text)) {
+    icon = '🧠';
+    label = 'STRATEGY';
+  } else if (/survival|horror|outpost|mining|sandbox|forest|ice|frost|wild|beast/i.test(text)) {
+    icon = '🌲';
+    label = 'SURVIVAL';
+  }
+
+  return { icon, label };
+};
+
 export interface GameMetadata {
   id: string;
   name: string;
@@ -23,6 +54,7 @@ interface GameGridTileProps {
 export default function GameGridTile({ game }: GameGridTileProps) {
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const posterStyle = derivePosterStyle(game);
 
   const playClick = () => {
     try {
@@ -83,49 +115,74 @@ export default function GameGridTile({ game }: GameGridTileProps) {
         
         {/* Game Poster Image Area */}
         <div className="relative flex-1 overflow-hidden bg-black">
-          <img
-            src={game.image}
-            alt={`${game.name} poster`}
-            className="w-full h-full object-cover"
+          <div
+            className="absolute inset-0 bg-cover bg-center"
             style={{
+              backgroundImage: `url(${game.image})`,
               transform: isHovered ? 'scale(1.08)' : 'scale(1.0)',
               transition: 'transform 0.4s ease',
-              filter: 'saturate(1.2) contrast(1.05)',
-              opacity: 0.9,
+              filter: 'saturate(1.25) contrast(1.1) brightness(0.75)',
             }}
           />
-
-          {/* Scan line overlay */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `radial-gradient(circle at top left, ${game.themeColor}55 0%, transparent 35%), linear-gradient(135deg, rgba(5,7,10,0.2) 0%, rgba(5,7,10,0.82) 100%)`,
+            }}
+          />
           <div className="absolute inset-0 pointer-events-none z-10"
-            style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)' }}
+            style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)' }}
           />
 
-          {/* Top-left sector badge */}
-          <div className="absolute top-8 left-2 z-20 flex flex-col gap-1">
+          <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
             <div
-              className="text-[7px] font-black tracking-[0.2em] uppercase px-2 py-0.5"
+              className="text-[7px] font-black tracking-[0.28em] uppercase px-2.5 py-1 backdrop-blur-xl"
               style={{ backgroundColor: `${game.themeColor}22`, border: `1px solid ${game.themeColor}60`, color: game.themeColor }}
             >
-              TITLE: {game.name}
+              {posterStyle.icon} {posterStyle.label}
             </div>
             <div
-              className="text-[6px] font-bold tracking-wider uppercase px-2 py-0.5 w-fit"
+              className="text-[6px] font-bold tracking-[0.25em] uppercase px-2 py-0.5 w-fit backdrop-blur-md"
               style={{ color: game.statusColor, border: `1px solid ${game.statusColor}40`, backgroundColor: `${game.statusColor}10` }}
             >
               ● {game.status}
             </div>
           </div>
 
-          {/* Hover overlay with objective */}
-          <div className={`absolute inset-0 bg-black/60 z-20 flex flex-col justify-center items-center p-4 text-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <h3 className="text-xl font-bold tracking-widest uppercase mb-2 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-              {game.name}
-            </h3>
-            <p className="text-xs text-slate-300 max-w-[90%] mb-4 leading-relaxed font-sans">{game.subtitle}</p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[8px] text-slate-400 uppercase tracking-widest text-left w-full max-w-[80%] border-t border-slate-700 pt-2">
-              <div><span className="text-slate-500">THREAT:</span> <span className="text-red-400">{game.threat}</span></div>
-              <div><span className="text-slate-500">TARGET:</span> {game.enemies}</div>
-              <div className="col-span-2"><span className="text-slate-500">OBJ:</span> <span style={{ color: game.themeColor }}>{game.objective}</span></div>
+          <div className="absolute right-3 top-3 z-20 rounded-full border border-white/10 bg-black/50 px-2.5 py-1 text-[6px] font-black uppercase tracking-[0.3em] text-white/80 backdrop-blur-md">
+            8K HD
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 z-20 p-3">
+            <div className="rounded-xl border border-white/10 bg-black/70 p-3 shadow-[0_0_30px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                {game.name}
+              </h3>
+              <p className="mt-1 text-[9px] leading-relaxed text-slate-300 font-sans">
+                {game.subtitle}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                <span className="rounded-full border border-white/10 px-2 py-0.5 text-[7px] font-bold uppercase tracking-[0.2em] text-slate-200">
+                  {game.threat}
+                </span>
+                <span className="rounded-full border border-white/10 px-2 py-0.5 text-[7px] font-bold uppercase tracking-[0.2em] text-slate-200">
+                  {game.enemies}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className={`absolute inset-0 z-20 flex flex-col justify-center items-center p-4 text-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="rounded-2xl border border-white/10 bg-black/70 p-4 backdrop-blur-xl max-w-[90%]">
+              <h3 className="text-sm font-black tracking-[0.25em] uppercase mb-2 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                {game.name}
+              </h3>
+              <p className="text-[10px] text-slate-300 mb-3 leading-relaxed font-sans">{game.subtitle}</p>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[8px] text-slate-400 uppercase tracking-widest text-left border-t border-slate-700 pt-2">
+                <div><span className="text-slate-500">THREAT:</span> <span className="text-red-400">{game.threat}</span></div>
+                <div><span className="text-slate-500">TARGET:</span> {game.enemies}</div>
+                <div className="col-span-2"><span className="text-slate-500">OBJ:</span> <span style={{ color: game.themeColor }}>{game.objective}</span></div>
+              </div>
             </div>
           </div>
         </div>

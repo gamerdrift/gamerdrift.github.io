@@ -667,9 +667,17 @@ export default function MoreGamesPage() {
 
         {/* Games Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {MOCK_GAMES.map((game, idx) => (
-            <GameGridTile key={idx} game={game} />
-          ))}
+          {MOCK_GAMES.map((game, idx) => {
+            let localImage = game.image;
+            if (game.image.includes('unsplash.com')) {
+              if (game.themeColor === '#00f0ff') localImage = '/cyberpunk.png';
+              else if (game.themeColor === '#ff9f00') localImage = '/scifi.png';
+              else if (game.themeColor === '#a855f7') localImage = '/fantasy.png';
+              else if (game.themeColor === '#39ff14') localImage = '/tactical.png';
+              else if (game.themeColor === '#ff0055') localImage = '/cyberpunk.png';
+            }
+            return <GameGridTile key={idx} game={{ ...game, image: localImage }} />;
+          })}
         </div>
 
         {/* Load More CTA */}

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mission Runner</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: radial-gradient(circle at top, #10131f 0%, #05060b 100%);
+        color: #f8fbff;
+        font-family: Inter, Segoe UI, Arial, sans-serif;
+        overflow: hidden;
+      }
+      body {
+        display: grid;
+        place-items: center;
+      }
+      canvas {
+        width: min(100vw, 1100px);
+        height: min(100vh, 620px);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 16px;
+        box-shadow: 0 0 40px rgba(0, 240, 255, 0.18);
+        background: linear-gradient(180deg, rgba(12,15,30,0.95), rgba(2,4,12,0.98));
+      }
+      .hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #86f7ff;
+        pointer-events: none;
+      }
+      .hud strong { color: #fff; }
+      .hint {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.16);
+        color: #cfe8ff;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hud">
+      <div><strong>NODE:</strong> <span id="nodeName">MISSION RUNNER</span></div>
+      <div><strong>SCORE:</strong> <span id="scoreValue">0</span></div>
+      <div><strong>LIVES:</strong> <span id="livesValue">3</span></div>
+    </div>
+    <div class="hint">Move with WASD or arrows • Hold space to fire</div>
+    <canvas id="game" width="1100" height="620"></canvas>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const gameId = params.get('gameId') || 'mission-runner';
+      const displayName = params.get('title') || 'MISSION RUNNER';
+      const nodeName = document.getElementById('nodeName');
+      nodeName.textContent = displayName.toUpperCase();
+
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const scoreValue = document.getElementById('scoreValue');
+      const livesValue = document.getElementById('livesValue');
+
+      const state = {
+        keys: {},
+        score: 0,
+        lives: 3,
+        over: false,
+        player: { x: 120, y: 280, width: 42, height: 42, speed: 340 },
+        bullets: [],
+        enemies: [],
+        stars: Array.from({ length: 80 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 2 + 0.5, s: Math.random() * 0.8 + 0.2 })),
+        cooldown: 0,
+        spawnTimer: 0,
+        theme: '#00f0ff',
+      };
+
+      const hashColor = () => {
+        const base = Array.from(gameId).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+        const hue = (base * 17) % 360;
+        return `hsl(${hue}, 85%, 60%)`;
+      };
+      state.theme = hashColor();
+
+      const setTheme = () => {
+        document.body.style.setProperty('--accent', state.theme);
+      };
+      setTheme();
+
+      window.addEventListener('keydown', (e) => {
+        state.keys[e.code] = true;
+        if (e.code === 'Space') e.preventDefault();
+        if (e.code === 'Enter' && state.over) restart();
+      });
+      window.addEventListener('keyup', (e) => {
+        state.keys[e.code] = false;
+      });
+
+      function restart() {
+        state.score = 0;
+        state.lives = 3;
+        state.over = false;
+        state.player.x = 120;
+        state.player.y = 280;
+        state.bullets = [];
+        state.enemies = [];
+        state.cooldown = 0;
+        state.spawnTimer = 0;
+      }
+
+      function spawnEnemy() {
+        const radius = 16 + Math.random() * 10;
+        state.enemies.push({
+          x: canvas.width + radius,
+          y: 60 + Math.random() * (canvas.height - 120),
+          radius,
+          speed: 120 + Math.random() * 90,
+          sway: Math.random() * 0.8 + 0.2,
+          drift: Math.random() * Math.PI * 2,
+        });
+      }
+
+      function update(dt) {
+        if (state.over) return;
+
+        const moveX = (state.keys['ArrowRight'] || state.keys['KeyD'] ? 1 : 0) - (state.keys['ArrowLeft'] || state.keys['KeyA'] ? 1 : 0);
+        const moveY = (state.keys['ArrowDown'] || state.keys['KeyS'] ? 1 : 0) - (state.keys['ArrowUp'] || state.keys['KeyW'] ? 1 : 0);
+        state.player.x += moveX * state.player.speed * dt;
+        state.player.y += moveY * state.player.speed * dt;
+        state.player.x = Math.max(20, Math.min(canvas.width - state.player.width - 20, state.player.x));
+        state.player.y = Math.max(20, Math.min(canvas.height - state.player.height - 20, state.player.y));
+
+        if (state.keys['Space']) {
+          state.cooldown -= dt;
+          if (state.cooldown <= 0) {
+            state.bullets.push({ x: state.player.x + state.player.width, y: state.player.y + state.player.height / 2, radius: 4, speed: 520 });
+            state.cooldown = 0.16;
+          }
+        } else {
+          state.cooldown = Math.max(0, state.cooldown - dt);
+        }
+
+        state.spawnTimer -= dt;
+        if (state.spawnTimer <= 0) {
+          spawnEnemy();
+          state.spawnTimer = 0.7;
+        }
+
+        state.bullets.forEach((bullet) => {
+          bullet.x += bullet.speed * dt;
+        });
+        state.bullets = state.bullets.filter((bullet) => bullet.x < canvas.width + 20);
+
+        state.enemies.forEach((enemy, index) => {
+          enemy.x -= enemy.speed * dt;
+          enemy.y += Math.sin(enemy.drift) * enemy.sway * 80 * dt;
+          enemy.drift += dt * 1.4;
+          if (enemy.x + enemy.radius < -30) {
+            state.lives = Math.max(0, state.lives - 1);
+            state.enemies.splice(index, 1);
+          }
+        });
+
+        for (let i = state.bullets.length - 1; i >= 0; i -= 1) {
+          const bullet = state.bullets[i];
+          for (let j = state.enemies.length - 1; j >= 0; j -= 1) {
+            const enemy = state.enemies[j];
+            const dx = bullet.x - enemy.x;
+            const dy = bullet.y - enemy.y;
+            if (dx * dx + dy * dy <= enemy.radius * enemy.radius + 12) {
+              state.bullets.splice(i, 1);
+              state.enemies.splice(j, 1);
+              state.score += 100;
+              break;
+            }
+          }
+        }
+
+        for (let i = state.enemies.length - 1; i >= 0; i -= 1) {
+          const enemy = state.enemies[i];
+          const px = state.player.x + state.player.width / 2;
+          const py = state.player.y + state.player.height / 2;
+          const dx = px - enemy.x;
+          const dy = py - enemy.y;
+          if (dx * dx + dy * dy <= (enemy.radius + 18) * (enemy.radius + 18)) {
+            state.enemies.splice(i, 1);
+            state.lives = Math.max(0, state.lives - 1);
+          }
+        }
+
+        if (state.lives <= 0) {
+          state.over = true;
+        }
+
+        scoreValue.textContent = state.score.toString();
+        livesValue.textContent = state.lives.toString();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#03040a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        state.stars.forEach((star) => {
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.restore();
+
+        ctx.save();
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(12,18,43,0.95)');
+        gradient.addColorStop(1, 'rgba(2,4,12,0.95)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fillRect(0, canvas.height - 70, canvas.width, 70);
+        ctx.restore();
+
+        ctx.save();
+        ctx.strokeStyle = state.theme;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+        ctx.restore();
+
+        ctx.save();
+        ctx.font = 'bold 48px Segoe UI';
+        ctx.fillStyle = '#f7fbff';
+        ctx.fillText(`LIVE MISSION: ${displayName}`, 40, 70);
+        ctx.font = '20px Segoe UI';
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.fillText(`NEURAL LINK // ${gameId.toUpperCase()}`, 40, 104);
+        ctx.restore();
+
+        ctx.save();
+        ctx.fillStyle = state.theme;
+        ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(state.player.x + 8, state.player.y + 8, 12, 12);
+        ctx.restore();
+
+        state.bullets.forEach((bullet) => {
+          ctx.save();
+          ctx.fillStyle = '#ffef85';
+          ctx.beginPath();
+          ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+
+        state.enemies.forEach((enemy) => {
+          ctx.save();
+          ctx.fillStyle = '#ff4d70';
+          ctx.beginPath();
+          ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(enemy.x - 4, enemy.y - 4, enemy.radius * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+
+        if (state.over) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(0,0,0,0.72)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#fff';
+          ctx.textAlign = 'center';
+          ctx.font = 'bold 56px Segoe UI';
+          ctx.fillText('NODE LOST', canvas.width / 2, canvas.height / 2 - 20);
+          ctx.font = '24px Segoe UI';
+          ctx.fillStyle = '#cfe8ff';
+          ctx.fillText('Press Enter to deploy again', canvas.width / 2, canvas.height / 2 + 24);
+          ctx.restore();
+        }
+      }
+
+      let last = performance.now();
+      function loop(now) {
+        const dt = Math.min(0.033, (now - last) / 1000);
+        last = now;
+        update(dt);
+        draw();
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    </script>
+  </body>
+</html>

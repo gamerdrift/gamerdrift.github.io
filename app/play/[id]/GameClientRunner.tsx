@@ -3,13 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { resolveGame } from '../../../data/games';
 import { useGames, GameComment } from '../../../lib/state/GameContext';
 import { useUser } from '../../../lib/state/UserContext';
 
 export default function GameClientRunner({ gameId }: { gameId: string }) {
   const { games, comments, addComment, addToHistory } = useGames();
   const { user, gainXP } = useUser();
-  const game = games.find((g) => g.id === gameId);
+  const game = games.find((g) => g.id === gameId) ?? resolveGame(gameId);
 
   const cabinetRef = useRef<HTMLDivElement>(null);
 

@@ -49,9 +49,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Cache-bust: if stored games contain any non-rogue-ghost static IDs, wipe and reseed
+    // Cache-bust: if stored games contain any stale or missing IDs, wipe and reseed
     const storedGames = localStorage.getItem('gamerdrift_games');
-    const CURRENT_VERSION = 'rogue-ghost-only-v1';
+    const CURRENT_VERSION = 'more-games-routes-v1';
     const storedVersion = localStorage.getItem('gamerdrift_version');
     if (storedVersion !== CURRENT_VERSION) {
       localStorage.removeItem('gamerdrift_games');
