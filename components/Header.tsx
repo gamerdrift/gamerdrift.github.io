@@ -19,7 +19,7 @@ export default function Header() {
     { name: 'Home', href: '/' },
     { name: 'RogueGhost', href: '/rogueghost' },
     { name: 'GhostDaddy_Casino', href: '/ghostdaddy-casino' },
-    { name: 'More Games', href: '/moregames' },
+    { name: 'eSports', href: '/moregames' },
     { name: 'News', href: '/news' },
     { name: 'Community', href: '/community' },
     { name: 'Leaderboards', href: '/leaderboard' },
