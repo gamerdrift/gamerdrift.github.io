@@ -1,0 +1,44 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#04070D"/>
+  <rect x="40" y="40" width="1520" height="820" rx="36" fill="url(#bg)" stroke="#30E3FF" stroke-opacity="0.3"/>
+  <circle cx="1290" cy="220" r="260" fill="#00F0FF" fill-opacity="0.16"/>
+  <circle cx="330" cy="660" r="300" fill="#FF9F00" fill-opacity="0.16"/>
+  <rect x="180" y="140" width="1240" height="620" rx="24" fill="#050A13" fill-opacity="0.9" stroke="#FFFFFF" stroke-opacity="0.12"/>
+  <path d="M330 620H1280" stroke="#30E3FF" stroke-opacity="0.2" stroke-width="2"/>
+  <path d="M330 520H1280" stroke="#30E3FF" stroke-opacity="0.16" stroke-width="2"/>
+  <path d="M330 420H1280" stroke="#30E3FF" stroke-opacity="0.16" stroke-width="2"/>
+  <path d="M330 320H1280" stroke="#30E3FF" stroke-opacity="0.16" stroke-width="2"/>
+  <path d="M330 220H1280" stroke="#30E3FF" stroke-opacity="0.16" stroke-width="2"/>
+  <path d="M430 180V710" stroke="#30E3FF" stroke-opacity="0.15" stroke-width="2"/>
+  <path d="M560 180V710" stroke="#30E3FF" stroke-opacity="0.13" stroke-width="2"/>
+  <path d="M690 180V710" stroke="#30E3FF" stroke-opacity="0.13" stroke-width="2"/>
+  <path d="M820 180V710" stroke="#30E3FF" stroke-opacity="0.13" stroke-width="2"/>
+  <path d="M950 180V710" stroke="#30E3FF" stroke-opacity="0.13" stroke-width="2"/>
+  <path d="M1080 180V710" stroke="#30E3FF" stroke-opacity="0.13" stroke-width="2"/>
+  <path d="M1210 180V710" stroke="#30E3FF" stroke-opacity="0.13" stroke-width="2"/>
+  <rect x="440" y="220" width="180" height="180" rx="10" fill="#F4D9A0"/>
+  <rect x="620" y="220" width="180" height="180" rx="10" fill="#7F4F2E"/>
+  <rect x="800" y="220" width="180" height="180" rx="10" fill="#F4D9A0"/>
+  <rect x="980" y="220" width="180" height="180" rx="10" fill="#7F4F2E"/>
+  <rect x="440" y="400" width="180" height="180" rx="10" fill="#7F4F2E"/>
+  <rect x="620" y="400" width="180" height="180" rx="10" fill="#F4D9A0"/>
+  <rect x="800" y="400" width="180" height="180" rx="10" fill="#7F4F2E"/>
+  <rect x="980" y="400" width="180" height="180" rx="10" fill="#F4D9A0"/>
+  <rect x="440" y="580" width="180" height="180" rx="10" fill="#F4D9A0"/>
+  <rect x="620" y="580" width="180" height="180" rx="10" fill="#7F4F2E"/>
+  <rect x="800" y="580" width="180" height="180" rx="10" fill="#F4D9A0"/>
+  <rect x="980" y="580" width="180" height="180" rx="10" fill="#7F4F2E"/>
+  <text x="260" y="300" fill="#00F0FF" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" letter-spacing="8">ESPORTS</text>
+  <text x="260" y="360" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="800" letter-spacing="2">CHESS MASTER</text>
+  <text x="260" y="422" fill="#D7E4F6" font-family="Arial, Helvetica, sans-serif" font-size="24" opacity="0.9">AI • TACTICAL • MOBILE READY</text>
+  <circle cx="1180" cy="640" r="90" fill="none" stroke="#FF9F00" stroke-width="8" stroke-opacity="0.8"/>
+  <path d="M1180 590V690" stroke="#FF9F00" stroke-width="8" stroke-linecap="round"/>
+  <path d="M1130 640H1230" stroke="#FF9F00" stroke-width="8" stroke-linecap="round"/>
+  <path d="M1220 520C1250 560 1260 600 1255 650" stroke="#00F0FF" stroke-width="8" stroke-linecap="round" stroke-opacity="0.7"/>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="90" x2="1460" y2="810" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E1727"/>
+      <stop offset="1" stop-color="#060B12"/>
+    </linearGradient>
+  </defs>
+</svg>

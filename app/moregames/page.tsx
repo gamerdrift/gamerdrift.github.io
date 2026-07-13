@@ -1,13 +1,21 @@
 import React from 'react';
+import Link from 'next/link';
 import Footer from '../../components/Footer';
-import type { GameMetadata } from '../../components/GameGridTile';
 
 export const metadata = {
   title: 'eSports - GamerDrift',
-  description: 'Explore the GamerDrift eSports experience and upcoming competitive highlights.',
+  description: 'Explore the GamerDrift eSports experience and competitive highlights.',
 };
 
-const MOCK_GAMES: GameMetadata[] = [];
+const FEATURED_ESPORTS = [
+  {
+    id: 'chess-master',
+    title: 'Chess Master',
+    subtitle: 'Premium tactical chess with AI, cinematic HUDs, and touch-ready controls.',
+    badge: 'NEW • PLAYABLE',
+    image: '/games/chess-poster.svg',
+  },
+];
 
 export default function MoreGamesPage() {
   return (
@@ -60,13 +68,43 @@ export default function MoreGamesPage() {
           ))}
         </div>
 
-        {/* Empty eSports State */}
-        <div className="rounded-2xl border border-[#00f0ff]/20 bg-black/30 p-10 text-center">
-          <div className="text-[#00f0ff] font-mono text-sm uppercase tracking-[0.25em] mb-3">Live roster status</div>
-          <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-wide mb-3">No live eSports titles are active right now</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto font-mono text-xs leading-6">
-            The eSports section is currently being refreshed for upcoming tournaments, live events, and competitive drops. Check back soon for the next briefing.
-          </p>
+        <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+          <div className="rounded-3xl border border-[#00f0ff]/20 bg-black/35 overflow-hidden shadow-[0_0_40px_rgba(0,240,255,0.08)]">
+            <div className="relative h-[320px] md:h-[430px]">
+              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/games/chess-poster.svg')" }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+              <div className="absolute left-6 top-6 rounded-full border border-[#00f0ff]/40 bg-[#00f0ff]/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.3em] text-[#00f0ff]">
+                {FEATURED_ESPORTS[0].badge}
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-[0.12em]">{FEATURED_ESPORTS[0].title}</h2>
+                <p className="mt-3 max-w-xl text-sm md:text-base text-slate-300 leading-7">{FEATURED_ESPORTS[0].subtitle}</p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link href="/play/chess-master" className="rounded-full bg-[#00f0ff] px-5 py-2.5 text-sm font-black uppercase tracking-[0.2em] text-black transition hover:scale-[1.02]">
+                    Play now
+                  </Link>
+                  <a href="/games/chess-master.html" target="_blank" rel="noreferrer" className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-black uppercase tracking-[0.2em] text-white/80 transition hover:border-[#00f0ff] hover:text-[#00f0ff]">
+                    Open full screen
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-7">
+            <div className="text-[#00f0ff] font-mono text-xs uppercase tracking-[0.3em]">Tournament Briefing</div>
+            <h3 className="mt-3 text-xl font-black uppercase tracking-[0.16em]">Premium competitive deck</h3>
+            <p className="mt-3 text-sm leading-7 text-slate-400">
+              GamerDrift now hosts a premium chess experience where players can take on a sharp AI opponent, challenge their tactics, and play comfortably on mobile, tablet, or desktop.
+            </p>
+            <div className="mt-6 space-y-3">
+              {['Adaptive AI', 'Mobile-ready board', 'Cinematic eSports visuals', 'Instant rematch'].map((item) => (
+                <div key={item} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-200">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
       </main>

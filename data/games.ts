@@ -14,14 +14,15 @@ const buildPlayableGame = (
   title: string,
   thumbnail: string,
   description: string,
-  category: Game['category']
+  category: Game['category'],
+  embedUrl?: string
 ): Game => ({
   id,
   title,
   thumbnail,
   url: `/play/${id}/`,
   isExternal: true,
-  embedUrl: `/games/mission-runner.html?gameId=${id}&title=${encodeURIComponent(title)}`,
+  embedUrl: embedUrl ?? `/games/mission-runner.html?gameId=${id}&title=${encodeURIComponent(title)}`,
   description,
   category,
 });
@@ -33,6 +34,14 @@ export const games: Game[] = [
     '/rogue_ghost_character.png',
     '3D Third-Person Tactical Infiltration / Stealth Action game. Infiltrate secure vaults, avoid patrol guards, rescue hostages and extract.',
     'Action'
+  ),
+  buildPlayableGame(
+    'chess-master',
+    'Chess Master',
+    '/games/chess-poster.svg',
+    'A premium tactical chess experience with AI opposition, rapid match flow, and a cinematic eSports presentation built for desktop, tablet, and mobile.',
+    'Strategy',
+    '/games/chess-master.html'
   ),
   buildPlayableGame(
     'neon-overdrive',
