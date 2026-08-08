@@ -33,7 +33,8 @@ export const games: Game[] = [
     'Rogue Ghost 3D',
     '/rogue_ghost_character.png',
     '3D Third-Person Tactical Infiltration / Stealth Action game. Infiltrate secure vaults, avoid patrol guards, rescue hostages and extract.',
-    'Action'
+    'Action',
+    '/games/rogueghost/index.html'
   ),
   buildPlayableGame(
     'chess-master',
