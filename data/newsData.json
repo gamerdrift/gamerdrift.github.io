@@ -1,5 +1,85 @@
 [
   {
+    "id": "feed-81500643-3000",
+    "title": "Flock reportedly tries to shrink workforce with employee buyouts",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "Without buyouts, Flock would \"almost certainly\" need to lay off staff....",
+    "content": "Without buyouts, Flock would \"almost certainly\" need to lay off staff.... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-564792967-7000",
+    "title": "Trump says it&#8217;s time to rebrand AI with a new name — and he&#8217;s also creating an AI Force",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "Trump claimed, without evidence, that the AI backlash is a Democratic hoax....",
+    "content": "Trump claimed, without evidence, that the AI backlash is a Democratic hoax.... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-463768468-0000",
+    "title": "Google’s Gemini is the latest AI model to hack other companies",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "Google said Gemini had \"acted appropriately\" by ending each hack immediately....",
+    "content": "Google said Gemini had \"acted appropriately\" by ending each hack immediately.... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-609389126-0000",
+    "title": "The US Navy just told us what&#8217;s on its tech wish list for the next several years",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "Navy CTO Justin Fanelli talks co-investing alongside VCs instead of funding early research himself, recent buys like a $562 million autonomous refueling deal, and the Navy's updated wish list — from AI to quantum — for w...",
+    "content": "Navy CTO Justin Fanelli talks co-investing alongside VCs instead of funding early research himself, recent buys like a $562 million autonomous refueling deal, and the Navy's updated wish list — from AI to quantum — for w... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-476817521-0000",
+    "title": "Petlibro’s new AI-powered feeder is a game changer for multi-cat homes",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "Petlibro's new Granary 2 smart feeders use a built-in scale and (on pricier models) an AI camera to track exactly how much your cat is eating and when — though the fanciest health-monitoring features will cost you an ext...",
+    "content": "Petlibro's new Granary 2 smart feeders use a built-in scale and (on pricier models) an AI camera to track exactly how much your cat is eating and when — though the fanciest health-monitoring features will cost you an ext... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-1777401919-0000",
+    "title": "AI safety conversations have gotten unbelievable",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "This week two conversations about AI safety went viral that demonstrate just how hard it is to discern AI fact from fiction....",
+    "content": "This week two conversations about AI safety went viral that demonstrate just how hard it is to discern AI fact from fiction.... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-1983299624-0000",
+    "title": "Prices go up in 7 days. Get your Disrupt ticket now.",
+    "category": "Technology News",
+    "date": "2026-09-19",
+    "summary": "Current ticket pricing ends Sept. 25 at 11:59 p.m. PT. Join 10,000+ founders, investors and tech leaders at Disrupt and save up to $200 on your ticket until then.....",
+    "content": "Current ticket pricing ends Sept. 25 at 11:59 p.m. PT. Join 10,000+ founders, investors and tech leaders at Disrupt and save up to $200 on your ticket until then..... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
+    "id": "feed-669269852-0000",
+    "title": "Vals, backed by Andreessen Horowitz, is looking to become the gold standard for AI benchmarking",
+    "category": "Hardware Reviews",
+    "date": "2026-09-19",
+    "summary": "Vals AI is hoping to make AI benchmarking a more neutral and trustworthy resource in a world increasingly inundated by AI models....",
+    "content": "Vals AI is hoping to make AI benchmarking a more neutral and trustworthy resource in a world increasingly inundated by AI models.... Full operational briefs are logged on direct transceiver channels.",
+    "imageUrl": "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=600&q=80",
+    "readTime": "2 min read"
+  },
+  {
     "id": "feed-1155356974-0000",
     "title": "India forces caller-ID apps to feed spam reports to telcos",
     "category": "Technology News",
@@ -67,86 +147,6 @@
     "summary": "Sony's upcoming Helldivers movie remains in development, and now a key piece of news has surfaced. According to Deadline , Reacher star Alan Ritchson will replace Jason Momoa as the lead, following Momoa's departure earl...",
     "content": "Sony's upcoming Helldivers movie remains in development, and now a key piece of news has surfaced. According to Deadline , Reacher star Alan Ritchson will replace Jason Momoa as the lead, following Momoa's departure earl... Full operational briefs are logged on direct transceiver channels.",
     "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/Alan-Large.jpeg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-796124443-1000",
-    "title": "Final Fantasy 7 Revelation Could Take 100 Hours To Beat, And Its Director Has Done It 46 Times",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "Final Fantasy 7 Revelation is shaping up to be the biggest entry in the remake trilogy by a considerable margin, as game director Naoki Hamaguchi estimates that a complete playthrough of everything that the game has to o...",
-    "content": "Final Fantasy 7 Revelation is shaping up to be the biggest entry in the remake trilogy by a considerable margin, as game director Naoki Hamaguchi estimates that a complete playthrough of everything that the game has to o... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/FF7-Revelation-Sephiroth.jpg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-1561713196-2000",
-    "title": "People Can’t Stop Talking About Mario’s New Tiny Pockets",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "Nintendo recently held two Direct presentations back to back, with fans hoping that the company would reveal a new Mario game of some kind. While that didn't happen, what we did get was the reveal that Mario Kart World i...",
-    "content": "Nintendo recently held two Direct presentations back to back, with fans hoping that the company would reveal a new Mario game of some kind. While that didn't happen, what we did get was the reveal that Mario Kart World i... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/Mario-Zoom.jpg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-420570496-1000",
-    "title": "Sony&#8217;s Iconic PS4 Game-Sharing Meme Has Been Recreated To Capture Our Depressing Future",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "Thirteen years ago, Sony \"won\" E3 with a simple public service announcement that dunked on Microsoft's controversial Xbox One DRM plans. All it took was 22 seconds for Sony's Shuhei Yoshida and Adam Boyes to show how gam...",
-    "content": "Thirteen years ago, Sony \"won\" E3 with a simple public service announcement that dunked on Microsoft's controversial Xbox One DRM plans. All it took was 22 seconds for Sony's Shuhei Yoshida and Adam Boyes to show how gam... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/PS4-Game-Share.jpg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-1844521529-1000",
-    "title": "A Lot Of People Are Seemingly Taking Time Off Work To Play GTA 6. Are You?",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "BambooHR , a human resources company that provides software-as-a-service for more than 30,000 companies, has released data that suggests people are taking time off to play GTA 6 this November. You might have seen anecdot...",
-    "content": "BambooHR , a human resources company that provides software-as-a-service for more than 30,000 companies, has released data that suggests people are taking time off to play GTA 6 this November. You might have seen anecdot... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/Lucia_Caminos_10.jpg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-1418430858-9000",
-    "title": "Nintendo Says We&#8217;re Still At The Beginning Of The Switch 2 Story",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "The Switch 2 is a little over a year old, and unsurprisingly, Nintendo says that its console is just getting started. In a new interview, Nintendo of America president and COO Devon Pritchard teased a multiyear plan for ...",
-    "content": "The Switch 2 is a little over a year old, and unsurprisingly, Nintendo says that its console is just getting started. In a new interview, Nintendo of America president and COO Devon Pritchard teased a multiyear plan for ... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/Switch2.jpg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-2143524387-4000",
-    "title": "Sony Says Free TV On PS5 Is &#8220;One Plus One Equaling A Lot More Than Two&#8221;",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "Sony recently launched \"Live TV on PS5,\" an offering that gives all PlayStation 5 owners access to 100+ channels of free ad-supported TV and movies. Keith Le Goy, the chairman of Sony Pictures TV, recently discussed the ...",
-    "content": "Sony recently launched \"Live TV on PS5,\" an offering that gives all PlayStation 5 owners access to 100+ channels of free ad-supported TV and movies. Keith Le Goy, the chairman of Sony Pictures TV, recently discussed the ... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/livetvonps5-Large.jpeg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-1660237435-5000",
-    "title": "Blacksmiths Discover Control Resonant&#8217;s Massive Hammer Is Simply Too Much Hammer",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "The best tool you can own in life is a hammer, and in Control Resonant , fixing Manhattan requires a VERY big one to perform some percussive maintenance. The Aberrant is the melee weapon that you'll wield in battle, and ...",
-    "content": "The best tool you can own in life is a hammer, and in Control Resonant , fixing Manhattan requires a VERY big one to perform some percussive maintenance. The Aberrant is the melee weapon that you'll wield in battle, and ... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/Control-Hammer.jpg?w=300",
-    "readTime": "2 min read"
-  },
-  {
-    "id": "feed-1925460232-2000",
-    "title": "The Resident Evil Movie Is Already Breaking Records",
-    "category": "Gaming News",
-    "date": "2026-09-18",
-    "summary": "The Resident Evil movie from Weapons and Barbarian director Zach Cregger officially releases today, September 18, but like many big movies, it actually debuted the night prior. The movie made $9 million or more in the US...",
-    "content": "The Resident Evil movie from Weapons and Barbarian director Zach Cregger officially releases today, September 18, but like many big movies, it actually debuted the night prior. The movie made $9 million or more in the US... Full operational briefs are logged on direct transceiver channels.",
-    "imageUrl": "https://www.gamespot.com/wp-content/uploads/2026/09/REMovieNew-Large.jpeg?w=300",
     "readTime": "2 min read"
   }
 ]
